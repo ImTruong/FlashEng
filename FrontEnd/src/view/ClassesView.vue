@@ -7,6 +7,7 @@
 
     const activeTab = ref("Classes");
 
+    const Overlay_background = ref("false");
 
 
 
@@ -24,9 +25,23 @@
         </div>
         <div class="line"></div>
   
-        <div class="class-list" v-if="activeTab === 'Classes'">
+        <div class="class-list" @click="Overlay_background = true" v-if="activeTab === 'Classes'">
           <div v-for="classItem in classes" :key="classItem.id" class="class-card">
-            <!-- <span class="class-icon">👥</span> -->
+            <img src="../assets/class.svg" alt="Icon" class="class-icon" @click="Overlay_background = false">
+            <div class="overlay"  @click="Overlay_background = false" v-if= "Overlay_background">
+                <div class="classbox-container" @click.stop> 
+                    <div class="search-container">
+                        <input type="text" placeholder="Search ..." class="search-bar"/>
+                        <img src="../assets/search.svg" alt="Icon" class="search-icon" >
+                    </div>
+                    <img src="../assets/add_set.svg" alt="Icon" class="add-set-icon">
+                    <img src="../assets/add_member.svg" alt="Icon" class="add-member-icon">
+                    <img src="../assets/leave-group.svg" alt="Icon" class="leave-group-icon" @click="Overlay_background = false">
+                    <h2>{{ classItem.name }}</h2>
+                    <img src="../assets/close.svg" alt="Icon" class="close-icon" @click="Overlay_background = false">
+                    <div class="line"></div>
+                </div>
+           </div>
             <div class="class-info">
               <h3>{{ classItem.name }}</h3>
               <p>{{ classItem.sets }} set | {{ classItem.members }} members</p>
@@ -41,7 +56,7 @@
 <style scoped>    
 
     main {
-        padding: 20px;
+        padding: 100px;
     }
     
     h2 {
@@ -88,6 +103,7 @@
         gap: 20px;
     }
     
+    
     .class-card {
         display: flex;
         align-items: center;
@@ -97,13 +113,103 @@
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
     
+    .class-list .overlay{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 50.67px;
+        left: 0;
+        width: 100%;
+        height: calc(100% - 50.67px);
+        background-color: rgba(0, 0, 0, 0.3);
+    }
+
+    .overlay .classbox-container{
+        /* margin: auto; */
+        z-index: 10;
+        padding: 10;
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 5%;
+       
+        width: 50%;
+        height: 80%;
+        background-color: white;
+    }
+
+    .overlay .classbox-container .close-icon{
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+
+    .overlay .classbox-container h2{
+        position: absolute;
+        top: 20px;
+        left: 10%;
+    }
+
+    .overlay .search-container{
+        position: absolute; 
+        text-align: center;
+        justify-content: center;
+        width: 25%;
+        top: 25px;
+        left: 20%;
+    }
+
+    .overlay .search-container .search-icon{
+        position: absolute;
+        left: 10px;
+        top: 7px;
+    }
+
+    .overlay .search-container .search-bar{
+        width: 100%;
+        padding: 8px 16px 8px 40px;
+        border-radius: 5px;
+    }
+
+    .add-set-icon{
+        position: absolute;
+        top: 25px;
+        left: 50%;
+        width: 75px;
+    }
+
+    .add-member-icon{
+        position: absolute;
+        top: 25px;
+        left: 65%;
+        width: 75px;
+    }
+
+    .leave-group-icon{
+        position: absolute;
+        top: 25px;
+        left: 80%;
+        width: 40px;
+    }
+
+    .overlay .classbox-container .line{
+        position: absolute;
+        top: 15%;
+        width: 80%;
+        left: 10%;
+    }
+    
     .class-icon {
+        /* position: relative; */
         font-size: 30px;
         margin-right: 20px;
     }
     
     .class-info h3 {
         margin: 0;
+        font-weight: bold;
         font-size: 18px;
     }
     
@@ -113,3 +219,4 @@
         color: gray;
     }
 </style>
+

@@ -1,0 +1,38 @@
+[
+    {
+        "id": 1,
+        "name": "Environment",
+        "terms": 5,
+        "owner": "ptitstudent1"
+    },
+    {
+        "id": 2,
+        "name": "Noun",
+        "terms": 3,
+        "owner": "ptitstudent2"
+    },
+    {
+        "id": 3,
+        "name": "School",
+        "terms": 7,
+        "owner": "ptitstudent3"
+    },
+    {
+        "id": 4,
+        "name": "Country",
+        "terms": 9,
+        "owner": "ptitstudent1"
+    },
+    {
+        "id": 5,
+        "name": "Vegetable",
+        "terms": 3,
+        "owner": "ptitstudent2"
+    },
+    {
+        "id": 6,
+        "name": "Food",
+        "terms": 7,
+        "owner": "ptitstudent3"
+    }
+]
