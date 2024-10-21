@@ -1,6 +1,6 @@
 <script setup>
     import { defineProps, defineEmits } from 'vue';
-    import Card from './Card.vue';
+    import Card from './Set.vue';
     import setsData from '@/data/sets.json'
     import { ref, onMounted } from 'vue';
 
