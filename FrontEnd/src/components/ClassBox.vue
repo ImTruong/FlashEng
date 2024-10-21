@@ -1,6 +1,9 @@
 <script setup>
     import { defineProps, defineEmits } from 'vue';
     import Card from './Card.vue';
+    import setsData from '@/data/sets.json'
+    import { ref, onMounted } from 'vue';
+
 
     const { classItem, Overlay_background } = defineProps(['classItem', 'Overlay_background']);
 
@@ -9,12 +12,18 @@
     function closeOverlay(){
         emit('close');
     }
+
+    const sets = ref(setsData)
+    const displayedSets = ref([])
+    const showAllSets = () => {
+        displayedSets.value = sets.value; // Hiển thị toàn bộ khi nhấn "More..."
+    };
 </script>
 
 <template>
  
     <div class="overlay"  @click="Overlay_background = false" v-if= "Overlay_background == true">
-           <div class="classbox-container" @click.stop> 
+        <div class="classbox-container" @click.stop> 
             <div class="search-container">
                 <input type="text" placeholder="Search ..." class="search-bar"/>
                 <img src="../assets/search.svg" alt="Icon" class="search-icon" >
@@ -25,14 +34,20 @@
             <h2>{{ classItem.name }}</h2>
             <img src="../assets/close.svg" alt="Icon" class="close-icon" @click="closeOverlay">
             <div class="line"></div>
+            
+            <div class="card-container">
+                <Card 
+                    v-for="set in sets" 
+                    :key="set.id" 
+                    :set="set" />
 
-            <!-- <Card></Card> -->
+            </div>
         </div>
     </div>
 
 </template>
 
-<style>
+<style scoped>
     .overlay{
         position: fixed;
         display: flex;
@@ -127,7 +142,22 @@
         position: absolute;
         top: 15%;
         width: 80%;
+        height: 1px;
         left: 10%;
+        z-index: 100;
+        background-color: rgba(71, 59, 59, 0.8)
+    }
+
+    .card-container {
+        position: absolute;
+        width: 100%;
+        height: 80%;
+        top:15%;
+        padding: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        overflow: hidden;
     }
 
 

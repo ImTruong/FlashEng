@@ -24,7 +24,8 @@
 <style scoped>
   .card {
     margin-left: 10px;
-    width: 310px;
+    width: 30%;
+    min-width: 250px;
     height: 160px;
     overflow: hidden;
     border-radius: 4%;
@@ -38,8 +39,8 @@
     }
 
     .card-text {
-        margin-top: 10px;
-        padding: 0 10px;
+        position: absolute;
+        padding: 10px;
     }
 
     .card-text h2 {
@@ -56,7 +57,8 @@
     .number-terms{
         background-color: rgba(105, 105, 148, 0.2);
         border-radius: 5px;
-        width: 55px;
+        width: 60px;
         height: 25px;
+        text-align: center;
     }
 </style>
