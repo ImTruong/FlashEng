@@ -1,6 +1,9 @@
 <script setup>
     import { defineProps, defineEmits } from 'vue';
     import Card from './Card.vue';
+    import setsData from '@/data/sets.json'
+    import {ref, onMounted} from "vue"
+
 
     const { classItem, Overlay_background } = defineProps(['classItem', 'Overlay_background']);
 
@@ -9,16 +12,26 @@
     function closeOverlay(){
         emit('close');
     }
+
+    const sets = ref(setsData)
+    const displayedSets = ref([])
+    const showAllSets = () => {
+        displayedSets.value = sets.value; // Hiển thị toàn bộ khi nhấn "More..."
+    };
+    onMounted(() => {
+        displayedSets.value = sets.value.slice(0, 3);
+    });
+
 </script>
 
 <template>
  
     <div class="overlay"  @click="Overlay_background = false" v-if= "Overlay_background == true">
-           <div class="classbox-container" @click.stop> 
+        <div class="classbox-container" @click.stop> 
             <div class="search-container">
                 <input type="text" placeholder="Search ..." class="search-bar"/>
                 <img src="../assets/search.svg" alt="Icon" class="search-icon" >
-                </div>
+            </div>
             <img src="../assets/add_set.svg" alt="Icon" class="add-set-icon">
             <img src="../assets/add_member.svg" alt="Icon" class="add-member-icon">
             <img src="../assets/leave-group.svg" alt="Icon" class="leave-group-icon" @click="closeOverlay">
@@ -26,13 +39,18 @@
             <img src="../assets/close.svg" alt="Icon" class="close-icon" @click="closeOverlay">
             <div class="line"></div>
 
-            <!-- <Card></Card> -->
+            <div class="card-container">
+                <Card 
+                    v-for="set in sets" 
+                    :key="set.id" 
+                    :set="set" /> 
+            </div>
         </div>
     </div>
 
 </template>
 
-<style>
+<style scoped>
     .overlay{
         position: fixed;
         display: flex;
@@ -46,6 +64,7 @@
     }
 
     .overlay .classbox-container{
+        padding: 10px;
         /* margin: auto; */
         z-index: 10;
         padding: 10;
@@ -54,10 +73,11 @@
         justify-content: center;
         align-items: center;
         border-radius: 5%;
-       
+
         width: 50%;
         height: 80%;
         background-color: white;
+        overflow: hidden;
     }
 
     .overlay .classbox-container .close-icon{
@@ -127,8 +147,22 @@
         position: absolute;
         top: 15%;
         width: 80%;
+        height: 1px;
         left: 10%;
+        background-color: rgba(0, 0, 0, 0.3);
+        /* margin-bottom: 10px; */
     }
+
+    .card-container{
+        position: absolute;
+        top: 15%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 20px;
+    }
+
+
 
 
 </style>
