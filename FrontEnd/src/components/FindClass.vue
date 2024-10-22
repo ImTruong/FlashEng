@@ -25,6 +25,7 @@
         if(join.value == "Join") join.value = "Cancel"
         else join.value = "Join"
     }
+
 </script>
 
 <template>
