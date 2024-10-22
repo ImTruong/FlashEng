@@ -1,14 +1,18 @@
 <script setup>
     import { ref, onMounted } from "vue";
     import Header from "@/components/Header.vue"
-    import Card from "@/components/Card.vue"
+    import Card from "@/components/Set.vue"
     import setsData from '@/data/sets.json'
+    import { useRouter } from "vue-router"; 
 
-
+    const router = useRouter()
     const sets = ref(setsData)
     const displayedSets = ref([])
-    const showAllSets = () => {
+    const showAllSetsRecent = () => {
         displayedSets.value = sets.value; // Hiển thị toàn bộ khi nhấn "More..."
+    };
+    const showAllSets = () => {
+        router.push("/classes")
     };
     onMounted(() => {
         displayedSets.value = sets.value.slice(0, 3);
@@ -20,7 +24,7 @@
     <div class="home">
         <h1 class="section-header">
             <span class="section-title">Recent</span>
-            <span v-if="sets.length > 3" class="more-link" @click="showAllSets">More...</span>
+            <span v-if="sets.length > 3" class="more-link" @click="showAllSetsRecent">More...</span>
         </h1>
         <div class="set-container">
             <Card 
