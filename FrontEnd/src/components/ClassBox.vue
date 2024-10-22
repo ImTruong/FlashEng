@@ -1,8 +1,8 @@
 <script setup>
     import { defineProps, defineEmits } from 'vue';
-    import Card from './Card.vue';
+    import Card from './Set.vue';
     import setsData from '@/data/sets.json'
-    import {ref, onMounted} from "vue"
+    import { ref } from 'vue';
 
 
     const { classItem, Overlay_background } = defineProps(['classItem', 'Overlay_background']);
@@ -18,10 +18,6 @@
     const showAllSets = () => {
         displayedSets.value = sets.value; // Hiển thị toàn bộ khi nhấn "More..."
     };
-    onMounted(() => {
-        displayedSets.value = sets.value.slice(0, 3);
-    });
-
 </script>
 
 <template>
@@ -38,12 +34,13 @@
             <h2>{{ classItem.name }}</h2>
             <img src="../assets/close.svg" alt="Icon" class="close-icon" @click="closeOverlay">
             <div class="line"></div>
-
+            
             <div class="card-container">
                 <Card 
                     v-for="set in sets" 
                     :key="set.id" 
-                    :set="set" /> 
+                    :set="set" />
+
             </div>
         </div>
     </div>
@@ -149,17 +146,20 @@
         width: 80%;
         height: 1px;
         left: 10%;
-        background-color: rgba(0, 0, 0, 0.3);
-        /* margin-bottom: 10px; */
+        z-index: 100;
+        background-color: rgba(71, 59, 59, 0.8)
     }
 
-    .card-container{
+    .card-container {
         position: absolute;
-        top: 15%;
+        width: 100%;
+        height: 80%;
+        top:15%;
+        padding: 20px;
         display: flex;
         flex-wrap: wrap;
         gap: 10px;
-        padding: 20px;
+        overflow: hidden;
     }
 
 

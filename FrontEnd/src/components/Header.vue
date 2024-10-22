@@ -1,12 +1,17 @@
 <script setup>
     import { ref } from 'vue';
+    
 
     const menuOpen = ref(false);
+    const showNotifications = ref(false)
 
     const toggleMenu = () => {
     menuOpen.value = !menuOpen.value;
     };
 
+    const toggleNotifications = () => {
+        showNotifications.value = !showNotifications.value
+    }
 </script>
 
 <template>
@@ -19,7 +24,8 @@
                 <ul>
                     <li>
                         <img src="@/assets/icons/home-icon.png" alt="Home"  class="menu-icon"/>
-                        <a href="#">Home</a>
+                        <router-link to="/" class="menu-link">Home</router-link>
+                        
                     </li>
                     <li>
                         <img src="@/assets/icons/folder.png" alt="folder"  class="menu-icon"/>
@@ -30,13 +36,14 @@
                         <a href="#">Statistics</a>
                     </li>
                     <li>
-                        <img src="@/assets/icons/notification.png" alt="Home"  class="menu-icon"/>
+                        <img src="@/assets/notification.svg" alt="Home"  class="menu-icon"/>
                         <a href="#">Notifications</a>
                     </li>
                     <li>
-                        <img src="@/assets/icons/user.png" alt="Home"  class="menu-icon"/>
+                        <img src="@/assets/user.svg" alt="Home"  class="menu-icon"/>
                         <a href="#">Your profile</a>
                     </li>
+                    <li class="divider"></li>
                     <li>
                         <img src="@/assets/icons/logout.png" alt="Home"  class="menu-icon"/>
                         <a href="#">Log out</a>
@@ -176,4 +183,12 @@
         border-radius: 4px;
         box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
     }
+
+    .divider {
+        border-top: 1px solid #ccc; /* Đường kẻ màu xám nhạt */
+        margin: 30px 0 10px 0; /* Khoảng cách trên dưới */
+        height: 1px; /* Chiều cao của đường phân cách */
+    }
+
+    
 </style>

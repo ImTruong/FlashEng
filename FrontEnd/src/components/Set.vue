@@ -15,7 +15,7 @@
       <div class="card-text">
         <h2>{{ set.name }}</h2>
         <p class="number-terms">{{ set.terms }} terms</p>
-        <p class="owner">{{ set.owner }}</p>
+        <p>{{ set.owner }}</p>
       </div>
     </div>
 </template>
@@ -39,11 +39,8 @@
     }
 
     .card-text {
-        position: relative;
-        /* margin-top: 10px; */
-        padding: 15px;
-        width: 100%;
-        height: 100%;
+        position: absolute;
+        padding: 10px;
     }
 
     .card-text h2 {
@@ -54,25 +51,14 @@
     .card-text p {
         color: #777;
         margin-top: 5px;
-        /* margin-bottom: 40px; */
+        margin-bottom: 40px;
     }
-
-    .owner{
-      position: absolute;
-      top:70%;
-    }
-    
 
     .number-terms{
-        position: relative;
         background-color: rgba(105, 105, 148, 0.2);
         border-radius: 5px;
-        width: 70px;
+        width: 60px;
         height: 25px;
-        display: flex;
         text-align: center;
-        justify-content: center;
-        /* top: 30% */
     }
-
 </style>
