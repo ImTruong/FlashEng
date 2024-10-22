@@ -2,6 +2,8 @@
     import q from "../data/classes.json"
     import Header from '@/components/Header.vue';
     import ClassBox from '@/components/ClassBox.vue'
+    import Card from "../components/Set.vue"
+    import setsData from '@/data/sets.json'
     import {ref} from "vue"
 
     const classes = ref(q);
@@ -10,6 +12,8 @@
 
     const Overlay_background = ref("false");
 
+    const sets = ref(setsData)
+    const flashcardSets = ref(sets.value);
 
 
 </script>
@@ -25,7 +29,13 @@
           <button :class="{ active: activeTab === 'Classes' }" @click="activeTab = 'Classes'">Classes</button>
         </div>
         <div class="line"></div>
-  
+        <div class="sets-list"  @click="Overlay_background = true" v-if="activeTab === 'Flashcard sets'">
+            <div class="sets-container">
+                <div v-for="set in flashcardSets" :key="set.id" class="card-wrapper">
+                    <Card :set="set" @click="Overlay_background = true" />
+                </div>
+            </div>
+        </div>
         <div class="class-list" @click="Overlay_background = true" v-if="activeTab === 'Classes'">
             <div v-for="classItem in classes" :key="classItem.id" class="class-card">
                 <div v-if="Overlay_background">
@@ -127,6 +137,17 @@
         margin: 0;
         font-size: 14px;
         color: gray;
+    }
+
+    .sets-container {
+        display: flex;
+        flex-wrap: wrap; 
+        gap: 20px;
+    }
+    
+    .card-wrapper {
+        flex: 1 1 calc(33.33% - 20px);
+        min-width: 250px;
     }
 </style>
 
