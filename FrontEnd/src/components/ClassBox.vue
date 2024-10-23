@@ -64,7 +64,6 @@
         padding: 10px;
         /* margin: auto; */
         z-index: 10;
-        padding: 10;
         position: absolute;
         display: flex;
         justify-content: center;

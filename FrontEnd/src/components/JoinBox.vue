@@ -13,12 +13,6 @@
         emit('close');
     }
 
-    const sets = ref(setsData)
-    const displayedSets = ref([])
-    const showAllSets = () => {
-        displayedSets.value = sets.value; // Hiển thị toàn bộ khi nhấn "More..."
-    };
-
     const join = ref("Join")
 
     const join_button = () =>{
@@ -43,6 +37,8 @@
                     <p>{{ join }}</p>
                 </div>
             </div>
+
+            
         </div>
     </div>
 
@@ -126,5 +122,4 @@
     .join-button:hover {
         background-color: #91e3df;
     }
-
 </style>

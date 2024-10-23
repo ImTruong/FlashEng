@@ -24,8 +24,8 @@
 <style scoped>
   .card {
     margin-left: 10px;
-    width: 30%;
-    min-width: 250px;
+    width: 28%;
+    min-width: 280px;
     height: 160px;
     overflow: hidden;
     border-radius: 4%;

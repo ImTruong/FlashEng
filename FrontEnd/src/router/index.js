@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
-import ClassesView from "@/view/ClassesView.vue";
+import ClassesView from "@/view/YourLibrary.vue";
 import HomeView from "@/view/HomeView.vue"
+import YourLibrary from "@/view/YourLibrary.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,7 +9,7 @@ const router = createRouter({
         {
             path: "/classes",
             name: "classes",
-            component: ClassesView
+            component: YourLibrary
         },
         {
             path: "/",
