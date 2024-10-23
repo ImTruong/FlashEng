@@ -1,5 +1,7 @@
 <script setup>
     import { ref } from 'vue';
+    import SetTable from "../components/SetTable.vue"
+    import OverlayBackground from "../components/OverlayBackground.vue";
     import classesData from "../data/classes.json" 
     import JoinBox from "../components/JoinBox.vue"
     import setsData from "../data/sets.json"
@@ -8,6 +10,7 @@
 
     const menuOpen = ref(false);
     const showNotifications = ref(false)
+    const setTable = ref(false)
     const searchQuery = ref("")
     const Overlay_background = ref("false");
     const showSearch = ref(false)
@@ -24,6 +27,9 @@
         showNotifications.value = !showNotifications.value
     }
 
+    const showSetTable = () =>{
+        setTable.value = !setTable.value
+    }
     const performSearch = (searchQuery, () => {
         if (searchQuery.value) {
             // Lọc danh sách class từ dữ liệu classesData dựa trên searchQuery
@@ -40,12 +46,11 @@
         searchQuery.value = ""
     })
 
-    
-
 </script>
 
 <template>
     <div class="container">
+        <OverlayBackground :isVisible="menuOpen" @clickOverlay="menuOpen = false" />
         <header>
             <div class="nav-header">
                 <button class="nav-toggle" @click="toggleMenu">☰</button>
@@ -59,7 +64,7 @@
                     </li>
                     <li>
                         <img src="@/assets/icons/folder.png" alt="folder"  class="menu-icon"/>
-                        <a href="#">Your library</a>
+                        <router-link to="/classes" class="menu-link">Your Library</router-link>
                     </li>
                     <li>
                         <img src="@/assets/icons/statistics.png" alt="Home"  class="menu-icon"/>
@@ -87,7 +92,10 @@
                 placeholder="Search for flashcards sets, classes" 
                 class="search-bar"/>
             <div class="button-container">
-                <button class="add-button" @click="">+</button>
+                <button class="add-button" @click="showSetTable">                    
+                    <img src="../assets/plus.svg" alt="Add set">
+                </button>
+                <SetTable v-if="setTable" @close="setTable = false" />
                 <div class="user-icon">
                     U
                 </div>
@@ -95,11 +103,11 @@
 
             <div v-if="showSearch" class="search-class">
                 <SeachClasses
-                    :searchQuery = "searchItem"
-                    :sets = "setItems"
+                    :searchQuery="searchItem"
+                    :sets="setItems"
                     :classes="classItems"
                     :Overlay_background="Overlay_background"
-                    @close ="Overlay_background = false"
+                    @close="Overlay_background = false"
                 />
             </div>
         </header>
@@ -118,7 +126,7 @@
         top: 0;
         left: 0;
         width: 100%;
-        z-index: 9999; /* Đảm bảo header luôn nằm trên các phần tử khác */
+        z-index: 9999; 
     }
         
     .nav-header {
@@ -234,6 +242,4 @@
         margin: 30px 0 10px 0; /* Khoảng cách trên dưới */
         height: 1px; /* Chiều cao của đường phân cách */
     }
-
-    
 </style>
