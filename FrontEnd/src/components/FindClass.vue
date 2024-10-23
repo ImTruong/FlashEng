@@ -43,8 +43,6 @@
                     <p>{{ join }}</p>
                 </div>
             </div>
-
-            
         </div>
     </div>
 
