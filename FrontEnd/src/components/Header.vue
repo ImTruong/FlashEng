@@ -1,21 +1,28 @@
 <script setup>
     import { ref } from 'vue';
-    
+    import SetTable from "../components/SetTable.vue"
+    import OverlayBackground from "../components/OverlayBackground.vue";
 
     const menuOpen = ref(false);
     const showNotifications = ref(false)
+    const setTable = ref(false)
 
     const toggleMenu = () => {
-    menuOpen.value = !menuOpen.value;
+        menuOpen.value = !menuOpen.value
     };
 
     const toggleNotifications = () => {
         showNotifications.value = !showNotifications.value
     }
+
+    const showSetTable = () =>{
+        setTable.value = !setTable.value
+    }
 </script>
 
 <template>
     <div class="container">
+        <OverlayBackground :isVisible="menuOpen" @clickOverlay="menuOpen = false" />
         <header>
             <div class="nav-header">
                 <button class="nav-toggle" @click="toggleMenu">☰</button>
@@ -29,7 +36,7 @@
                     </li>
                     <li>
                         <img src="@/assets/icons/folder.png" alt="folder"  class="menu-icon"/>
-                        <a href="#">Your library</a>
+                        <router-link to="/classes" class="menu-link">Your Library</router-link>
                     </li>
                     <li>
                         <img src="@/assets/icons/statistics.png" alt="Home"  class="menu-icon"/>
@@ -52,7 +59,10 @@
             </div>
             <input type="text" placeholder="Search for flashcards" class="search-bar"/>
             <div class="button-container">
-                <button class="add-button" @click="">+</button>
+                <button class="add-button" @click="showSetTable">                    
+                    <img src="../assets/plus.svg" alt="Add set">
+                </button>
+                <SetTable v-if="setTable" @close="setTable = false" />
                 <div class="user-icon">
                     U
                 </div>
@@ -73,7 +83,7 @@
         top: 0;
         left: 0;
         width: 100%;
-        z-index: 9999; /* Đảm bảo header luôn nằm trên các phần tử khác */
+        z-index: 9999; 
     }
         
     .nav-header {
@@ -189,6 +199,4 @@
         margin: 30px 0 10px 0; /* Khoảng cách trên dưới */
         height: 1px; /* Chiều cao của đường phân cách */
     }
-
-    
 </style>
