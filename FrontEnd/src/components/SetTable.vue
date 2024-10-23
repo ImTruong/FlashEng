@@ -74,7 +74,7 @@
     <OverlayBackground :isVisible="visible" @clickOverlay="closeForm" />
     <div v-if="visible" class="set-window">
         <div class="set-header">
-            <img src="../assets/lock.svg" alt="Status" @click="toggleOptions">
+            <img src="../assets/lock.svg" alt="Status" @click="toggleOptions" class="option-icon">
             <img src="../assets/search_icon.svg" alt="Status">
             <div class="set-name">
             <label for="set-name">Set:</label>
@@ -244,6 +244,7 @@
     .icon {
         width: 100%; 
         height: auto; 
+        cursor: pointer;
     }
 
     .close-btn {
@@ -252,6 +253,7 @@
         font-size: 20px;
         cursor: pointer;
     }
+
 
     .options-dropdown {
         position: absolute; 
@@ -282,6 +284,7 @@
         width: 20px; 
         height: 20px; 
         margin-right: 15px; 
+        cursor: pointer;
     }
     
     .checkmark {

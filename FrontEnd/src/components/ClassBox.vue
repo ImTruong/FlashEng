@@ -2,7 +2,7 @@
     import { defineProps, defineEmits } from 'vue';
     import Card from './Set.vue';
     import setsData from '@/data/sets.json'
-    import { ref, onMounted } from 'vue';
+    import { ref } from 'vue';
 
 
     const { classItem, Overlay_background } = defineProps(['classItem', 'Overlay_background']);
@@ -27,7 +27,7 @@
             <div class="search-container">
                 <input type="text" placeholder="Search ..." class="search-bar"/>
                 <img src="../assets/search.svg" alt="Icon" class="search-icon" >
-                </div>
+            </div>
             <img src="../assets/add_set.svg" alt="Icon" class="add-set-icon">
             <img src="../assets/add_member.svg" alt="Icon" class="add-member-icon">
             <img src="../assets/leave-group.svg" alt="Icon" class="leave-group-icon" @click="closeOverlay">
@@ -61,18 +61,19 @@
     }
 
     .overlay .classbox-container{
+        padding: 10px;
         /* margin: auto; */
         z-index: 10;
-        padding: 10;
         position: absolute;
         display: flex;
         justify-content: center;
         align-items: center;
         border-radius: 5%;
-       
+
         width: 50%;
         height: 80%;
         background-color: white;
+        overflow: hidden;
     }
 
     .overlay .classbox-container .close-icon{
@@ -159,6 +160,8 @@
         gap: 10px;
         overflow: hidden;
     }
+
+
 
 
 </style>

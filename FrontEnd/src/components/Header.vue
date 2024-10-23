@@ -2,13 +2,25 @@
     import { ref } from 'vue';
     import SetTable from "../components/SetTable.vue"
     import OverlayBackground from "../components/OverlayBackground.vue";
+    import classesData from "../data/classes.json" 
+    import JoinBox from "../components/JoinBox.vue"
+    import setsData from "../data/sets.json"
+    import SeachClasses from './SeachClasses.vue';
+    import ClassBox from './ClassBox.vue';
 
     const menuOpen = ref(false);
     const showNotifications = ref(false)
     const setTable = ref(false)
+    const searchQuery = ref("")
+    const Overlay_background = ref("false");
+    const showSearch = ref(false)
+    const classItems = ref([])
+    const setItems = ref([])
+    const searchItem = ref("")
+
 
     const toggleMenu = () => {
-        menuOpen.value = !menuOpen.value
+        menuOpen.value = !menuOpen.value;
     };
 
     const toggleNotifications = () => {
@@ -18,6 +30,22 @@
     const showSetTable = () =>{
         setTable.value = !setTable.value
     }
+    const performSearch = (searchQuery, () => {
+        if (searchQuery.value) {
+            // Lọc danh sách class từ dữ liệu classesData dựa trên searchQuery
+            classItems.value = classesData.filter(classData => 
+                classData.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+            );
+            setItems.value = setsData.filter(setData => 
+                setData.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+            );
+        }
+        showSearch.value = true;
+        Overlay_background.value = true;
+        searchItem.value = searchQuery.value
+        searchQuery.value = ""
+    })
+
 </script>
 
 <template>
@@ -57,7 +85,12 @@
                     </li>
                 </ul>
             </div>
-            <input type="text" placeholder="Search for flashcards" class="search-bar"/>
+            <input 
+                type="text" 
+                v-model="searchQuery"
+                @keyup.enter="performSearch" 
+                placeholder="Search for flashcards sets, classes" 
+                class="search-bar"/>
             <div class="button-container">
                 <button class="add-button" @click="showSetTable">                    
                     <img src="../assets/plus.svg" alt="Add set">
@@ -66,6 +99,16 @@
                 <div class="user-icon">
                     U
                 </div>
+            </div>
+
+            <div v-if="showSearch" class="search-class">
+                <SeachClasses
+                    :searchQuery="searchItem"
+                    :sets="setItems"
+                    :classes="classItems"
+                    :Overlay_background="Overlay_background"
+                    @close="Overlay_background = false"
+                />
             </div>
         </header>
     </div>

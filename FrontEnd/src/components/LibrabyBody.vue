@@ -1,29 +1,22 @@
 <script setup>
-    import q from "../data/classes.json"
     import Header from '@/components/Header.vue';
     import ClassBox from '@/components/ClassBox.vue'
     import Card from "../components/Set.vue"
-    import setsData from '@/data/sets.json'
     import {ref} from "vue"
+    import { defineProps, defineEmits } from 'vue';
 
-    const classes = ref(q);
+    const {sets, classes} = defineProps(['sets','classes']);
 
     const activeTab = ref("Classes");
 
-    const Overlay_background = ref("false");
+    const Overlay_background = ref(false);
 
-    const sets = ref(setsData)
-    const flashcardSets = ref(sets.value);
 
 
 </script>
 
 <template>
-    <div id="app">
-    <Header></Header>
-    
     <main>
-        <h2>Your library</h2>
         <div class="tabs">
           <button :class="{ active: activeTab === 'Flashcard sets' }" @click="activeTab ='Flashcard sets'">Flashcard sets</button>
           <button :class="{ active: activeTab === 'Classes' }" @click="activeTab = 'Classes'">Classes</button>
@@ -31,7 +24,7 @@
         <div class="line"></div>
         <div class="sets-list"  @click="Overlay_background = true" v-if="activeTab === 'Flashcard sets'">
             <div class="sets-container">
-                <div v-for="set in flashcardSets" :key="set.id" class="card-wrapper">
+                <div v-for="set in sets" :key="set.id" class="card-wrapper">
                     <Card :set="set" @click="Overlay_background = true" />
                 </div>
             </div>
@@ -52,19 +45,16 @@
                 </div>
             </div>
         </div>
-      </main>
-    </div>
+    </main>
 </template>
   
     
 <style scoped>    
-
     main {
-        padding: 100px;
-    }
-    
-    h2 {
-        font-weight: bold;
+        position: absolute;
+        top: 40px;
+        left: 0px;
+        width: 100%;
     }
     
     .tabs {
