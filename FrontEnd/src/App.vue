@@ -1,6 +1,6 @@
 <script setup>
   import {RouterView} from 'vue-router';
-  import ClassesView from './view/ClassesView.vue';
+  import ClassesView from './view/YourLibrary.vue';
 </script>
 
 
