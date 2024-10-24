@@ -3,10 +3,10 @@
     import SetTable from "../components/SetTable.vue"
     import OverlayBackground from "../components/OverlayBackground.vue";
     import classesData from "../data/classes.json" 
-    import JoinBox from "../components/JoinBox.vue"
+    // import JoinBox from "../components/JoinBox.vue"
     import setsData from "../data/sets.json"
-    import SeachClasses from './SeachClasses.vue';
-    import ClassBox from './ClassBox.vue';
+    // import SeachClasses from './SeachClasses.vue';
+    // import ClassBox from './ClassBox.vue';
 
     const menuOpen = ref(false);
     const showNotifications = ref(false)
@@ -17,6 +17,7 @@
     const classItems = ref([])
     const setItems = ref([])
     const searchItem = ref("")
+    const newItem = ref(false);
 
 
     const toggleMenu = () => {
@@ -28,7 +29,8 @@
     }
 
     const showSetTable = () =>{
-        setTable.value = !setTable.value
+        setTable.value = !setTable.value;
+        newItem.value = !newItem.value
     }
     const performSearch = (searchQuery, () => {
         if (searchQuery.value) {
@@ -45,6 +47,7 @@
         searchItem.value = searchQuery.value
         searchQuery.value = ""
     })
+
 
 </script>
 
@@ -92,7 +95,7 @@
                 placeholder="Search for flashcards sets, classes" 
                 class="search-bar"/>
             <div class="button-container">
-                <button class="add-button" @click="showSetTable">                    
+                <button class="add-button" @click="newItem = !newItem"> 
                     <img src="../assets/plus.svg" alt="Add set">
                 </button>
                 <SetTable v-if="setTable" @close="setTable = false" />
@@ -110,11 +113,36 @@
                     @close="Overlay_background = false"
                 />
             </div>
+
+            <div class="new-set-class-container" v-if="newItem">
+                <p  @click="showSetTable" >Flashcard set</p>
+                <p>Class</p>
+            </div>
         </header>
     </div>
 </template>
 
 <style scoped>
+    .new-set-class-container{
+        position: fixed;
+        top: 50px;
+        right: 80px;
+        width: 150px;
+        background-color: #ffffff;
+        border-radius: 5px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+    }
+    .new-set-class-container p{
+        height: 40px;
+        padding: 10px;
+        font-size: 18px;
+        cursor: pointer;
+    }
+
+    .new-set-class-container p:hover{
+        background-color: #dcdcdc;
+    }
+
     header {
         display: flex;
         align-items: center;
@@ -126,6 +154,7 @@
         top: 0;
         left: 0;
         width: 100%;
+        height: 50.67px;
         z-index: 9999; 
     }
         
@@ -191,12 +220,16 @@
         width: 100%;
     }
     .button-container {
+        position: fixed;
+        right: 80px;
         display: flex; /* Sử dụng flexbox cho container */
         align-items: center; /* Căn giữa dọc */
-        margin-left: 10px; /* Khoảng cách bên trái */
+        /* margin-left: 10px; Khoảng cách bên trái */
     }
 
     .user-icon {
+        position: fixed;
+        right: 30px;
         font-size: 16px;
         background-color: #D9D9D9; /* Màu nền cho icon user */
         color: white; /* Màu chữ */
@@ -206,7 +239,6 @@
         align-items: center;
         justify-content: center;
         border-radius: 50%; /* Tạo hình tròn */
-        margin-left: 10px; /* Tạo khoảng cách giữa add-button và user icon */
         cursor: pointer;
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
     }
@@ -229,7 +261,9 @@
     }
 
     .search-bar {
+        position: fixed;
         width: 60%;
+        left:20%;
         height: 40px;
         padding: 0 10px;
         border: 1px solid #ccc;
