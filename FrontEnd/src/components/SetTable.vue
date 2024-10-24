@@ -1,7 +1,9 @@
 <script setup>
-    import { ref, watch, onMounted, onBeforeUnmount} from 'vue';
+    import { ref, watch, defineEmits} from 'vue';
     import OverlayBackground from '../components/OverlayBackground.vue'
     // import { debounce } from 'lodash'; // Nếu bạn sử dụng lodash
+
+    const emit = defineEmits(['close', 'save']);
 
     const visible = ref(true); 
     const setName = ref('');
@@ -43,6 +45,7 @@
     };
 
     const closeForm = () => {
+        emit('close');
         visible.value = false;
     };
 
@@ -59,8 +62,13 @@
         showSelectColumn.value = !showSelectColumn.value;
     };
 
-    const toggleOptions = () => {
-        showOptions.value = !showOptions.value; 
+    const toggleOptions = (option) => {
+        showOptions.value = option; 
+        showOptions = false;
+    };
+
+    const saveData = () => {
+        emit('save', { setName: setName.value, rows: rows.value, selectedWords: selectedWords.value });
     };
 
     const selectOption = (option) => {
@@ -74,7 +82,7 @@
     <OverlayBackground :isVisible="visible" @clickOverlay="closeForm" />
     <div v-if="visible" class="set-window">
         <div class="set-header">
-            <img src="../assets/lock.svg" alt="Status" @click="toggleOptions" class="option-icon">
+            <img src="../assets/lock.svg" alt="Status" @click.stop="toggleOptions" class="option-icon">
             <img src="../assets/search_icon.svg" alt="Status">
             <div class="set-name">
             <label for="set-name">Set:</label>
@@ -82,18 +90,18 @@
             </div>
             <button @click="closeForm" class="close-btn">✖</button>
         </div>
-    <div v-if="showOptions" class="options-dropdown" ref="dropdownRef">
-        <button @click="selectOption('Public')" class="option-button">
+    <div v-show="showOptions" class="options-dropdown" ref="dropdownRef">
+        <button @click.stop="selectOption('Public')" class="option-button">
             <img src="../assets/globe.svg" alt="Public" class="option-icon" />
             <span class="option-text">Public</span>
             <span v-if="selectedOption === 'Public'" class="checkmark">✔</span>
         </button>
-        <button @click="selectOption('Private')" class="option-button">
+        <button @click.stop="selectOption('Private')" class="option-button">
             <img src="../assets/lock.svg" alt="Private" class="option-icon" />
             <span class="option-text">Private</span>
             <span v-if="selectedOption === 'Private'" class="checkmark">✔</span>
         </button>
-        <button @click="selectOption('Group')" class="option-button">
+        <button @click.stop="selectOption('Group')" class="option-button">
             <img src="../assets/lock.svg" alt="Group" class="option-icon" />
             <span class="option-text">Group</span>
             <span v-if="selectedOption === 'Group'" class="checkmark">✔</span>
