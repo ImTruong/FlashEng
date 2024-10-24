@@ -1,16 +1,23 @@
 <script setup>
     import Header from '@/components/Header.vue';
     import ClassBox from '@/components/ClassBox.vue'
+    import InvitationBox from './InvitationBox.vue';
     import Card from "../components/Set.vue"
     import {ref} from "vue"
     import { defineProps, defineEmits } from 'vue';
 
     const {sets, classes} = defineProps(['sets','classes']);
 
-    const activeTab = ref("Classes");
+    const activeTab = ref("Flashcard sets");
 
     const Overlay_background = ref(false);
 
+    const selectedClassItem = ref("");
+
+    const selectClass = (classItem) => {
+        selectedClassItem.value = classItem;
+        Overlay_background.value = true;
+    }
 
 
 </script>
@@ -29,21 +36,26 @@
                 </div>
             </div>
         </div>
-        <div class="class-list" @click="Overlay_background = true" v-if="activeTab === 'Classes'">
-            <div v-for="classItem in classes" :key="classItem.id" class="class-card">
-                <div v-if="Overlay_background">
-                    <ClassBox 
-                    :classItem ="classItem" 
-                    :Overlay_background ="Overlay_background" 
-                    @close ="Overlay_background = false"
-                    />
-                </div>
+        <div class="class-list"  v-if="activeTab === 'Classes'">
+            <div v-for="classItem in classes" :key="classItem.id" class="class-card" @click="selectClass(classItem)">
                 <img src="../assets/class.svg" alt="Icon" class="class-icon">
                 <div class="class-info">
-                <h3>{{ classItem.name }}</h3>
-                <p>{{ classItem.sets }} set | {{ classItem.members }} members</p>
+                    <h3>{{ classItem.name }}</h3>
+                    <p>{{ classItem.sets }} set | {{ classItem.members }} members</p>
                 </div>
             </div>
+        </div>
+        <div v-if="Overlay_background">
+            <ClassBox 
+            :classItem ="selectedClassItem" 
+            :Overlay_background ="Overlay_background" 
+            @close ="Overlay_background = false"
+            />
+            <!-- <InvitationBox
+            :classItem ="selectedClassItem" 
+            :Overlay_background ="Overlay_background" 
+            @close ="Overlay_background = false"
+            ></InvitationBox> -->
         </div>
     </main>
 </template>
@@ -99,7 +111,6 @@
         
     }
     
-    
     .class-card {
         display: flex;
         align-items: center;
@@ -108,6 +119,10 @@
         border-radius: 10px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         
+    }
+
+    .class-card:hover{
+        transform: scale(1.05);
     }
     
     
