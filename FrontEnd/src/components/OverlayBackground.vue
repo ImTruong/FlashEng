@@ -23,11 +23,11 @@ const handleOverlayClick = () => {
     .overlay {
         background-color: rgba(71, 69, 69, 0.5); 
         position: fixed;
-        top: 0;
+        top: 50.67px;
         left: 0;
         width: 100%;
         height: 100vh; 
-        z-index: 998; 
+        z-index: 10; 
         transition: background-color 0.3s ease; 
     }
 </style>

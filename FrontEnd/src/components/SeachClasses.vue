@@ -4,7 +4,9 @@
     import setsData from '@/data/sets.json'
     import { ref } from 'vue';
     import LibrabyBody from './LibrabyBody.vue';
+    import OverlayBackground from './OverlayBackground.vue';
 
+    const status = ref(true);
 
     const {searchQuery, sets, classes, Overlay_background } = defineProps(['searchQuery', 'sets', 'classes', 'Overlay_background']);
 
@@ -15,71 +17,73 @@
         emit('close');
     }
 
+
 </script>
 
 <template>
-    <div class="overlay"  @click="Overlay_background = false" v-if= "Overlay_background == true">
-        <div class="classbox-container" @click.stop> 
-            <LibrabyBody
-            class = "libraryBody"
-            :sets="sets"
-            :classes="classes"
-            />
+    <OverlayBackground 
+        :isVisible="Overlay_background" 
+        @clickOverlay="closeOverlay" />
+    <div class="classbox-container" v-if="Overlay_background">
+        <div class="header">
             <h1>{{ searchQuery }}</h1>
             <img src="../assets/close.svg" alt="Icon" class="close-icon" @click="closeOverlay">
-        </div>
+        </div> 
+        <LibrabyBody
+        class = "libraryBody"
+        :sets="sets"
+        :classes="classes"
+        />
+        
     </div>
 
 </template>
 
 <style scoped>
-    .overlay{
-        position: fixed;
-        display: flex;
-        justify-content: center;
-        /* align-items: center; */
-        top: 50.67px;
-        left: 0;
-        width: 100%;
-        height: calc(100% - 50.67px);
-        background-color: rgba(0, 0, 0, 0.3);
-    }
 
-    .overlay .classbox-container{
-        padding: 10px;
-        /* margin: auto; */
-        z-index: 10;
-        position: absolute;
+    .classbox-container{
+        position: fixed;
+        top: 15vh;
+        left: 25%;
+        height: 70vh;
+        width: 50%;
         display: flex;
         justify-content: center;
         align-items: center;
         border-radius: 5%;
-
-        width: 50%;
-        height: 80%;
         background-color: white;
-        overflow: hidden;
+        /* overflow: hidden; */
+        z-index: 11;
+    }
+
+    .header{
+        position: absolute;
+        top: 10px;
+        width: 100%;
     }
 
 
-    .classbox-container .close-icon{
+    .header .close-icon{
         position: absolute;
-        top: 10px;
         right: 10px;
         cursor: pointer;
 
     }
+    
 
-    .classbox-container h1{
+    .header h1{
         position: absolute;
-        top: 10px;
+        top: 0px;
         left: 10%;
         bottom: 10px;
     }
 
     .classbox-container .libraryBody{
         position: absolute;
+        top: 12%;
+        height: 80%;
         padding: 20px;
+        overflow-y: auto;
     }
 
 

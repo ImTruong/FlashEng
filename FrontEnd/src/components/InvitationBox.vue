@@ -3,6 +3,7 @@
     import Card from './Set.vue';
     import setsData from '@/data/sets.json'
     import { ref } from 'vue';
+    import OverlayBackground from './OverlayBackground.vue';
 
 
     const { classItem, Overlay_background } = defineProps(['classItem', 'Overlay_background']);
@@ -18,25 +19,26 @@
 </script>
 
 <template>
-    <div class="overlay"  @click="Overlay_background = false" v-if= "Overlay_background == true">
-        <div class="class-container" @click.stop> 
-            <img src="../assets/close.svg" alt="Icon" class="close-icon" @click="closeOverlay">
-            <div class="class-info">
-                <div class="class-header">
-                    <img src="../assets/class.svg" alt="class-icon">
-                    <h1>{{ classItem.name }}</h1>
+    <OverlayBackground 
+        :isVisible="Overlay_background" 
+        @clickOverlay="closeOverlay" />
+    <div class="class-container" v-if="Overlay_background">  
+        <img src="../assets/close.svg" alt="Icon" class="close-icon" @click="closeOverlay">
+        <div class="class-info">
+            <div class="class-header">
+                <img src="../assets/class.svg" alt="class-icon">
+                <h1>{{ classItem.name }}</h1>
+            </div>
+            <p>{{ classItem.sets }} set | {{ classItem.members }} members</p>
+            <p class="inviter">Inviter: </p>
+            <div class="button">
+                <div class="accept-button" @click="closeOverlay">
+                    <p>Accept</p>
                 </div>
-                <p>{{ classItem.sets }} set | {{ classItem.members }} members</p>
-                <p class="inviter">Inviter: </p>
-                <div class="button">
-                    <div class="accept-button" @click="closeOverlay">
-                        <p>Accept</p>
-                    </div>
-                    <div class="delete-button" @click="closeOverlay">
-                        <p>Delete</p>
-                    </div>
+                <div class="delete-button" @click="closeOverlay">
+                    <p>Delete</p>
+                </div>
 
-                </div>
             </div>
         </div>
     </div>
@@ -44,36 +46,24 @@
 </template>
 
 <style scoped>
-    .overlay{
+    .class-container{
         position: fixed;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        top: 50.67px;
-        left: 0;
-        width: 100%;
-        height: calc(100% - 50.67px);
-        background-color: rgba(0, 0, 0, 0.3);
-    }
-
-    .overlay .class-container{
+        top: 25%;
+        left: 35%;
         padding: 10px;
-        /* margin: auto; */
-        z-index: 10;
+        z-index: 15;
         padding: 10;
-        position: absolute;
         display: flex;
         justify-content: center;
         align-items: center;
         border-radius: 5%;
-
         width: 30%;
         height: 50%;
         background-color: white;
         overflow: hidden;
     }
 
-    .overlay .class-container .close-icon{
+    .class-container .close-icon{
         position: absolute;
         top: 10px;
         right: 10px;
