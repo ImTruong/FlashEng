@@ -1,5 +1,5 @@
 <script setup>
-    import { ref, watch, defineEmits} from 'vue';
+    import { ref, watch, defineEmits, defineProps} from 'vue';
     import OverlayBackground from '../components/OverlayBackground.vue'
     // import { debounce } from 'lodash'; // Nếu bạn sử dụng lodash
 
@@ -309,7 +309,7 @@
     }
     
     .checkmark {
-        color:rgb(218, 87, 87); 
+    color:rgb(218, 87, 87); 
         margin-left: 15px; 
     }
 </style>
