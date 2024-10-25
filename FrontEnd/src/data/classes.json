@@ -3,7 +3,21 @@
         "id": 1,
         "name": "D22",
         "sets": 1, 
-        "members": 5 
+        "members": 5,
+        "members-list":[
+            {
+                "username": "ptitstudent1",
+                "role": "admin"
+            },
+            {
+                "username": "ptitstudent2",
+                "role": "member"
+            },
+            {
+                "username": "ptitstudent3",
+                "role": "member"
+            }
+        ] 
     },
     { 
         "id": 2, 

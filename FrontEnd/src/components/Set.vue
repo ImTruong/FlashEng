@@ -35,18 +35,18 @@
         <p>{{ set.owner }}</p>
       </div>
       <div class="set-option">
-        <button class="icon-container" @click.stop="studySet" >
+        <div class="icon-container" @click.stop="studySet" >
           <img src="../assets/study.svg" alt="Study">
-        </button>
-        <button class="icon-container" @click.stop="gameSet" >
+        </div>
+        <div class="icon-container" @click.stop="gameSet" >
           <img src="../assets/game.svg" alt="Game">
-        </button>
-        <button class="icon-container" @click.stop="editSet" >
+        </div>
+        <div class="icon-container" @click.stop="editSet" >
           <img src="../assets/edit.svg" alt="Edit">
-        </button>
-        <button class="icon-container" @click.stop="deleteSet" >
+        </div>
+        <div class="icon-container" @click.stop="deleteSet" >
           <img src="../assets/delete.svg" alt="Delete">
-        </button>
+        </div>
       </div>
     </div>
 </template>
@@ -68,7 +68,7 @@
   
   .card:hover {
     transform: scale(1.05);
-    background-color:#d9d7d7ac;
+    background-color:#e6e6e6;
   }
 
   .card-text {
@@ -96,34 +96,42 @@
   }
 
   .set-option {
-    position: absolute;
+    /* position: absolute; */
     display: flex;
-    gap: 0px;
+    gap: 10px;
     visibility: hidden;
-    transition: visibility 0.3s ease;
+    transition: visibility 0.1s ease;
     justify-content: center;
     align-items: center;
+    height: 100%;
     flex-wrap: wrap;
   }
 
-  .card:hover .set-option {
+  .set-option .icon-container{
+    width: 60px;
+    height: 40px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card:hover .icon-container {
     visibility: visible;
   }
 
-  .set-option button {
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0px;
+  .card:hover .card-text {
+    visibility: hidden;
   }
 
-  .set-option button:hover {
+  .set-option img {
+    width: 90px;
+  }
+
+  .set-option .icon-container:hover {
     transform: scale(1.1);
-  }
+    cursor: pointer;
 
-  .option-icon img {
-    width: 16px; /* Đặt kích thước hợp lý cho các biểu tượng */
-    height: 16px;
   }
 
 </style>
