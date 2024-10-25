@@ -29,10 +29,10 @@
           <button :class="{ active: activeTab === 'Classes' }" @click="activeTab = 'Classes'">Classes</button>
         </div>
         <div class="line"></div>
-        <div class="sets-list"  @click="Overlay_background = true" v-if="activeTab === 'Flashcard sets'">
+        <div class="sets-list"  v-if="activeTab === 'Flashcard sets'">
             <div class="sets-container">
                 <div v-for="set in sets" :key="set.id" class="card-wrapper">
-                    <Card :set="set" @click="Overlay_background = true" />
+                    <Card :set="set" @click="" />
                 </div>
             </div>
         </div>
@@ -41,7 +41,10 @@
                 <img src="../assets/class.svg" alt="Icon" class="class-icon">
                 <div class="class-info">
                     <h3>{{ classItem.name }}</h3>
-                    <p>{{ classItem.sets }} set | {{ classItem.members }} members</p>
+                    <div class="class-detail" @click.stop="">
+                        <p @click="selectClass(classItem)">{{ classItem.sets }} set |</p>
+                        <p @click=""> {{ classItem.members }} members</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -137,11 +140,21 @@
         font-weight: bold;
         font-size: 18px;
     }
+
+    .class-list .class-detail{
+        display: flex;
+    }
     
     .class-info p {
         margin: 0;
         font-size: 14px;
         color: gray;
+        margin-left: 5px;
+        cursor: pointer;
+    }
+
+    .class-info p:hover{
+        transform: scale(1.1);
     }
 
     .sets-container {
