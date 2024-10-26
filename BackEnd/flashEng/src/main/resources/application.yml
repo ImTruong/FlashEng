@@ -16,4 +16,4 @@ spring:
       enabled: true
 
 jwt:
-  privateKey: QhV1bbgiS2lzKg9ZCW2LyiOMr0popaPoaOdb4l+I68M=
+  secretKey: QhV1bbgiS2lzKg9ZCW2LyiOMr0popaPoaOdb4l+I68M=

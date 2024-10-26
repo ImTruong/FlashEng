@@ -5,9 +5,12 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.util.Date;
 
 @Component
 public class JwtUtil {
@@ -15,10 +18,17 @@ public class JwtUtil {
     @Value("${jwt.secretKey}")
     private String secretKeyString;
 
-    public String generateToken(String data){
+    private final int jwtExpirationMs = 86400000; // 1 day
+
+    public String generateToken(Authentication authentication) {
+        User userPrincipal = (User) authentication.getPrincipal();
         SecretKey secretKey= Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKeyString)) ;
-        String jws = Jwts.builder().setSubject(data).signWith(secretKey).compact();
-        return jws;
+        return Jwts.builder()
+                .setSubject(userPrincipal.getUsername())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+                .signWith(secretKey)
+                .compact();
     }
 
     public boolean verifyToken(String token){
