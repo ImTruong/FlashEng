@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,7 +36,7 @@ public class UserEntity {
     private String country;
 
     @Column(name = "status", nullable = false)
-    private String status;
+    private int status = 1; // mặc định gán 1
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
