@@ -5,8 +5,8 @@
     import classesData from "../data/classes.json" 
     // import JoinBox from "../components/JoinBox.vue"
     import setsData from "../data/sets.json"
-    // import SeachClasses from './SeachClasses.vue';
-    // import ClassBox from './ClassBox.vue';
+    import SeachClasses from './SeachClasses.vue';
+    import ClassTable from './ClassTable.vue';
 
     const isEditMode = ref(false);
     const existingSet = ref(null);
@@ -20,6 +20,7 @@
     const setItems = ref([])
     const searchItem = ref("")
     const newItem = ref(false);
+    const classTable = ref(false)
 
 
     const toggleMenu = () => {
@@ -34,6 +35,10 @@
     //     setTable.value = !setTable.value;
     //     newItem.value = !newItem.value
     // }
+    const showClassTable = () =>{
+        classTable.value = !classTable.value;
+        newItem.value = !newItem;
+    }
     const performSearch = (searchQuery, () => {
         if (searchQuery.value) {
             // Lọc danh sách class từ dữ liệu classesData dựa trên searchQuery
@@ -106,7 +111,7 @@
                 <button class="add-button" @click="newItem = !newItem"> 
                     <img src="../assets/plus.svg" alt="Add set">
                 </button>
-                <SetTable v-if="setTable" @close="setTable = false" />
+                
                 <div class="user-icon">
                     U
                 </div>
@@ -123,9 +128,17 @@
             </div>
 
             <div class="new-set-class-container" v-if="newItem">
-                <p  @click="showSetTable(false)" >Flashcard set</p>
-                <p>Class</p>
+                <p  @click="showSetTable(false)" >
+                    <img src="../assets/new-set.svg" alt="">
+                    Flashcard set
+                </p>
+                <p @click="showClassTable">
+                    <img src="../assets/class.svg" alt="">
+                    Class
+                </p>
             </div>
+            <SetTable v-if="setTable" @close="setTable = false" />
+            <ClassTable v-if="classTable" @close="classTable = false"></ClassTable>
         </header>
     </div>
 </template>
@@ -133,6 +146,7 @@
 <style scoped>
     .new-set-class-container{
         position: fixed;
+        padding: 5px;
         top: 50px;
         right: 80px;
         width: 150px;
@@ -142,9 +156,14 @@
     }
     .new-set-class-container p{
         height: 40px;
-        padding: 10px;
+        padding: 5px;
         font-size: 18px;
         cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .new-set-class-container p img{
+        width: 20px;
     }
 
     .new-set-class-container p:hover{
@@ -230,8 +249,8 @@
     .button-container {
         position: fixed;
         right: 80px;
-        display: flex; /* Sử dụng flexbox cho container */
-        align-items: center; /* Căn giữa dọc */
+        display: flex; 
+        /* align-items: center;  */
         /* margin-left: 10px; Khoảng cách bên trái */
     }
 
