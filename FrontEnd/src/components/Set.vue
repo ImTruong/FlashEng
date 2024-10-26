@@ -1,17 +1,21 @@
 <script setup>
   import {ref, defineProps} from "vue"
   import {useRouter} from "vue-router"
-  
+  import SetTable from "../components/SetTable.vue"
+
   const hover  = ref(false)
   const router = useRouter()
   const {set} = defineProps(['set'])
+  const setTable = ref(false); 
+  const existingSet = ref({})
+  const isEditMode = ref(false)
 
   const navigateToSet = () => {
     router.push(`/set/${set.id}`);
   }
 
   const editSet = () => {
-    console.log(`Editing set ${set.id}`)
+    showSetTable(true, set)
   }
 
   const gameSet = () => {
@@ -25,6 +29,17 @@
   const deleteSet = () => {
     console.log(`Deleting set ${set.id}`)
   }
+
+  const showSetTable = (editMode, existingSetData) => {
+    setTable.value = true; 
+    isEditMode.value = editMode; 
+    existingSet.value = existingSetData;
+    console.log('Existing Set:', existingSet.value);
+  }
+
+  const closeSetTable = () => {
+    setTable.value = false;
+  };
 </script>
 
 <template>
@@ -49,6 +64,12 @@
         </div>
       </div>
     </div>
+    <SetTable 
+        v-if="setTable" 
+        :isEditMode="isEditMode" 
+        :existingSet="existingSet" 
+        @close="closeSetTable" 
+      />
 </template>
   
 

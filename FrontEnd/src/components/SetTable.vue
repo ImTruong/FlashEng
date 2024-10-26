@@ -1,38 +1,38 @@
 <script setup>
-    import { ref, watch, defineEmits} from 'vue';
+    import { ref, watch, defineEmits, defineProps, onMounted} from 'vue';
+    import setsData from '../data/sets.json'; 
     import OverlayBackground from '../components/OverlayBackground.vue'
-    // import { debounce } from 'lodash'; // Nếu bạn sử dụng lodash
 
-    const emit = defineEmits(['close', 'save']);
+    const emit = defineEmits(['close', 'save', 'update']);
+
+    const props = defineProps(['isEditMode', 'existingSet']);
 
     const visible = ref(true); 
-    const setName = ref('');
-    const rows = ref([{ word: '', ipa: '', definition: '', example: '', image: '' }]);
-    const selectedWords = ref([]); // Danh sách các từ được chọn
+    const setName = ref(props.isEditMode ? props.existingSet.name : '');
+    const rows = ref(props.isEditMode ? props.existingSet.words: [{ word: '', ipa: '', definition: '', example: '', image: '' }]);
+    const selectedWords = ref([]); 
     const showSelectColumn = ref(false);
     const showOptions = ref(false)
     const selectedOption = ref('')
     const dropdownRef = ref(null)
-    // Hàm lưu vào database
-    // const saveToDatabase = async () => {
-    //     console.log('Saving to database...');
-    //     console.log('Set Name:', setName.value);
-    //     console.log('Rows:', rows.value);
-    //     console.log('Selected Words:', selectedWords.value); // In ra các từ được chọn
-    //     // Logic để lưu vào database
-    // };
 
-    // // Hàm lưu vào database với debounce
-    // const saveToDatabaseDebounced = debounce(saveToDatabase, 300); // Gọi hàm mỗi 300ms sau khi dừng lại
-
-    // // Theo dõi thay đổi của setName và rows
-    // watch(setName, saveToDatabaseDebounced);
-    // watch(rows, (newRows) => {
-    //     saveToDatabaseDebounced(); // Gọi hàm lưu dữ liệu
-    // }, { deep: true });
+    const saveData = () => {
+        const payload = {
+            id: props.isEditMode ? props.existingSet.id : null, // Lấy ID từ existingSet nếu đang ở chế độ chỉnh sửa
+            setName: setName.value,
+            rows: rows.value,
+            selectedWords: selectedWords.value
+        };
+        if (props.isEditMode) {
+            emit('update', payload); // Gửi sự kiện update nếu ở chế độ chỉnh sửa
+        } else {
+            emit('save', payload); // Gửi sự kiện save nếu không phải ở chế độ chỉnh sửa
+        }
+    };
 
     const addRow = () => {
         rows.value.push({ word: '', ipa: '', definition: '', example: '', image: '' });
+        saveData();
     };
 
     const removeRow = () => {
@@ -67,14 +67,24 @@
         showOptions = false;
     };
 
-    const saveData = () => {
-        emit('save', { setName: setName.value, rows: rows.value, selectedWords: selectedWords.value });
-    };
-
     const selectOption = (option) => {
         selectedOption.value = option;
-        showOptions.value = false; // Ẩn dropdown khi đã chọn
+        showOptions.value = false; 
     };
+
+    watch(setName, saveData);
+    watch(rows, (newRows) => {
+        saveData(); 
+    }, { deep: true });
+    watch(() => props.existingSet, (newExistingSet) => {
+        if (newExistingSet && newExistingSet.words) {
+            setName.value = newExistingSet.name; // Cập nhật tên set
+            rows.value = newExistingSet.words; // Cập nhật các hàng
+        }
+    }, { deep: true });
+
+    console.log('Existing Set:', props.existingSet);
+    console.log('Rows:', rows.value);
 
 </script>
 

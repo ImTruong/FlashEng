@@ -1,5 +1,5 @@
 <script setup>
-    import { ref } from 'vue';
+    import { ref} from 'vue';
     import SetTable from "../components/SetTable.vue"
     import OverlayBackground from "../components/OverlayBackground.vue";
     import classesData from "../data/classes.json" 
@@ -8,6 +8,8 @@
     import SeachClasses from './SeachClasses.vue';
     import ClassTable from './ClassTable.vue';
 
+    const isEditMode = ref(false);
+    const existingSet = ref(null);
     const menuOpen = ref(false);
     const showNotifications = ref(false)
     const setTable = ref(false)
@@ -29,10 +31,10 @@
         showNotifications.value = !showNotifications.value
     }
 
-    const showSetTable = () =>{
-        setTable.value = !setTable.value;
-        newItem.value = !newItem.value
-    }
+    // const showSetTable = () =>{
+    //     setTable.value = !setTable.value;
+    //     newItem.value = !newItem.value
+    // }
     const showClassTable = () =>{
         classTable.value = !classTable.value;
         newItem.value = !newItem;
@@ -52,6 +54,12 @@
         searchItem.value = searchQuery.value
         searchQuery.value = ""
     })
+
+    const showSetTable = (editMode = false, setData = null) => {
+        isEditMode.value = editMode;
+        existingSet.value = setData; // Gán dữ liệu cho set hiện tại nếu cần
+        setTable.value = true; // Hiển thị SetTable
+    };
 
 
 </script>
@@ -120,7 +128,7 @@
             </div>
 
             <div class="new-set-class-container" v-if="newItem">
-                <p  @click="showSetTable" >
+                <p  @click="showSetTable(false)" >
                     <img src="../assets/new-set.svg" alt="">
                     Flashcard set
                 </p>
