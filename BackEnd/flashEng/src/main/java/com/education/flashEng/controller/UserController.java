@@ -25,14 +25,14 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<String>> login(@RequestBody LoginRequest loginRequest) {
-        ApiResponse<String> response = authService.login(loginRequest);
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
+        ApiResponse<String> response = new ApiResponse<String>(true,"Login Successful",authService.login(loginRequest));
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<String>> register(@Valid @RequestBody RegisterRequest registerRequest) {
-        ApiResponse<String> response = userService.register(registerRequest);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest registerRequest) {
+        ApiResponse<Boolean> response = new ApiResponse<Boolean>(userService.register(registerRequest),"Registration Successful",null);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }

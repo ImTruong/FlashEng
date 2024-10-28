@@ -4,10 +4,12 @@ import com.education.flashEng.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity,Long> {
-    UserEntity findByUsername(String userName);
-    UserEntity findByEmail(String email);
+    Optional<UserEntity> findByUsernameAndStatus(String userName, int status);
+    Optional<UserEntity> findByEmailAndStatus(String email, int status);
 
     boolean existsByUsernameAndStatus(String username, int status);
 

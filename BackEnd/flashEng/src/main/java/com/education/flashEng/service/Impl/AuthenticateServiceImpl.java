@@ -22,14 +22,14 @@ public class AuthenticateServiceImpl implements AuthenticateService {
     AuthenticationManager authenticationManager;
 
     @Override
-    public ApiResponse<String> login(LoginRequest loginRequest) {
+    public String login(LoginRequest loginRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
             );
 
             String token = jwtUtil.generateToken(authentication);
-            return new ApiResponse<>(true, "Login successful", token);
+            return token;
         } catch (AuthenticationException e) {
             throw new AuthenticationFailedException("Invalid username or password. Please try again.");
         }

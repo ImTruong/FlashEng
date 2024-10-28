@@ -1,17 +1,20 @@
 package com.education.flashEng.service.Impl;
 
 import com.education.flashEng.entity.UserEntity;
-import com.education.flashEng.exception.DatabaseOperationException;
 import com.education.flashEng.exception.ResourceAlreadyExistsException;
+import com.education.flashEng.exception.UserNotAuthenticatedException;
 import com.education.flashEng.payload.request.RegisterRequest;
-import com.education.flashEng.payload.response.ApiResponse;
 import com.education.flashEng.repository.UserRepository;
 import com.education.flashEng.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -24,7 +27,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public ApiResponse<String> register(RegisterRequest registerRequest) {
+    public boolean register(RegisterRequest registerRequest) {
 
         if (userRepository.existsByUsernameAndStatus(registerRequest.getUsername(), 1))
             throw new ResourceAlreadyExistsException("Username is already taken");
@@ -34,14 +37,21 @@ public class UserServiceImpl implements UserService {
 
         registerRequest.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         UserEntity user = modelMapper.map(registerRequest, UserEntity.class);
-        try {
-            userRepository.save(user);
-        } catch (DataIntegrityViolationException ex) {
-            throw new DatabaseOperationException("Failed to save user: Database constraint violated");
-        } catch (Exception ex) {
-            throw new DatabaseOperationException("An unexpected error occurred while saving user");
+        userRepository.save(user);
+        return true;
+    }
+
+    public UserEntity getUserFromSecurityContext() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+
+        if (authentication == null || !authentication.isAuthenticated() || !(principal instanceof UserDetails)) {
+            throw new UserNotAuthenticatedException("User is not authenticated");
         }
 
-        return new ApiResponse<>(true, "Registration successful", null);
+        UserDetails userDetails = (UserDetails) principal;
+
+        return userRepository.findByUsernameAndStatus(userDetails.getUsername(), 1)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + userDetails.getUsername()));
     }
 }

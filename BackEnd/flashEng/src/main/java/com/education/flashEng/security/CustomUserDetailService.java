@@ -10,22 +10,27 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 public class CustomUserDetailService implements UserDetailsService {
 
     @Autowired
     UserRepository userRepository;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity userEntity;
-        if(username.contains("@"))
-            userEntity=userRepository.findByEmail(username);
-        else
-            userEntity=userRepository.findByUsername(username);
-        if(userEntity==null){
-            throw new UsernameNotFoundException("User doesn`t exist");
+        Optional<UserEntity> optionalUserEntity;
+
+        if (username.contains("@")) {
+            optionalUserEntity = userRepository.findByEmailAndStatus(username, 1);
+        } else {
+            optionalUserEntity = userRepository.findByUsernameAndStatus(username, 1);
         }
-        return new User(username,userEntity.getPassword(),new ArrayList<>());
+
+        UserEntity userEntity = optionalUserEntity
+                .orElseThrow(() -> new UsernameNotFoundException("User doesn't exist"));
+
+        return new User(userEntity.getUsername(), userEntity.getPassword(), new ArrayList<>());
     }
 }

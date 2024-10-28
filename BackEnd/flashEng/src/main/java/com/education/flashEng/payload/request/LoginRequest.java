@@ -10,7 +10,7 @@ import lombok.Setter;
 public class LoginRequest {
 
     @NotBlank(message = "Username is required")
-    @Pattern(regexp = "^[a-zA-Z0-9]*$", message = "Username must not contain special characters")
+    @Pattern(regexp = "^[a-zA-Z0-9@.]*$", message = "Username must not contain special characters")
     private String username;
 
     @NotBlank(message = "Password is required")
