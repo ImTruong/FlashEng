@@ -1,6 +1,16 @@
 package com.education.flashEng.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+
+@Builder
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 
 @Entity
 @Table(name = "class_members")
@@ -11,9 +21,6 @@ public class ClassMemberEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "status", nullable = false)
-    private String status;
-
     @ManyToOne
     @JoinColumn(name = "class_id", nullable = false)
     private ClassEntity classEntity;
@@ -23,7 +30,9 @@ public class ClassMemberEntity {
     private UserEntity userEntity;
 
     @ManyToOne
-    @JoinColumn(name = "role_id", nullable = false)
-    private RoleEntity roleEntity;
+    @JoinColumn(name = "role_class_id", nullable = false)
+    private RoleClassEntity roleClassEntity;
+
+
 
 }

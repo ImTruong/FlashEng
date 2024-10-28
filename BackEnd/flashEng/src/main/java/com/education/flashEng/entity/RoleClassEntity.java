@@ -5,8 +5,8 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "roles")
-public class RoleEntity {
+@Table(name = "role_class")
+public class RoleClassEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,6 +18,6 @@ public class RoleEntity {
     @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "roleEntity")
+    @OneToMany(mappedBy = "roleClassEntity")
     private List<ClassMemberEntity> classMemberEntityList;
 }
