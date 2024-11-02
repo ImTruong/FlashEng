@@ -33,9 +33,12 @@ public class ClassEntity {
     private List<ClassInvitationEntity> classInvitationEntityList;
 
     @OneToMany(mappedBy = "classEntity")
-    private List<ClassSetRequest> classSetRequestList;
+    private List<ClassSetRequestEntity> classSetRequestEntityList;
 
     @OneToMany(mappedBy = "classEntity")
     private List<ClassMemberEntity> classMemberEntityList;
+
+    @OneToMany(mappedBy = "classEntity")
+    private List<ClassJoinRequestEntity> classJoinRequestEntityList;
 
 }

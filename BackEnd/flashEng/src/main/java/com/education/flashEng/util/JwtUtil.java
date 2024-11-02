@@ -32,14 +32,9 @@ public class JwtUtil {
     }
 
     public boolean verifyToken(String token){
-        SecretKey secretKey= Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKeyString)) ;
-        try{
-            Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
-            return true;
-        }catch(Exception e){
-            return false;
-        }
-
+        SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKeyString)) ;
+        Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
+        return true;
     }
 
     public String getUsernameFromToken(String token){

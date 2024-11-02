@@ -38,5 +38,5 @@ public class SetEntity {
     private List<WordEntity> wordsEntityList;
 
     @OneToMany(mappedBy = "setEntity")
-    private List<ClassSetRequest> classSetRequestList;
+    private List<ClassSetRequestEntity> classSetRequestEntityList;
 }
