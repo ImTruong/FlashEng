@@ -6,6 +6,7 @@ import com.education.flashEng.exception.UserNotAuthenticatedException;
 import com.education.flashEng.payload.request.RegisterRequest;
 import com.education.flashEng.repository.UserRepository;
 import com.education.flashEng.service.UserService;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -27,6 +28,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Transactional
+    @Override
     public boolean register(RegisterRequest registerRequest) {
 
         if (userRepository.existsByUsernameAndStatus(registerRequest.getUsername(), 1))
@@ -41,6 +44,7 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    @Override
     public UserEntity getUserFromSecurityContext() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
@@ -53,5 +57,11 @@ public class UserServiceImpl implements UserService {
 
         return userRepository.findByUsernameAndStatus(userDetails.getUsername(), 1)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + userDetails.getUsername()));
+    }
+
+    @Override
+    public UserEntity getUserById(Long id) {
+        return userRepository.findByIdAndStatus(id, 1)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + id));
     }
 }

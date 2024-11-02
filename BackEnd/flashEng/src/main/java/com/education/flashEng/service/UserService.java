@@ -5,6 +5,8 @@ import com.education.flashEng.payload.request.RegisterRequest;
 import com.education.flashEng.payload.response.ApiResponse;
 
 public interface UserService {
-    public boolean register(RegisterRequest registerRequest);
-    public UserEntity getUserFromSecurityContext();
+    boolean register(RegisterRequest registerRequest);
+    UserEntity getUserFromSecurityContext();
+
+    UserEntity getUserById(Long id);
 }
