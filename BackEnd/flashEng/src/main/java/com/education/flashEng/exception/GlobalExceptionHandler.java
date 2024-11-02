@@ -1,16 +1,15 @@
 package com.education.flashEng.exception;
 
 import com.education.flashEng.payload.response.ApiResponse;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.security.SignatureException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,24 +26,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleUsernameAlreadyTaken(ResourceAlreadyExistsException ex) {
         ApiResponse<String> response = new ApiResponse<>(false, ex.getMessage(), null);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<ApiResponse<String>> handleExpiredJwtException(ExpiredJwtException ex) {
-        ApiResponse<String> response = new ApiResponse<>(false, "Token has expired", null);
-        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-    }
-
-    @ExceptionHandler(MalformedJwtException.class)
-    public ResponseEntity<ApiResponse<String>> handleMalformedJwtException(MalformedJwtException ex) {
-        ApiResponse<String> response = new ApiResponse<>(false, "Malformed token", null);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(SignatureException.class)
-    public ResponseEntity<ApiResponse<String>> handleSignatureException(SignatureException ex) {
-        ApiResponse<String> response = new ApiResponse<>(false, "Invalid token signature", null);
-        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -67,14 +48,26 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ApiResponse<String>> handleEntityNotFoundException(EntityNotFoundException ex) {
+    @ExceptionHandler(EntityNotFoundWithIdException.class)
+    public ResponseEntity<ApiResponse<String>> handleEntityNotFoundException(EntityNotFoundWithIdException ex) {
         ApiResponse<String> response = new ApiResponse<>(false, ex.getMessage(), null);
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ApiResponse<String>> handleUsernameNotFoundException(UsernameNotFoundException ex) {
+        ApiResponse<String> response = new ApiResponse<>(false, ex.getMessage(), null);
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<String>> handleAccessDeniedException(AccessDeniedException ex) {
+        ApiResponse<String> response = new ApiResponse<>(false, ex.getMessage(), null);
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ApiResponse<String>> handleEntityNotFoundException(EntityNotFoundException ex) {
         ApiResponse<String> response = new ApiResponse<>(false, ex.getMessage(), null);
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
