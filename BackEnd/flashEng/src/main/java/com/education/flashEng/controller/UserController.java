@@ -2,6 +2,7 @@ package com.education.flashEng.controller;
 
 import com.education.flashEng.payload.request.LoginRequest;
 import com.education.flashEng.payload.request.RegisterRequest;
+import com.education.flashEng.payload.request.UpdateUserRequest;
 import com.education.flashEng.payload.response.ApiResponse;
 import com.education.flashEng.service.AuthenticateService;
 import com.education.flashEng.service.UserService;
@@ -9,10 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
@@ -32,7 +30,14 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest registerRequest) {
-        ApiResponse<Boolean> response = new ApiResponse<Boolean>(userService.register(registerRequest),"Registration Successful",null);
+        ApiResponse<String> response = new ApiResponse<String>(userService.register(registerRequest),"Registration Successful",null);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+
+    @PutMapping("/update")
+    public ResponseEntity<?> update(@Valid @RequestBody UpdateUserRequest updateUserRequest) {
+        ApiResponse<String> response = new ApiResponse<String>(userService.update(updateUserRequest),"Update Account Successful",null);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }

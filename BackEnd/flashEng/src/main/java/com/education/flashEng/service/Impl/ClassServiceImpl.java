@@ -4,6 +4,7 @@ import com.education.flashEng.entity.ClassEntity;
 import com.education.flashEng.entity.ClassMemberEntity;
 import com.education.flashEng.entity.RoleClassEntity;
 import com.education.flashEng.entity.UserEntity;
+import com.education.flashEng.exception.EntityNotFoundWithIdException;
 import com.education.flashEng.payload.request.CreateClassRequest;
 import com.education.flashEng.repository.ClassRepository;
 import com.education.flashEng.service.ClassMemberService;
@@ -14,6 +15,8 @@ import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class ClassServiceImpl implements ClassService {
@@ -34,6 +37,7 @@ public class ClassServiceImpl implements ClassService {
     private ModelMapper modelMapper;
 
     @Transactional
+    @Override
     public boolean createClass(CreateClassRequest createClassRequest) {
         UserEntity user = userService.getUserFromSecurityContext();
 
@@ -50,6 +54,24 @@ public class ClassServiceImpl implements ClassService {
 
         classMemberService.saveClassMember(classMemberEntity);
 
+        return true;
+    }
+
+    @Override
+    public ClassEntity getClassById(Long id) {
+        return classRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundWithIdException("Class", id.toString()));
+    }
+
+    @Transactional
+    @Override
+    public boolean updateClassName(Long classId, String name) {
+        UserEntity user = userService.getUserFromSecurityContext();
+        ClassEntity classEntity = getClassById(classId);
+        if (!classMemberService.getClassMemberByClassIdAndUserId(classId, user.getId()).getRoleClassEntity().getName().equals("ADMIN"))
+            throw new RuntimeException("You are not authorized to update this class name.");
+        classEntity.setName(name);
+        classRepository.save(classEntity);
         return true;
     }
 }

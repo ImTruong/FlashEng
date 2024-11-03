@@ -1,25 +1,23 @@
 package com.education.flashEng.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
+@Builder
 @Getter
 @Setter
-
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "class_set_requests")
-public class ClassSetRequest {
+@Table(name = "class_join_requests")
+public class ClassJoinRequestEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "title", nullable = false)
-    private String title;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -28,10 +26,6 @@ public class ClassSetRequest {
     @ManyToOne
     @JoinColumn(name = "class_id", nullable = false)
     private ClassEntity classEntity;
-
-    @ManyToOne
-    @JoinColumn(name = "set_id", nullable = false)
-    private SetEntity setEntity;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

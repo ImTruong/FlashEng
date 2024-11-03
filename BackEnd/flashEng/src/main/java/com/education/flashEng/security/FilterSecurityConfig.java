@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -21,6 +22,9 @@ public class FilterSecurityConfig {
 
     @Autowired
     JwtAuthFilter jwtAuthFilter;
+
+    @Autowired
+    SecurityPermitAllHttp securityPermitAllHttp;
 
 
     @Bean
@@ -33,11 +37,14 @@ public class FilterSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.disable())
-                        .csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
-                        .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
-//                                .requestMatchers("/users/**").permitAll()
-                                .anyRequest().permitAll())
-                        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
+                .authorizeHttpRequests(authorizeRequests -> {
+                    for (String endpoint : securityPermitAllHttp.getPermitAllEndpoints()) {
+                        authorizeRequests.requestMatchers(new AntPathRequestMatcher(endpoint)).permitAll();
+                    }
+                    authorizeRequests.anyRequest().authenticated();
+                })
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
     }

@@ -1,14 +1,12 @@
 package com.education.flashEng.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 @Builder
 @Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 

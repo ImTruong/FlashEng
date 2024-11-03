@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -55,11 +54,14 @@ public class UserEntity {
     private List<ClassInvitationEntity> receivedClassInvitations;
 
     @OneToMany(mappedBy = "userEntity")
-    private List<ClassSetRequest> classSetRequestList;
+    private List<ClassSetRequestEntity> classSetRequestEntityList;
 
     @OneToMany(mappedBy = "userEntity")
     private List<StudySessionEntity> studySessionEntityList;
 
     @OneToMany(mappedBy = "userEntity")
     private List<ClassMemberEntity> classMemberEntityList;
+
+    @OneToMany(mappedBy = "userEntity")
+    private List<ClassJoinRequestEntity> classJoinRequestEntityList;
 }
