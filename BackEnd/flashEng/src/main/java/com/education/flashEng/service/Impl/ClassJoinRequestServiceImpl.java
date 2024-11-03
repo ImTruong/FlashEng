@@ -6,6 +6,7 @@ import com.education.flashEng.repository.ClassJoinRequestRepository;
 import com.education.flashEng.service.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,10 @@ public class ClassJoinRequestServiceImpl implements ClassJoinRequestService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    @Lazy
+    private ClassInvitationService classInvitationService;
+
     @Override
     public Optional<ClassJoinRequestEntity> getClassJoinRequestByClassIdAndUserId(Long classId, Long userId) {
         return classJoinRequestRepository.findByClassEntityIdAndUserEntityId(classId, userId);
@@ -56,6 +61,7 @@ public class ClassJoinRequestServiceImpl implements ClassJoinRequestService {
                 .build();
         classJoinRequestRepository.save(classJoinRequestEntity);
         notificationService.createClassJoinRequestNotification(classJoinRequestEntity);
+        classInvitationService.deleteAllInviteeInvitationsOfAClass(classId, userId);
         return classJoinRequestEntity;
     }
 

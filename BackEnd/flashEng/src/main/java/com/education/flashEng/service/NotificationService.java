@@ -17,4 +17,5 @@ public interface NotificationService {
     boolean deleteNotificationMetaDataEntityByEntity(NotificationMetaDataEntity notificationMetaDataEntity);
 
     boolean deleteAllRelatedNotificationsByNotificationMetaData(String key, String value);
+
 }

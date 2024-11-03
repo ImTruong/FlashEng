@@ -2,6 +2,7 @@ package com.education.flashEng.controller;
 
 import com.education.flashEng.payload.request.LoginRequest;
 import com.education.flashEng.payload.request.RegisterRequest;
+import com.education.flashEng.payload.request.UpdateUserRequest;
 import com.education.flashEng.payload.response.ApiResponse;
 import com.education.flashEng.service.AuthenticateService;
 import com.education.flashEng.service.UserService;
@@ -33,5 +34,10 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @PutMapping("/update")
+    public ResponseEntity<?> update(@Valid @RequestBody UpdateUserRequest updateUserRequest) {
+        ApiResponse<String> response = new ApiResponse<String>(userService.update(updateUserRequest),"Update Account Successful",null);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
 }

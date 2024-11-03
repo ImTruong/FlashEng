@@ -61,7 +61,7 @@ public class ClassMemberServiceImpl implements ClassMemberService {
                 .orElseThrow(() -> new EntityNotFoundWithIdException("Class Member", userId.toString()));
         if (memberEntity.getRoleClassEntity().getName().equals("ADMIN"))
             throw new AccessDeniedException("You can't change the role of an admin.");
-        memberEntity.setRoleClassEntity(roleClassService.getRoleClassByName(role));
+        memberEntity.setRoleClassEntity(roleClassService.getRoleClassByName(role.toUpperCase()));
         classMemberRepository.save(memberEntity);
         return true;
     }

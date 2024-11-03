@@ -2,6 +2,7 @@ package com.education.flashEng.service;
 
 import com.education.flashEng.entity.ClassInvitationEntity;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ClassInvitationService {
@@ -12,5 +13,6 @@ public interface ClassInvitationService {
 
      boolean rejectInvitation(Long invitationId);
 
+     boolean deleteAllInviteeInvitationsOfAClass(Long classId, Long inviteeId);
 }
 

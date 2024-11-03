@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -47,6 +48,8 @@ public class ClassInvitationServiceImpl implements ClassInvitationService {
             throw new AccessDeniedException("User is already a member of this class.");
         if (classInvitationRepository.findByClassEntityIdAndInviteeEntityIdAndInviterEntityId(classId, inviteeId, inviter.getId()).isPresent())
             throw new AccessDeniedException("You have already invited this user to this class.");
+        if (classJoinRequestService.getClassJoinRequestByClassIdAndUserId(classId, inviteeId).isPresent())
+            throw new AccessDeniedException("User has already requested to join this class.");
         ClassInvitationEntity classInvitationEntity = ClassInvitationEntity.builder()
                 .classEntity(classEntity)
                 .inviteeEntity(invitee)
@@ -66,17 +69,18 @@ public class ClassInvitationServiceImpl implements ClassInvitationService {
         if (invitee != classInvitationEntity.getInviteeEntity())
             throw new AccessDeniedException("You are not authorized to accept this invitation.");
         ClassMemberEntity classMemberEntity = classMemberService.getClassMemberByClassIdAndUserId(classInvitationEntity.getClassEntity().getId(), classInvitationEntity.getInviterEntity().getId());
-        classInvitationRepository.delete(classInvitationEntity);
+
         if (classMemberEntity.getRoleClassEntity().getName().equals("ADMIN")){
             classMemberService.saveClassMember(ClassMemberEntity.builder()
                     .classEntity(classInvitationEntity.getClassEntity())
                     .userEntity(invitee)
                     .roleClassEntity(roleClassService.getRoleClassByName("MEMBER"))
                     .build());
+            deleteAllInviteeInvitationsOfAClass(classInvitationEntity.getClassEntity().getId(), invitee.getId());
         }
         else
             classJoinRequestService.createClassJoinRequest(classInvitationEntity.getClassEntity().getId(), invitee.getId());
-        notificationService.deleteAllRelatedNotificationsByNotificationMetaData("classInvitationId", invitationId.toString());
+
         return true;
     }
 
@@ -93,5 +97,17 @@ public class ClassInvitationServiceImpl implements ClassInvitationService {
         return true;
     }
 
+    @Transactional
+    @Override
+    public boolean deleteAllInviteeInvitationsOfAClass(Long classId, Long inviteeId){
+        Optional<List<ClassInvitationEntity>> classInvitationEntities = classInvitationRepository.findByInviteeEntityIdAndClassEntityId(inviteeId, classId);
+        if(classInvitationEntities.isPresent()){
+            for(ClassInvitationEntity classInvitationEntity : classInvitationEntities.get()){
+                notificationService.deleteAllRelatedNotificationsByNotificationMetaData("classInvitationId", classInvitationEntity.getId().toString());
+                classInvitationRepository.delete(classInvitationEntity);
+            }
+        }
+        return true;
+    }
 
 }
