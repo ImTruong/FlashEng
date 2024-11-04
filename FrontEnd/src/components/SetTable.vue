@@ -2,6 +2,7 @@
     import { ref, watch, defineEmits, defineProps, onMounted} from 'vue';
     import setsData from '../data/sets.json'; 
     import OverlayBackground from '../components/OverlayBackground.vue'
+    import AddCardModal from '../components/AddCardModal.vue'
 
     const emit = defineEmits(['close', 'save', 'update']);
 
@@ -15,6 +16,7 @@
     const showOptions = ref(false)
     const selectedOption = ref('')
     const dropdownRef = ref(null)
+    const showAddCardModal = ref(false);
 
     const saveData = () => {
         const payload = {
@@ -30,9 +32,14 @@
         }
     };
 
-    const addRow = () => {
-        rows.value.push({ word: '', ipa: '', definition: '', example: '', image: '' });
-        saveData();
+    const addNewWord = (newWord) => {
+        if (rows.value[0].word === '') {
+        // Nếu dòng đầu tiênc có giá trị null hoặc rỗng, thay thế nó
+            rows.value[0] = newWord;
+        } else {
+            // Nếu không, thêm từ mới vào cuối mảng
+            rows.value.push(newWord);
+        }
     };
 
     const removeRow = () => {
@@ -71,6 +78,15 @@
         selectedOption.value = option;
         showOptions.value = false; 
     };
+    const openAddCardModal = () => {
+        showAddCardModal.value = true;
+        visible.value = false;
+    };
+
+    const closeAddCardModal = () => {
+        showAddCardModal.value = false;
+        visible.value = true
+    };
 
     watch(setName, saveData);
     watch(rows, (newRows) => {
@@ -95,8 +111,8 @@
             <img src="../assets/lock.svg" alt="Status" @click.stop="toggleOptions" class="option-icon">
             <img src="../assets/search_icon.svg" alt="Status">
             <div class="set-name">
-            <label for="set-name">Set:</label>
-            <input id="set-name" v-model="setName" placeholder="Enter set name" />
+                <label for="set-name">Set:</label>
+                <input id="set-name" v-model="setName" placeholder="Enter set name" />
             </div>
             <button @click="closeForm" class="close-btn">✖</button>
         </div>
@@ -144,7 +160,6 @@
             </tbody>
           </table>
     </div>
-  
     <div class="actions">
         <button @click="toggleSelectColumn" class="icon-button">
             <img src="../assets/select.svg" alt="" class="icon">
@@ -152,11 +167,12 @@
         <button @click="removeRow" class="icon-button">
             <img src="../assets/delete-word.svg" alt="" class="icon">
         </button>
-        <button @click="addRow" class="icon-button">
+        <button @click="openAddCardModal" class="icon-button">
             <img src="../assets/add-word.svg" alt="" class="icon">
         </button>
       </div>
     </div>
+    <AddCardModal :setName="setName" v-if="showAddCardModal" @close="closeAddCardModal" @save="addNewWord"></AddCardModal>
 </template>  
   
 <style scoped>
@@ -170,7 +186,7 @@
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         padding: 20px;
         width: 60%;
-        z-index: 1000;
+        z-index: 11;
     }
   
     .set-header {
@@ -188,6 +204,7 @@
         align-items: center;
         justify-content: center;
         flex-grow: 1;
+        width: 100%;
     }
 
     .set-name input {
@@ -196,14 +213,16 @@
         border: 1px solid black;
         border-radius: 4px;
         text-align: center; 
-        width: 300px;
+        width: 50%;
+        min-width: 150px; 
+        max-width: 300px;
     }
   
     .table-container {
-        max-height: 300px; /* Chiều cao tối đa cho bảng */
-        overflow-y: auto; /* Kích hoạt thanh cuộn dọc */
-        margin-top: 20px; /* Khoảng cách giữa tiêu đề và bảng */
-        flex-grow: 1; /* Cho phép phần này chiếm không gian còn lại */
+        max-height: 300px; 
+        overflow-y: auto; 
+        margin-top: 20px; 
+        flex-grow: 1; 
         position: relative;
     }
     .set-table {
