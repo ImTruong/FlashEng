@@ -163,7 +163,7 @@
         position: absolute;
         width: 100%;
         height: 80%;
-        top:15%;
+        top:17%;
         padding: 10px;
         display: flex;
         flex-wrap: wrap;

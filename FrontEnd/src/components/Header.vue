@@ -84,7 +84,7 @@
                     </li>
                     <li>
                         <img src="@/assets/icons/statistics.png" alt="Home"  class="menu-icon"/>
-                        <a href="#">Statistics</a>
+                        <a href="/statistics">Statistics</a>
                     </li>
                     <li>
                         <img src="@/assets/notification.svg" alt="Home"  class="menu-icon"/>
@@ -92,12 +92,12 @@
                     </li>
                     <li>
                         <img src="@/assets/user.svg" alt="Home"  class="menu-icon"/>
-                        <a href="#">Your profile</a>
+                        <a href="/userinfo">Your profile</a>
                     </li>
                     <li class="divider"></li>
                     <li>
                         <img src="@/assets/icons/logout.png" alt="Home"  class="menu-icon"/>
-                        <a href="#">Log out</a>
+                        <router-link to="/login" class="login">Log out</router-link>
                     </li>
                 </ul>
             </div>
