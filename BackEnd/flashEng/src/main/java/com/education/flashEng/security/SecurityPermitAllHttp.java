@@ -2,19 +2,21 @@ package com.education.flashEng.security;
 
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @Component
 public class SecurityPermitAllHttp {
-    private static final Set<String> PERMIT_ALL_ENDPOINTS = new HashSet<>();
+    private static final Map<String, Set<String>> PERMIT_ALL_ENDPOINTS = new HashMap<>();
 
     static {
-        PERMIT_ALL_ENDPOINTS.add("/user/login");
-        PERMIT_ALL_ENDPOINTS.add("/user/register");
+        PERMIT_ALL_ENDPOINTS.put("/user/login", Set.of("POST"));
+        PERMIT_ALL_ENDPOINTS.put("/user/register", Set.of("POST"));
+        PERMIT_ALL_ENDPOINTS.put("/class/{classId}", Set.of("GET"));
     }
 
-    public static Set<String> getPermitAllEndpoints() {
+    public static Map<String, Set<String>> getPermitAllEndpoints() {
         return PERMIT_ALL_ENDPOINTS;
     }
 }

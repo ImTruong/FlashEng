@@ -1,15 +1,19 @@
 package com.education.flashEng.service.Impl;
 
 import com.education.flashEng.entity.UserEntity;
+import com.education.flashEng.exception.PasswordMismatchException;
 import com.education.flashEng.exception.ResourceAlreadyExistsException;
 import com.education.flashEng.exception.UserNotAuthenticatedException;
 import com.education.flashEng.payload.request.RegisterRequest;
+import com.education.flashEng.payload.request.UpdateUserPasswordRequest;
 import com.education.flashEng.payload.request.UpdateUserRequest;
+import com.education.flashEng.payload.response.UserDetailResponse;
 import com.education.flashEng.repository.UserRepository;
 import com.education.flashEng.service.UserService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -70,10 +74,27 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean update(UpdateUserRequest updateRequest) {
         UserEntity user = getUserFromSecurityContext();
-        if (!passwordEncoder.matches(updateRequest.getCurrentPassword(), user.getPassword()))
-            throw new IllegalArgumentException("Current password is incorrect");
         modelMapper.map(updateRequest, user);
         userRepository.save(user);
         return true;
+    }
+
+    @Transactional
+    @Override
+    public boolean updatePassword(UpdateUserPasswordRequest updateUserPasswordRequest) {
+        UserEntity user = getUserFromSecurityContext();
+        if(!passwordEncoder.matches(updateUserPasswordRequest.getOldPassword(), user.getPassword()))
+            throw new PasswordMismatchException("Current password is incorrect");
+        if(!updateUserPasswordRequest.getNewPassword().equals(updateUserPasswordRequest.getConfirmPassword()))
+            throw new PasswordMismatchException("New password and confirm password do not match");
+        user.setPassword(passwordEncoder.encode(updateUserPasswordRequest.getNewPassword()));
+        userRepository.save(user);
+        return true;
+    }
+
+    @Override
+    public UserDetailResponse getUserDetailResponse() {
+        UserEntity user = getUserFromSecurityContext();
+        return modelMapper.map(user, UserDetailResponse.class);
     }
 }

@@ -16,6 +16,12 @@ public class ClassInvitationController {
     @Autowired
     private ClassInvitationService classInvitationService;
 
+    @GetMapping("/{invitationId}")
+    public ResponseEntity<?> getClassInvitation(@PathVariable @NotNull(message = "invitationId is required") Long invitationId) {
+        ApiResponse<?> response = new ApiResponse<>(true, "Class Invitation Fetched Successfully", classInvitationService.getClassInvitation(invitationId));
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<?> inviteToClass(@RequestParam @NotNull(message = "classId is required") Long classId,
                                            @RequestParam @NotNull(message = "inviteeId is required") Long inviteeId) {
