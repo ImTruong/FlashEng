@@ -2,6 +2,8 @@ package com.education.flashEng.service.Impl;
 
 import com.education.flashEng.entity.*;
 import com.education.flashEng.exception.EntityNotFoundWithIdException;
+import com.education.flashEng.payload.response.ClassInformationResponse;
+import com.education.flashEng.payload.response.ClassInvitationResponse;
 import com.education.flashEng.repository.ClassInvitationRepository;
 import com.education.flashEng.service.*;
 import jakarta.transaction.Transactional;
@@ -80,7 +82,7 @@ public class ClassInvitationServiceImpl implements ClassInvitationService {
         }
         else
             classJoinRequestService.createClassJoinRequest(classInvitationEntity.getClassEntity().getId(), invitee.getId());
-
+        notificationService.createAcceptedClassInvitationNotification(classInvitationEntity);
         return true;
     }
 
@@ -94,6 +96,7 @@ public class ClassInvitationServiceImpl implements ClassInvitationService {
             throw new AccessDeniedException("You are not authorized to reject this invitation.");
         classInvitationRepository.delete(classInvitationEntity);
         notificationService.deleteAllRelatedNotificationsByNotificationMetaData("classInvitationId", invitationId.toString());
+        notificationService.createRejectedClassInvitationNotification(classInvitationEntity);
         return true;
     }
 
@@ -108,6 +111,20 @@ public class ClassInvitationServiceImpl implements ClassInvitationService {
             }
         }
         return true;
+    }
+
+    @Override
+    public ClassInvitationResponse getClassInvitation(Long invitationId) {
+        ClassInvitationEntity classInvitationEntity = classInvitationRepository.findById(invitationId)
+                .orElseThrow(() -> new EntityNotFoundWithIdException("Invitation", invitationId.toString()));
+        UserEntity invitee = userService.getUserFromSecurityContext();
+        if (invitee != classInvitationEntity.getInviteeEntity())
+            throw new AccessDeniedException("You are not authorized to view this invitation.");
+        return ClassInvitationResponse.builder()
+                .classInformationResponse(classService.getClassInformation(classInvitationEntity.getClassEntity().getId()))
+                .inviterName(classInvitationEntity.getInviterEntity().getFullName())
+                .invitationId(classInvitationEntity.getId())
+                .build();
     }
 
 }

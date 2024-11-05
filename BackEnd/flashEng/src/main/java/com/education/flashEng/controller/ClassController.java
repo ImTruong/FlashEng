@@ -21,6 +21,11 @@ public class ClassController {
     @Autowired
     private ClassService classService;
 
+    @GetMapping("/{classId}")
+    public ResponseEntity<?> getClassInformation(@PathVariable Long classId) {
+        ApiResponse<?> response = new ApiResponse<>(true, "Class Information Fetched Successfully", classService.getClassInformation(classId));
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
     @PostMapping
     public ResponseEntity<?> createClass(@Valid @RequestBody CreateClassRequest createClassRequest) {

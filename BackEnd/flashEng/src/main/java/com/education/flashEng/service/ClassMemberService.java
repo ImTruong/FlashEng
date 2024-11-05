@@ -1,6 +1,7 @@
 package com.education.flashEng.service;
 
 import com.education.flashEng.entity.ClassMemberEntity;
+import com.education.flashEng.payload.response.ClassMemberListReponse;
 
 public interface ClassMemberService {
     ClassMemberEntity saveClassMember(ClassMemberEntity classMemberEntity);
@@ -10,4 +11,6 @@ public interface ClassMemberService {
     boolean deleteClassMember(Long userId,Long classId);
 
     boolean changeRole(Long userId, Long classId, String role);
+
+    ClassMemberListReponse getAllMembers(Long classId);
 }

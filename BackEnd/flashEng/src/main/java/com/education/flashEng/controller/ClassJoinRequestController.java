@@ -17,6 +17,12 @@ public class ClassJoinRequestController {
     @Autowired
     private ClassJoinRequestService classJoinRequestService;
 
+    @GetMapping("/{requestId}")
+    public ResponseEntity<?> getClassJoinRequest(@PathVariable @NotNull(message = "requestId is required") Long requestId) {
+        ApiResponse<?> response = new ApiResponse<>(true, "Class Join Request Fetched Successfully", classJoinRequestService.getClassJoinRequest(requestId));
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @PostMapping()
     public ResponseEntity<?> createClassJoinRequest(@Valid @RequestBody ClassJoinRequestRequest classJoinRequestRequest) {
         try {

@@ -6,6 +6,7 @@ import com.education.flashEng.entity.RoleClassEntity;
 import com.education.flashEng.entity.UserEntity;
 import com.education.flashEng.exception.EntityNotFoundWithIdException;
 import com.education.flashEng.payload.request.CreateClassRequest;
+import com.education.flashEng.payload.response.ClassInformationResponse;
 import com.education.flashEng.repository.ClassRepository;
 import com.education.flashEng.service.ClassMemberService;
 import com.education.flashEng.service.ClassService;
@@ -14,6 +15,7 @@ import com.education.flashEng.service.UserService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -28,6 +30,7 @@ public class ClassServiceImpl implements ClassService {
     private RoleClassService roleClassService;
 
     @Autowired
+    @Lazy
     private ClassMemberService classMemberService;
 
     @Autowired
@@ -73,5 +76,16 @@ public class ClassServiceImpl implements ClassService {
         classEntity.setName(name);
         classRepository.save(classEntity);
         return true;
+    }
+
+    @Override
+    public ClassInformationResponse getClassInformation(Long classId) {
+        ClassEntity classEntity = getClassById(classId);
+        return ClassInformationResponse.builder()
+                .classId(classEntity.getId())
+                .className(classEntity.getName())
+                .numberOfMembers(classEntity.getClassMemberEntityList().size())
+                .numberOfSets(classEntity.getSetsEntityList().size())
+                .build();
     }
 }

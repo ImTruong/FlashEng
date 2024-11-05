@@ -2,6 +2,7 @@ package com.education.flashEng.service;
 
 
 import com.education.flashEng.entity.ClassJoinRequestEntity;
+import com.education.flashEng.payload.response.ClassJoinRequestResponse;
 
 import java.util.Optional;
 
@@ -13,4 +14,6 @@ public interface ClassJoinRequestService {
      boolean rejectClassJoinRequest(Long requestId);
 
      Optional<ClassJoinRequestEntity> getClassJoinRequestByClassIdAndUserId(Long classId, Long userId);
+
+     ClassJoinRequestResponse getClassJoinRequest(Long requestId);
 }

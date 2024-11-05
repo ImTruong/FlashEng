@@ -1,10 +1,13 @@
 package com.education.flashEng.service.Impl;
 
+import com.education.flashEng.entity.ClassEntity;
 import com.education.flashEng.entity.ClassMemberEntity;
 import com.education.flashEng.entity.UserEntity;
 import com.education.flashEng.exception.EntityNotFoundWithIdException;
+import com.education.flashEng.payload.response.ClassMemberListReponse;
 import com.education.flashEng.repository.ClassMemberRepository;
 import com.education.flashEng.service.ClassMemberService;
+import com.education.flashEng.service.ClassService;
 import com.education.flashEng.service.RoleClassService;
 import com.education.flashEng.service.UserService;
 import jakarta.transaction.Transactional;
@@ -23,6 +26,9 @@ public class ClassMemberServiceImpl implements ClassMemberService {
 
     @Autowired
     private RoleClassService roleClassService;
+
+    @Autowired
+    private ClassService classService;
 
     public ClassMemberEntity saveClassMember(ClassMemberEntity classMemberEntity) {
         return classMemberRepository.save(classMemberEntity);
@@ -64,5 +70,25 @@ public class ClassMemberServiceImpl implements ClassMemberService {
         memberEntity.setRoleClassEntity(roleClassService.getRoleClassByName(role.toUpperCase()));
         classMemberRepository.save(memberEntity);
         return true;
+    }
+
+    @Override
+    public ClassMemberListReponse getAllMembers(Long classId) {
+        UserEntity user = userService.getUserFromSecurityContext();
+        if (classMemberRepository.findByClassEntityIdAndUserEntityId(classId, user.getId()).isEmpty())
+            throw new AccessDeniedException("You are not a member of this class.");
+        ClassEntity classEntity = classService.getClassById(classId);
+        ClassMemberListReponse classMemberListReponse = ClassMemberListReponse.builder()
+                .classId(classEntity.getId())
+                .className(classEntity.getName())
+                .memberList(classEntity.getClassMemberEntityList().stream()
+                        .map(classMemberEntity -> ClassMemberListReponse.MemberInfo.builder()
+                                .userId(classMemberEntity.getUserEntity().getId())
+                                .userName(classMemberEntity.getUserEntity().getUsername())
+                                .role(classMemberEntity.getRoleClassEntity().getName())
+                                .build())
+                        .toList())
+                .build();
+        return classMemberListReponse;
     }
 }
