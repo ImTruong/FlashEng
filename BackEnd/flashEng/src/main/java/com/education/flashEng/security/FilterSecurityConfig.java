@@ -36,12 +36,17 @@ public class FilterSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.disable())
-                .csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
+        httpSecurity
+                .cors(corsConfigurer -> corsConfigurer.disable())
+                .csrf(csrfConfigurer -> csrfConfigurer.disable())
                 .authorizeHttpRequests(authorizeRequests -> {
-                    for (String endpoint : securityPermitAllHttp.getPermitAllEndpoints()) {
-                        authorizeRequests.requestMatchers(new AntPathRequestMatcher(endpoint)).permitAll();
-                    }
+                    securityPermitAllHttp.getPermitAllEndpoints().forEach((endpoint, methods) -> {
+                        for (String method : methods) {
+                            authorizeRequests
+                                    .requestMatchers(new AntPathRequestMatcher(endpoint, method))
+                                    .permitAll();
+                        }
+                    });
                     authorizeRequests.anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
