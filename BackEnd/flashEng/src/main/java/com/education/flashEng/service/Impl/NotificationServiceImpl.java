@@ -131,5 +131,29 @@ public class NotificationServiceImpl implements NotificationService {
         return true;
     }
 
+    @Override
+    public boolean createClassSetRequestNotification(ClassSetRequestEntity classSetRequestEntity) {
+        NotificationMetaDataEntity notificationMetaDataEntity = NotificationMetaDataEntity.builder()
+                .key("classSetRequestId")
+                .value(classSetRequestEntity.getId().toString())
+                .build();
+        notificationMetaDataRepository.save(notificationMetaDataEntity);
+        ClassEntity classEntity = classSetRequestEntity.getClassEntity();
+        for (ClassMemberEntity memberEntity : classEntity.getClassMemberEntityList()) {
+            if (memberEntity.getRoleClassEntity().getName().equals("ADMIN")) {
+                UserEntity user = memberEntity.getUserEntity();
+                NotificationEntity notificationEntity = NotificationEntity.builder()
+                        .userEntity(user)
+                        .message("User " + classSetRequestEntity.getUserEntity().getUsername() + " has requested to create set in class " + classEntity.getName())
+                        .notificationMetaDataEntity(notificationMetaDataEntity)
+                        .isRead(false)
+                        .type("CLASS_SET_REQUEST")
+                        .build();
+                notificationRepository.save(notificationEntity);
+            }
+        }
+        return true;
+    }
+
 
 }

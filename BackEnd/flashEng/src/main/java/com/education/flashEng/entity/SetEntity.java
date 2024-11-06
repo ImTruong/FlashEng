@@ -3,12 +3,12 @@ package com.education.flashEng.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
+import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.util.List;
 
 @Setter
 @Getter
-
 @Entity
 @Table(name = "sets")
 public class SetEntity {
@@ -26,12 +26,13 @@ public class SetEntity {
     @Column(name = "privacy_status", nullable = false)
     private String privacyStatus;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity userEntity;
 
     @ManyToOne
     @JoinColumn(name = "class_id")
+    @JsonBackReference // Chỉ định tham chiếu ngược
     private ClassEntity classEntity;
 
     @OneToMany(mappedBy = "setEntity")
