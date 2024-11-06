@@ -1,5 +1,4 @@
-import { createRouter, createWebHistory } from "vue-router";
-import ClassesView from "@/view/YourLibrary.vue";
+import { createRouter, createWebHistory } from "vue-router"
 import HomeView from "@/view/HomeView.vue"
 import YourLibrary from "@/view/YourLibrary.vue";
 import Login from "@/view/Login.vue";
@@ -41,6 +40,11 @@ const router = createRouter({
             path: "/statistics",
             name: "Statistics",
             component: Statistics
+        },
+        {
+            path: "/flashcard/:id",
+            name: "flashcard",
+            component: FlashCard
         }
     ]
 })
