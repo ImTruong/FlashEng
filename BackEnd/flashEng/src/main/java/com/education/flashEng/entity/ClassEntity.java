@@ -29,7 +29,6 @@ public class ClassEntity {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "classEntity")
-    @JsonManagedReference // Chỉ định tham chiếu quản lý
     private List<SetEntity> setsEntityList;
 
     @OneToMany(mappedBy = "classEntity")

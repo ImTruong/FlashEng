@@ -32,12 +32,12 @@ public class SetEntity {
 
     @ManyToOne
     @JoinColumn(name = "class_id")
-    @JsonBackReference // Chỉ định tham chiếu ngược
     private ClassEntity classEntity;
 
-    @OneToMany(mappedBy = "setEntity")
+    @OneToMany(mappedBy = "setEntity", cascade = CascadeType.ALL)
     private List<WordEntity> wordsEntityList;
 
-    @OneToMany(mappedBy = "setEntity")
+    @OneToMany(mappedBy = "setEntity", cascade = CascadeType.ALL)
     private List<ClassSetRequestEntity> classSetRequestEntityList;
+
 }
