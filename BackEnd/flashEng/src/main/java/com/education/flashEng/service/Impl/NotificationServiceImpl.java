@@ -31,7 +31,6 @@ public class NotificationServiceImpl implements NotificationService {
                 .value(classJoinRequestEntity.getId().toString())
                 .build();
         notificationMetaDataRepository.save(notificationMetaDataEntity);
-
         ClassEntity classEntity = classJoinRequestEntity.getClassEntity();
         for (ClassMemberEntity memberEntity : classEntity.getClassMemberEntityList()){
             if(memberEntity.getRoleClassEntity().getName().equals("ADMIN")){
@@ -76,29 +75,83 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Transactional
     @Override
-    public boolean deleteNotificationEntityByEntity(NotificationEntity notificationEntity) {
-        notificationRepository.delete(notificationEntity);
-        return true;
-    }
-
-    @Transactional
-    @Override
-    public boolean deleteNotificationMetaDataEntityByEntity(NotificationMetaDataEntity notificationMetaDataEntity) {
-        notificationMetaDataRepository.delete(notificationMetaDataEntity);
-        return true;
-    }
-
-    @Transactional
-    @Override
     public boolean deleteAllRelatedNotificationsByNotificationMetaData(String key, String value) {
         NotificationMetaDataEntity notificationMetaDataEntity = notificationMetaDataRepository.findByKeyAndValue(key, value)
                 .orElseThrow(() -> new EntityNotFoundWithIdException("NotificationMetaData", "key: " + key + " value: " + value));
-        System.out.println(notificationMetaDataEntity.getId());
-        for (NotificationEntity notificationEntity : notificationMetaDataEntity.getNotificationEntityList()){
-            System.out.println(notificationEntity.getId());
-        }
         notificationRepository.deleteAll(notificationMetaDataEntity.getNotificationEntityList());
         notificationMetaDataRepository.delete(notificationMetaDataEntity);
+        return true;
+    }
+
+    @Override
+    public boolean createAcceptedClassJoinRequestNotification(ClassJoinRequestEntity classJoinRequestEntity) {
+        NotificationEntity notificationEntity = NotificationEntity.builder()
+                .userEntity(classJoinRequestEntity.getUserEntity())
+                .message("Your request to join class " + classJoinRequestEntity.getClassEntity().getName() + " has been accepted.")
+                .isRead(false)
+                .type("ACCEPTED_CLASS_JOIN_REQUEST")
+                .build();
+        notificationRepository.save(notificationEntity);
+        return true;
+    }
+
+    @Override
+    public boolean createRejectedClassJoinRequestNotification(ClassJoinRequestEntity classJoinRequestEntity) {
+        NotificationEntity notificationEntity = NotificationEntity.builder()
+                .userEntity(classJoinRequestEntity.getUserEntity())
+                .message("Your request to join class " + classJoinRequestEntity.getClassEntity().getName() + " has been rejected.")
+                .isRead(false)
+                .type("REJECTED_CLASS_JOIN_REQUEST")
+                .build();
+        notificationRepository.save(notificationEntity);
+        return true;
+    }
+
+    @Override
+    public boolean createAcceptedClassInvitationNotification(ClassInvitationEntity classInvitationEntity) {
+        NotificationEntity notificationEntity = NotificationEntity.builder()
+                .userEntity(classInvitationEntity.getInviterEntity())
+                .message(classInvitationEntity.getInviteeEntity().getUsername() + " has accepted your invitation to join class " + classInvitationEntity.getClassEntity().getName())
+                .isRead(false)
+                .type("ACCEPTED_CLASS_INVITATION")
+                .build();
+        notificationRepository.save(notificationEntity);
+        return true;
+    }
+
+    @Override
+    public boolean createRejectedClassInvitationNotification(ClassInvitationEntity classInvitationEntity) {
+        NotificationEntity notificationEntity = NotificationEntity.builder()
+                .userEntity(classInvitationEntity.getInviterEntity())
+                .message(classInvitationEntity.getInviteeEntity().getUsername() + " has rejected your invitation to join class " + classInvitationEntity.getClassEntity().getName())
+                .isRead(false)
+                .type("REJECTED_CLASS_INVITATION")
+                .build();
+        notificationRepository.save(notificationEntity);
+        return true;
+    }
+
+    @Override
+    public boolean createClassSetRequestNotification(ClassSetRequestEntity classSetRequestEntity) {
+        NotificationMetaDataEntity notificationMetaDataEntity = NotificationMetaDataEntity.builder()
+                .key("classSetRequestId")
+                .value(classSetRequestEntity.getId().toString())
+                .build();
+        notificationMetaDataRepository.save(notificationMetaDataEntity);
+        ClassEntity classEntity = classSetRequestEntity.getClassEntity();
+        for (ClassMemberEntity memberEntity : classEntity.getClassMemberEntityList()) {
+            if (memberEntity.getRoleClassEntity().getName().equals("ADMIN")) {
+                UserEntity user = memberEntity.getUserEntity();
+                NotificationEntity notificationEntity = NotificationEntity.builder()
+                        .userEntity(user)
+                        .message("User " + classSetRequestEntity.getUserEntity().getUsername() + " has requested to create set in class " + classEntity.getName())
+                        .notificationMetaDataEntity(notificationMetaDataEntity)
+                        .isRead(false)
+                        .type("CLASS_SET_REQUEST")
+                        .build();
+                notificationRepository.save(notificationEntity);
+            }
+        }
         return true;
     }
 

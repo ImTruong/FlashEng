@@ -2,6 +2,8 @@ package com.education.flashEng.service.Impl;
 
 import com.education.flashEng.entity.*;
 import com.education.flashEng.exception.EntityNotFoundWithIdException;
+import com.education.flashEng.payload.response.ClassInformationResponse;
+import com.education.flashEng.payload.response.ClassJoinRequestResponse;
 import com.education.flashEng.repository.ClassJoinRequestRepository;
 import com.education.flashEng.service.*;
 import jakarta.transaction.Transactional;
@@ -41,6 +43,20 @@ public class ClassJoinRequestServiceImpl implements ClassJoinRequestService {
     @Override
     public Optional<ClassJoinRequestEntity> getClassJoinRequestByClassIdAndUserId(Long classId, Long userId) {
         return classJoinRequestRepository.findByClassEntityIdAndUserEntityId(classId, userId);
+    }
+
+    @Override
+    public ClassJoinRequestResponse getClassJoinRequest(Long requestId) {
+        ClassJoinRequestEntity classJoinRequestEntity = classJoinRequestRepository.findById(requestId)
+                .orElseThrow(() -> new EntityNotFoundWithIdException("Class Join Request", requestId.toString()));
+        UserEntity user = userService.getUserFromSecurityContext();
+        if (classJoinRequestEntity.getClassEntity().getClassMemberEntityList().stream().noneMatch(classMemberEntity -> classMemberEntity.getUserEntity() == user && classMemberEntity.getRoleClassEntity().getName().equals("ADMIN")))
+            throw new AccessDeniedException("You are not authorized to view this request.");
+        return ClassJoinRequestResponse.builder()
+                .classInformationResponse(classService.getClassInformation(classJoinRequestEntity.getClassEntity().getId()))
+                .requestId(classJoinRequestEntity.getId())
+                .requesterName(classJoinRequestEntity.getUserEntity().getUsername())
+                .build();
     }
 
     @Transactional
@@ -83,6 +99,7 @@ public class ClassJoinRequestServiceImpl implements ClassJoinRequestService {
                             .build());
                     notificationService.deleteAllRelatedNotificationsByNotificationMetaData("classJoinRequestId", requestId.toString());
                     classJoinRequestRepository.delete(classJoinRequestEntity);
+                    notificationService.createAcceptedClassJoinRequestNotification(classJoinRequestEntity);
                     return true;
                 }
                 else
@@ -106,6 +123,7 @@ public class ClassJoinRequestServiceImpl implements ClassJoinRequestService {
                     classJoinRequestRepository.delete(classJoinRequestEntity);
                     notificationService.deleteAllRelatedNotificationsByNotificationMetaData("classJoinRequestId", requestId.toString());
                     classJoinRequestRepository.delete(classJoinRequestEntity);
+                    notificationService.createRejectedClassJoinRequestNotification(classJoinRequestEntity);
                     return true;
                 }
                 else

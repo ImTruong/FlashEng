@@ -1,6 +1,5 @@
 <script setup>
-    import { ref, watch, defineEmits, defineProps, onMounted} from 'vue';
-    import setsData from '../data/sets.json'; 
+    import { ref, watch, defineEmits, defineProps} from 'vue';
     import OverlayBackground from '../components/OverlayBackground.vue'
     import AddCardModal from '../components/AddCardModal.vue'
 

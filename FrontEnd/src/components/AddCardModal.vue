@@ -181,6 +181,7 @@ const updateSetName = (event) => {
     font-weight: bold;
     margin-left: 50px;
     width: 100px;
+    flex-grow: 1;
   }
   
   .cancel-btn {

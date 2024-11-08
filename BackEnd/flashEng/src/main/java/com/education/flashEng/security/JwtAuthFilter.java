@@ -15,10 +15,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.security.SignatureException;
+import java.util.Set;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -35,35 +37,47 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Autowired
     private JwtExceptionHandler jwtExceptionHandler;
 
+    private final AntPathMatcher antPathMatcher = new AntPathMatcher();
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String requestURI = request.getRequestURI();
+        String requestMethod = request.getMethod();
         String token = getJwtFromRequest(request);
-        if (securityPermitAllHttp.getPermitAllEndpoints().contains(requestURI)) {
+
+        boolean isPermitAll = securityPermitAllHttp.getPermitAllEndpoints().entrySet().stream()
+                .anyMatch(entry -> {
+                    String endpoint = entry.getKey();
+                    Set<String> methods = entry.getValue();
+                    return antPathMatcher.match(endpoint, requestURI) && methods.contains(requestMethod);
+                });
+
+        if (isPermitAll) {
             filterChain.doFilter(request, response);
+            return;
         }
-        else{
-            try{
-                if (token == null) {
-                    jwtExceptionHandler.handleJwtException(response, HttpStatus.UNAUTHORIZED, "Token is missing");
-                    return;
-                }
-                jwtUtil.verifyToken(token);
-                String username = jwtUtil.getUsernameFromToken(token);
-                UserDetails userDetails = customUserDetailService.loadUserByUsername(username);
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                filterChain.doFilter(request, response);
-            } catch (ExpiredJwtException e) {
-                jwtExceptionHandler.handleJwtException(response, HttpStatus.UNAUTHORIZED, "Token Expired");
-            } catch (MalformedJwtException e) {
-                jwtExceptionHandler.handleJwtException(response, HttpStatus.BAD_REQUEST, "Token is not valid");
-            } catch (Exception e) {
-                jwtExceptionHandler.handleJwtException(response, HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error " + e.getMessage());
+        try {
+            if (token == null) {
+                jwtExceptionHandler.handleJwtException(response, HttpStatus.UNAUTHORIZED, "Token is missing");
+                return;
             }
+
+            jwtUtil.verifyToken(token);
+            String username = jwtUtil.getUsernameFromToken(token);
+            UserDetails userDetails = customUserDetailService.loadUserByUsername(username);
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            filterChain.doFilter(request, response);
+        } catch (ExpiredJwtException e) {
+            jwtExceptionHandler.handleJwtException(response, HttpStatus.UNAUTHORIZED, "Token Expired");
+        } catch (MalformedJwtException e) {
+            jwtExceptionHandler.handleJwtException(response, HttpStatus.BAD_REQUEST, "Token is not valid");
+        } catch (Exception e) {
+            jwtExceptionHandler.handleJwtException(response, HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
         }
     }
 

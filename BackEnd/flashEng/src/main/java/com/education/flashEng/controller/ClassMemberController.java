@@ -19,6 +19,12 @@ public class ClassMemberController {
     @Autowired
     private ClassMemberService classMemberService;
 
+    @GetMapping("/list")
+    public ResponseEntity<?> getMembers(@RequestParam @NotNull(message = "classId is required") Long classId) {
+        ApiResponse<?> response = new ApiResponse<>(true, "Members Fetched Successfully", classMemberService.getAllMembers(classId));
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteMember(@RequestParam @NotNull(message = "userId is required") Long userId,
                                           @RequestParam @NotNull(message = "classId is required") Long classId) {
