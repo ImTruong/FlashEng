@@ -1,6 +1,6 @@
 <script setup>
   import router from '@/router';
-import axios from 'axios';
+  import axios from 'axios';
   import { ref } from 'vue';
 
   const fullname = ref('');
@@ -8,7 +8,6 @@ import axios from 'axios';
   const password = ref('');
   const email = ref('');
   const country = ref('');
-  const errorMessage = ref(null);
 
   // Hàm đăng ký người dùng
   const registerUser = async () => {
@@ -29,11 +28,9 @@ import axios from 'axios';
       password.value = '';
       email.value = '';
       country.value = '';
-      errorMessage.value = null;
 
     } catch (error) {
       // Xử lý lỗi
-      errorMessage.value = error.response?.data?.message || 'Registration failed!';
       console.error("Error data:", error.response?.data);
     }
   };
