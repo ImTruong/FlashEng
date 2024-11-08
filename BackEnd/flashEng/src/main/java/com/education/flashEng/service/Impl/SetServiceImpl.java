@@ -6,14 +6,12 @@ import com.education.flashEng.exception.EntityNotFoundWithIdException;
 import com.education.flashEng.payload.request.CreateSetRequest;
 import com.education.flashEng.payload.request.UpdateSetRequest;
 import com.education.flashEng.payload.response.SetResponse;
+import com.education.flashEng.payload.response.WordListResponse;
 import com.education.flashEng.repository.ClassMemberRepository;
 import com.education.flashEng.repository.ClassRepository;
 import com.education.flashEng.repository.ClassSetRequestRepository;
 import com.education.flashEng.repository.SetRepository;
-import com.education.flashEng.service.ClassSetRequestService;
-import com.education.flashEng.service.NotificationService;
-import com.education.flashEng.service.SetService;
-import com.education.flashEng.service.UserService;
+import com.education.flashEng.service.*;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +41,8 @@ public class SetServiceImpl implements SetService {
     private ClassMemberRepository classMemberRepository;
     @Autowired
     private ClassSetRequestRepository classSetRequestRepository;
+    @Autowired
+    private WordService wordService;
 
     @Transactional
     @Override
@@ -89,6 +89,9 @@ public class SetServiceImpl implements SetService {
                     setEntity.getUserEntity().getUsername(),
                     setEntity.getUserEntity().getEmail(),
                     setEntity.getUserEntity().getCountry());
+
+            List<WordListResponse> wordListResponses = wordService.getWordBySetId(setEntity.getId());
+            s.setWordListResponses(wordListResponses);
             setResponses.add(s);
         }
         return setResponses;
@@ -109,6 +112,8 @@ public class SetServiceImpl implements SetService {
                     setEntity.getUserEntity().getUsername(),
                     setEntity.getUserEntity().getEmail(),
                     setEntity.getUserEntity().getCountry());
+            List<WordListResponse> wordListResponses = wordService.getWordBySetId(setEntity.getId());
+            s.setWordListResponses(wordListResponses);
             setResponses.add(s);
         }
         return setResponses;
@@ -134,6 +139,8 @@ public class SetServiceImpl implements SetService {
                     setEntity.getUserEntity().getUsername(),
                     setEntity.getUserEntity().getEmail(),
                     setEntity.getUserEntity().getCountry());
+            List<WordListResponse> wordListResponses = wordService.getWordBySetId(setEntity.getId());
+            setResponse.setWordListResponses(wordListResponses);
             setResponses.add(setResponse);
         }
         return setResponses;

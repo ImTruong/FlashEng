@@ -2,9 +2,12 @@ package com.education.flashEng.entity;
 
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
-
+@Setter
+@Getter
 @Entity
 @Table(name = "words")
 public class WordEntity {
@@ -27,6 +30,9 @@ public class WordEntity {
 
     @Column(name = "image", nullable = false)
     private String image;
+
+    @Column(name = "image_public_id", nullable = false)
+    private String imagePublicId;
 
     @Column(name = "audio", nullable = false)
     private String audio;
