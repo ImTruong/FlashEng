@@ -5,6 +5,7 @@ import Login from "@/view/Login.vue";
 import SignUp from "@/view/SignUp.vue";
 import User from "@/view/User.vue";
 import Statistics from "@/view/Statistics.vue";
+import FlashCard from "@/view/FlashCardView.vue";
 
 
 
