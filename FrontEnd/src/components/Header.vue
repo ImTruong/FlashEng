@@ -7,7 +7,9 @@
     import setsData from "../data/sets.json"
     import SeachClasses from './SeachClasses.vue';
     import ClassTable from './ClassTable.vue';
-
+    import InviteMember from './AddMember.vue';
+import { RouterLink } from 'vue-router';
+    
     const isEditMode = ref(false);
     const existingSet = ref(null);
     const menuOpen = ref(false);
@@ -79,7 +81,9 @@
                     </li>
                     <li>
                         <img src="@/assets/icons/folder.png" alt="folder"  class="menu-icon"/>
-                        <router-link to="/classes" class="menu-link">Your Library</router-link>
+                        <router-link to="/classes" class="menu-link">Your Library
+                            
+                        </router-link>
                     </li>
                     <li>
                         <img src="@/assets/icons/statistics.png" alt="Home"  class="menu-icon"/>
@@ -91,7 +95,7 @@
                     </li>
                     <li>
                         <img src="@/assets/user.svg" alt="Home"  class="menu-icon"/>
-                        <a href="/userinfo">Your profile</a>
+                        <a href="/profile">Your profile</a>
                     </li>
                     <li class="divider"></li>
                     <li>
@@ -111,9 +115,7 @@
                     <img src="../assets/plus.svg" alt="Add set">
                 </button>
                 
-                <div class="user-icon">
-                    U
-                </div>
+                <RouterLink to="/profile" class="user-icon" >U</RouterLink>
             </div>
 
             <div v-if="showSearch" class="search-class">
@@ -138,6 +140,8 @@
             </div>
             <SetTable v-if="setTable" @close="setTable = false" />
             <ClassTable v-if="classTable" @close="classTable = false"></ClassTable>
+
+        
         </header>
     </div>
 </template>

@@ -5,7 +5,7 @@
     import { ref } from 'vue';
     import LibrabyBody from './LibrabyBody.vue';
     import OverlayBackground from './OverlayBackground.vue';
-
+       
     const status = ref(true);
 
     const {searchQuery, sets, classes, Overlay_background } = defineProps(['searchQuery', 'sets', 'classes', 'Overlay_background']);
@@ -44,15 +44,15 @@
     .classbox-container{
         position: fixed;
         top: 15vh;
-        left: 25%;
-        height: 70vh;
-        width: 50%;
+        left: 20vw;
+        height: 75vh;
+        width: 60vw;
         display: flex;
         justify-content: center;
         align-items: center;
-        border-radius: 5%;
+        border-radius: 8px;
         background-color: white;
-        /* overflow: hidden; */
+        overflow: hidden;
         z-index: 11;
     }
 
@@ -82,7 +82,7 @@
         position: absolute;
         top: 12%;
         height: 80%;
-        padding: 20px;
+        padding: 30px;
         overflow-y: auto;
     }
 

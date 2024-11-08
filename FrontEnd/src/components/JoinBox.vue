@@ -4,7 +4,7 @@
     import setsData from '@/data/sets.json'
     import { ref } from 'vue';
     import OverlayBackground from './OverlayBackground.vue';
-
+    
 
     const { classItem, Overlay_background } = defineProps(['classItem', 'Overlay_background']);
 

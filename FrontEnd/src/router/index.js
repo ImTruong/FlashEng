@@ -3,7 +3,7 @@ import HomeView from "@/view/HomeView.vue"
 import YourLibrary from "@/view/YourLibrary.vue";
 import Login from "@/view/Login.vue";
 import SignUp from "@/view/SignUp.vue";
-import UserInfo from "@/view/UserInfo.vue";
+import User from "@/view/User.vue";
 import Statistics from "@/view/Statistics.vue";
 import FlashCard from "../view/FlashCardView.vue"
 import GameView from "../view/GameView.vue"
@@ -34,9 +34,9 @@ const router = createRouter({
             component: SignUp
         },
         {
-            path: "/userinfo",
-            name: "UserInfo",
-            component: UserInfo
+            path: "/profile",
+            name: "User",
+            component: User
         },
         {
             path: "/statistics",
@@ -53,6 +53,7 @@ const router = createRouter({
             name: "game",
             component: GameView
         }
+        
     ]
 })
 
