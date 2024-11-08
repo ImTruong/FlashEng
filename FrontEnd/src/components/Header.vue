@@ -76,7 +76,6 @@
                     <li>
                         <img src="@/assets/icons/home-icon.png" alt="Home"  class="menu-icon"/>
                         <router-link to="/" class="menu-link">Home</router-link>
-                        
                     </li>
                     <li>
                         <img src="@/assets/icons/folder.png" alt="folder"  class="menu-icon"/>

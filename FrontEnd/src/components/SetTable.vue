@@ -1,4 +1,5 @@
 <script setup>
+    import axios from 'axios';
     import { ref, watch, defineEmits, defineProps} from 'vue';
     import OverlayBackground from '../components/OverlayBackground.vue'
     import AddCardModal from '../components/AddCardModal.vue'
@@ -17,17 +18,31 @@
     const dropdownRef = ref(null)
     const showAddCardModal = ref(false);
 
-    const saveData = () => {
+    const saveData  = async () => {
         const payload = {
-            id: props.isEditMode ? props.existingSet.id : null, // Lấy ID từ existingSet nếu đang ở chế độ chỉnh sửa
-            setName: setName.value,
-            rows: rows.value,
-            selectedWords: selectedWords.value
+            id: props.isEditMode ? props.existingSet.id : null, 
+            title: setName.value,
+            privacy: selectedOption.value,  
+            user_id: 1,  
+            class_id: null,  
         };
-        if (props.isEditMode) {
-            emit('update', payload); // Gửi sự kiện update nếu ở chế độ chỉnh sửa
-        } else {
-            emit('save', payload); // Gửi sự kiện save nếu không phải ở chế độ chỉnh sửa
+        try {
+            if (props.isEditMode) {
+                const response = await axios.put(`/user/sets/${props.existingSet.id}`, payload);  // API cập nhật
+                console.log('Set updated:', response.data);
+                emit('update', response.data); 
+            } else {
+                // Gọi API POST thông qua proxy `/user`
+                const response = await axios.post('/user/sets', payload); // Đường dẫn tương đối
+                console.log('Set created:', response.data);
+                emit('save', response.data); // Gửi sự kiện save với dữ liệu từ API
+            }
+        } catch (error) {
+            if (error.response) {
+                console.error('API Error:', error.response.status, error.response.data);
+            } else {
+                console.error('Network or Axios error:', error.message);
+            }
         }
     };
 

@@ -23,7 +23,7 @@
   }
 
   const studySet = () => {
-    console.log(`Viewing set ${set.id}`)
+    router.push(`/flashcard/${set.id}`)
   }
 
   const deleteSet = () => {
@@ -51,6 +51,7 @@
       </div>
       <div class="set-option">
         <div class="icon-container" @click.stop="studySet" >
+          <router-link to="/flashcard" class="study"></router-link>
           <img src="../assets/study.svg" alt="Study">
         </div>
         <div class="icon-container" @click.stop="gameSet" >
