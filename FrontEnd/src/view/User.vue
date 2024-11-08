@@ -1,7 +1,45 @@
+<script setup>
+import Header from "@/components/Header.vue" // Import your header component
+  import {ref} from 'vue'
+
+  const user = ref({
+    name: '',
+    email: '',
+    birthday: '',
+    country: ''
+  });
+  const errorMessage = ref(null);
+
+// export default {
+//   components: {
+//     Header
+//   },
+//   data() {
+//     return {
+//       user: {
+//         name: '',
+//         email: '',
+//         birthday: '',
+//         country: '',
+//       },
+//     };
+//   },
+//   methods: {
+//     updateProfile() {
+//       // Logic to update profile
+//     },
+//     changePassword() {
+//       // Logic to change password
+//     },
+//   },
+// };
+</script>
+
+
 <template>
     <div class="user-profile-page">
       <!-- Header component -->
-      <Header />
+      <Header></Header>
   
       <div class="profile-container">
         
@@ -23,7 +61,7 @@
               <input v-model="user.email" id="email" type="email" />
             </div>
             <div class="form-group">
-              <label for="birthday">Birthday</label>
+              <label for="birthday"></label>
               <input v-model="user.birthday" id="birthday" type="date" />
             </div>
             <div class="form-group">
@@ -40,33 +78,7 @@
     </div>
   </template>
   
-  <script>
-  import Header from "@/components/Header.vue" // Import your header component
-  
-  export default {
-    components: {
-      Header
-    },
-    data() {
-      return {
-        user: {
-          name: '',
-          email: '',
-          birthday: '',
-          country: '',
-        },
-      };
-    },
-    methods: {
-      updateProfile() {
-        // Logic to update profile
-      },
-      changePassword() {
-        // Logic to change password
-      },
-    },
-  };
-  </script>
+
   
   <style scoped>
   .user-profile-page {

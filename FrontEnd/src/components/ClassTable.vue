@@ -2,20 +2,24 @@
     import { ref, watch, defineEmits, defineProps} from 'vue';
     import OverlayBackground from '../components/OverlayBackground.vue'
     // import { debounce } from 'lodash'; // Nếu bạn sử dụng lodash
+    import AddMember from './AddMember.vue';
 
     const emit = defineEmits(['close', 'save']);
+
+    const props = defineProps(['isEditMode', 'existingClass']);
 
     const visible = ref(true); 
     const className = ref('');
     const rows = ref([{ username: '', role: ''}]);
     const selectedUsers = ref([]); // Danh sách các từ được chọn
     const showSelectColumn = ref(false);
-    const showOptions = ref(false)
     const selectedOption = ref('')
     const dropdownRef = ref(null)
     const search = ref("")
     const showSearch = ref(false);
     const membersData = ref([])
+    const showAddMember = ref(false);
+
     
     // Hàm lưu vào database
     // const saveToDatabase = async () => {
@@ -35,8 +39,13 @@
     //     saveToDatabaseDebounced(); // Gọi hàm lưu dữ liệu
     // }, { deep: true });
 
-    const addRow = () => {
-        rows.value.push({ username: '', role: ''});
+    const addMember = (newMember) => {
+        if(row.value[0].username === ''){
+            row.value[0] = newMember;
+        }
+        else{
+            rows.value.push(newMember);
+        }
     };
 
     const removeRow = () => {
@@ -53,7 +62,7 @@
         visible.value = false;
     };
 
-    const toggleSelectWord = (username) => {
+    const toggleSelectMember = (username) => {
         const index = selectedUsers.value.indexOf(username);
         if (index === -1) {
             selectedUsers.value.push(username);
@@ -86,6 +95,16 @@
         }
     })
 
+    const openAddMember = () => {
+        showAddMember.value = true;
+        visible.value = false;
+    };
+
+    const closeAddMember = () => {
+        showAddMember.value = false;
+        visible.value = true
+    };
+
 </script>
 
 <template>
@@ -112,15 +131,15 @@
               </tr>
             </thead>
             <tbody>
-                <tr>
+                <!-- <tr >
                     <th v-if="showSelectColumn">
                     </th>
                     <th class="username-column">ptitstudent1</th>
                     <th class="role">Admin</th>
-              </tr>
+              </tr> -->
               <tr v-for="(row, index) in rows" :key="index">
                 <td v-if="showSelectColumn">
-                    <input type="checkbox" @change="toggleSelectWord(row.username)" :checked="selectedUsers.includes(row.username)" />
+                    <input type="checkbox" @change="toggleSelectMember(row.username)" :checked="selectedUsers.includes(row.username)" />
                 </td>
                 <td class="username-column"><input v-model="row.username" placeholder="Username" /></td>
                 <td class="role"><p>Member</p></td>
@@ -136,11 +155,13 @@
         <button @click="removeRow" class="icon-button">
             <img src="../assets/delete-word.svg" alt="" class="icon">
         </button>
-        <button @click="addRow" class="icon-button">
+        <button @click="openAddMember" class="icon-button">
             <img src="../assets/add-word.svg" alt="" class="icon">
         </button>
-      </div>
     </div>
+    </div>
+    
+    <AddMember :setName="setName" v-if="showAddMember" @close = "closeAddMember" @save= "addMember"></AddMember>
 </template>  
   
 <style scoped>

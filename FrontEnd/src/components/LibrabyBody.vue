@@ -9,15 +9,22 @@
     const {sets, classes} = defineProps(['sets','classes']);
 
     const activeTab = ref("Flashcard sets");
-
+    
     const Overlay_background = ref(false);
 
     const selectedClassItem = ref("");
+    const selectedClassMember = ref("");
 
     const selectClass = (classItem) => {
         selectedClassItem.value = classItem;
         Overlay_background.value = true;
     }
+
+    const selectedMember = (classMember) => {
+        selectedClassMember.value = classMember;
+        Overlay_background.value = true;
+    }
+
 
 
 </script>
