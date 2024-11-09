@@ -1,5 +1,6 @@
 <script setup>
     import { ref} from 'vue';
+    import { RouterLink } from 'vue-router';
     import SetTable from "../components/SetTable.vue"
     import OverlayBackground from "../components/OverlayBackground.vue";
     import classesData from "../data/classes.json" 
@@ -8,7 +9,7 @@
     import SeachClasses from './SeachClasses.vue';
     import ClassTable from './ClassTable.vue';
     import InviteMember from './AddMember.vue';
-import { RouterLink } from 'vue-router';
+    import NotificationList from './NotificationList.vue'
     
     const isEditMode = ref(false);
     const existingSet = ref(null);
@@ -23,7 +24,6 @@ import { RouterLink } from 'vue-router';
     const searchItem = ref("")
     const newItem = ref(false);
     const classTable = ref(false)
-
 
     const toggleMenu = () => {
         menuOpen.value = !menuOpen.value;
@@ -90,11 +90,12 @@ import { RouterLink } from 'vue-router';
                         <a href="/statistics">Statistics</a>
                     </li>
                     <li>
-                        <img src="@/assets/notification.svg" alt="Home"  class="menu-icon"/>
-                        <a href="#">Notifications</a>
-                    </li>
+                        <img src="@/assets/notification.svg" alt="Notification" class="menu-icon" />
+                        <a href="#" @click="toggleNotifications">Notifications</a>
+                        
+                      </li>
                     <li>
-                        <img src="@/assets/user.svg" alt="Home"  class="menu-icon"/>
+                        <img src="@/assets/user.svg" alt="Your Profile"  class="menu-icon"/>
                         <a href="/profile">Your profile</a>
                     </li>
                     <li class="divider"></li>
@@ -140,7 +141,12 @@ import { RouterLink } from 'vue-router';
             </div>
             <SetTable v-if="setTable" @close="setTable = false" />
             <ClassTable v-if="classTable" @close="classTable = false"></ClassTable>
-
+            <NotificationList 
+                v-if="showNotifications" 
+                @click="toggleNotifications"
+                class="notification-dropdown"
+                :class="{ show: showNotifications }"
+            />
         
         </header>
     </div>
@@ -306,4 +312,21 @@ import { RouterLink } from 'vue-router';
         margin: 30px 0 10px 0; /* Khoảng cách trên dưới */
         height: 1px; /* Chiều cao của đường phân cách */
     }
+    .notification-dropdown {
+        position: absolute;  /* Đặt bảng thông báo ở vị trí tuyệt đối */
+        top: 240px;  /* Điều chỉnh giá trị này để bảng thông báo nằm gần icon, tránh đè lên thanh menu */
+        left: 230px;  /* Đặt bảng thông báo vào phía bên phải của thanh nav */
+        width: 300px;  /* Chiều rộng bảng thông báo */
+        background-color: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        padding: 16px;
+        z-index: 9999; /* Đảm bảo bảng thông báo có độ ưu tiên hiển thị trên các phần tử khác */
+        display: none; 
+    }
+    
+    .notification-dropdown.show {
+        display: block; /* Hiển thị bảng khi có class 'show' */
+    }
+      
 </style>

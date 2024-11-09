@@ -1,23 +1,26 @@
 <script setup>
     import classesData from "../data/classes.json"
     import Header from '@/components/Header.vue';
-    import LibrabyBody from "@/components/LibrabyBody.vue";
-    import setsData from '@/data/sets.json'
-    import {ref} from 'vue'
+    import LibraryBody from "@/components/LibraryBody.vue";
+    import { ref, computed, onMounted } from "vue";
+    import { useStore } from 'vuex';
+    const store = useStore();
+    
+    const classes = ref(classesData)
+    const sets = computed(() => store.getters.getSets);
 
-    const classes = ref(classesData);
-    const sets = ref(setsData)
-
-
+    onMounted(() => {
+        store.dispatch('fetchLibrarySets');  
+    })
+   
 </script>
 
 <template>
     <div id="app">
     <Header></Header>
-    
     <main>
         <h2>Your library</h2>
-        <LibrabyBody
+        <LibraryBody
             :sets="sets"
             :classes="classes"
         />

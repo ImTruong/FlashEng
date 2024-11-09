@@ -1,11 +1,16 @@
 <script setup>
-    import { defineProps, defineEmits } from 'vue';
+    import { onMounted, computed, defineProps, defineEmits } from 'vue';
     import Card from './Set.vue';
     import OverlayBackground from './OverlayBackground.vue';
-    import setsData from '@/data/sets.json'
     import { ref, watch } from 'vue';
+    import { useStore } from 'vuex';
+    const store = useStore();
     
+    const sets = computed(() => store.getters.getSets);
 
+    onMounted(() => {
+        store.dispatch('fetchLibrarySets');  
+    })
     const { classItem, Overlay_background } = defineProps(['classItem', 'Overlay_background']);
 
     const emit = defineEmits();
@@ -14,19 +19,17 @@
         emit('close');
     }
 
-    const sets = ref(setsData)
     const icon = ref(false)
     const search = ref("")
 
     watch(search, () => {
-        sets.value = setsData.filter(set => set.name.toLowerCase().includes(search.value.toLowerCase()))
+        sets.value = sets.filter(set => set.name.toLowerCase().includes(search.value.toLowerCase()))
     })
 
     
 </script>
 
 <template>
-    
     <OverlayBackground 
         :isVisible="Overlay_background" 
         @clickOverlay="closeOverlay" />
@@ -49,7 +52,6 @@
                 v-for="set in sets" 
                 :key="set.id" 
                 :set="set" />
-
         </div>
     </div>
 </template>
