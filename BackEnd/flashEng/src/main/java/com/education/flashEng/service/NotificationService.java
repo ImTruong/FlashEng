@@ -20,4 +20,8 @@ public interface NotificationService {
     boolean createRejectedClassInvitationNotification(ClassInvitationEntity classInvitationEntity);
 
     boolean createClassSetRequestNotification(ClassSetRequestEntity classSetRequestEntity);
+
+    boolean createAcceptRequestNotification(SetEntity setEntity);
+
+    boolean createRejectRequestNotification(SetEntity setEntity, ClassEntity classEntity);
 }

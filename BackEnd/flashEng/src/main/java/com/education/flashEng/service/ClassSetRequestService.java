@@ -6,6 +6,7 @@ import com.education.flashEng.entity.SetEntity;
 import com.education.flashEng.entity.UserEntity;
 
 public interface ClassSetRequestService {
-    public ClassSetRequestEntity createSetRequest(SetEntity setEntity, UserEntity userEntity, ClassEntity classEntity);
-    public boolean acceptSetRequest(Long SetRequestId);
+    ClassSetRequestEntity createSetRequest(SetEntity setEntity, UserEntity userEntity, ClassEntity classEntity);
+    boolean acceptSetRequest(Long SetRequestId);
+    boolean rejectSetRequest(Long SetRequestId);
 }
