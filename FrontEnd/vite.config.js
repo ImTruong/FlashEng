@@ -12,14 +12,20 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
-  },
+  }
+  ,
   server: {
     proxy: {
       '/user': {
-        target: 'http://localhost:8080', // Địa chỉ của backend
+        target: 'http://localhost:8080', // Địa chỉ backend
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/user/, '/user'), // Nếu cần xóa tiền tố `/user`, bạn có thể điều chỉnh ở đây
+        secure: false
       },
-    },
+      '/set': {
+        target: 'http://localhost:8080', // Địa chỉ backend
+        changeOrigin: true,
+        secure: false
+      },
+    }
   }
 })
