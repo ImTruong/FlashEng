@@ -19,13 +19,13 @@ export default defineConfig({
       '/user': {
         target: 'http://localhost:8080', // Địa chỉ backend
         changeOrigin: true,
-        secure: false, // Thêm secure: false để bỏ qua SSL khi thử nghiệm
+        secure: false
       },
       '/set': {
-        target: 'http://localhost:8080', // Địa chỉ của backend
+        target: 'http://localhost:8080', // Địa chỉ backend
         changeOrigin: true,
-        secure: false,
-      }
-    },
+        secure: false
+      },
+    }
   }
 })

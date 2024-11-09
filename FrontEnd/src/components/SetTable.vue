@@ -3,10 +3,8 @@
     import { ref, watch, defineEmits, defineProps} from 'vue';
     import OverlayBackground from '../components/OverlayBackground.vue'
     import AddCardModal from '../components/AddCardModal.vue'
-    // import axios from "@/axios"
 
     const emit = defineEmits(['close', 'save', 'update']);
-
     const props = defineProps(['isEditMode', 'existingSet']);
 
     const visible = ref(true); 
@@ -20,17 +18,31 @@
     const showAddCardModal = ref(false);
     const classId = ref('')
 
+    // const fetchWords = async (setId) => {
+    //     const token = localStorage.getItem('token');
+    //     const config = {
+    //         headers: {
+    //             Authorization: `Bearer ${token}`
+    //         }
+    //     };
+
+    //     try {
+    //         const response = await axios.get(`/set/${setId}/words`, config); // Gọi API GET để lấy từ
+    //         console.log('Words fetched:', response.data);
+    //         rows.value = response.data.data; // Cập nhật danh sách từ
+    //     } catch (error) {
+    //         console.error('Error fetching words:', error);
+    //     }
+    // };
     const saveData  = async () => {
         const token = localStorage.getItem('token');
         const payload = {
+            setId: props.isEditMode ? props.existingSet.id : null,
             name: setName.value,
             description: "Created set", // description có thể là null
             privacyStatus: selectedOption.value,
-            classId: null, // class_id có thể là null
+            classId: classId.value | null // class_id có thể là null
         }
-        // if (selectedOption.value === 'CLASS' && classId.value.trim()) {
-        //     payload.class_id = classId.value.trim();
-        // }
         try {
             const config = {
             headers: {
@@ -38,17 +50,15 @@
             }
             }
             if (props.isEditMode) {
-                // const response = await axios.put(`/sets/${props.existingSet.id}`, payload, { headers: config.headers });  // API cập nhật
-                // console.log('Set updated:', response.data);
-                // emit('update', response.data); 
+                const response = await axios.put('/set', payload, { headers: config.headers });  // API cập nhật
+                console.log('Set updated:', response.data);
+                emit('update', response.data); 
             } else {
-                console.log(payload.classId)
                 const response = await axios.post('/set', payload, { headers: config.headers }); 
                 console.log('Set created:', response.data.data);
-                console.log(response.data.data)
-                emit('save', response.data.data); // Gửi sự kiện save với dữ liệu từ API
+                console.log(response.data)
+                emit('save', response.data.data); 
             }
-            
         } catch (error) {
             if (error.response) {
                 console.error('API Error:', error.response.status, error.response.data);
@@ -60,10 +70,8 @@
 
     const addNewWord = (newWord) => {
         if (rows.value[0].word === '') {
-        // Nếu dòng đầu tiênc có giá trị null hoặc rỗng, thay thế nó
             rows.value[0] = newWord;
         } else {
-            // Nếu không, thêm từ mới vào cuối mảng
             rows.value.push(newWord);
         }
     };
@@ -126,9 +134,6 @@
         }
     };
 
-    // watch(rows, (newRows) => {
-    //     saveData(); 
-    // }, { deep: true });
     watch(() => props.existingSet, (newExistingSet) => {
         if (newExistingSet && newExistingSet.words) {
             setName.value = newExistingSet.name; // Cập nhật tên set
@@ -167,7 +172,7 @@
         <div class="option-container">
             <button @click.stop="selectOption('CLASS')" class="option-button">
                 <img src="../assets/lock.svg" alt="Group" class="option-icon" />
-                <span class="option-text">Group</span>
+                <span class="option-text">Class</span>
                 <span v-if="selectedOption === 'CLASS'" class="checkmark">✔</span>
             </button>
             <input

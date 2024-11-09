@@ -33,9 +33,8 @@ const fetchLibrarySets = async () => {
             }
         });
         // Lưu danh sách các set từ API
-        console.log(response)
         sets.value = response.data.data;
-        displayedSets.value = sets.value.slice(0, 3);  // Hiển thị 3 set đầu tiên
+        displayedSets.value = sets.value.slice(0, 3); 
     } catch (error) {
         console.error("Error fetching library sets:", error);
     }
