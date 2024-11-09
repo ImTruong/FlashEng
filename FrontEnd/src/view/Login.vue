@@ -1,26 +1,37 @@
 <script setup>
-  import {ref} from 'vue';
+  import { ref } from 'vue';
   import axios from 'axios';
-import router from '@/router';
+  import { useRouter } from 'vue-router';
 
   const username = ref('');
-  const password = ref(''); 
+  const password = ref('');
+  const message = ref('');
+  const router = useRouter();
 
-  const Login = async () =>{
+  const Login = async () => {
     try {
       const response = await axios.post('/user/login', {
         username: username.value,
-        password: password.value
+        password: password.value,
       });
 
-      alert("Login successful!")
-      router.push('/')
-    }
-    catch(error){
-      console.error("Error data:", error.response?.data);
-    }
-  }
+      message.value = response.data.message;
 
+      if (response.data.success) {
+        const token = response.data.data;
+        localStorage.setItem('token', token);
+
+
+        router.push('/');
+      } else {
+        message.value = 'Login failed. Please try again.';
+        alert(message.value);
+      }
+    } catch (error) {
+      message.value = 'Invalid username or password. Please try again.';
+      alert(message.value);
+    }
+  };
 </script>
 
 
