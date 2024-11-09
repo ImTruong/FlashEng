@@ -12,7 +12,10 @@ import router from '@/router';
         username: username.value,
         password: password.value
       });
-
+      console.log("Response data:", response.data);
+      const token = response.data.data; // Giả sử token nằm trong response
+      localStorage.setItem('authToken', token); // Lưu token vào localStorage
+      console.log('Token saved to localStorage');
       alert("Login successful!")
       router.push('/')
     }
@@ -20,6 +23,7 @@ import router from '@/router';
       console.error("Error data:", error.response?.data);
     }
   }
+
 
 </script>
 

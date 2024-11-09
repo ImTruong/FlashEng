@@ -3,6 +3,7 @@
     import { ref, watch, defineEmits, defineProps} from 'vue';
     import OverlayBackground from '../components/OverlayBackground.vue'
     import AddCardModal from '../components/AddCardModal.vue'
+    // import axios from "@/axios"
 
     const emit = defineEmits(['close', 'save', 'update']);
 
@@ -17,26 +18,34 @@
     const selectedOption = ref('')
     const dropdownRef = ref(null)
     const showAddCardModal = ref(false);
+    const classId = ref()
 
     const saveData  = async () => {
+        const token = localStorage.getItem('authToken');
         const payload = {
-            id: props.isEditMode ? props.existingSet.id : null, 
-            title: setName.value,
-            privacy: selectedOption.value,  
-            user_id: 1,  
-            class_id: null,  
+            name: setName.value,
+            description: "Created set", // description có thể là null
+            privacyStatus: selectedOption.value,
+            class_id: null, // class_id có thể là null
         };
         try {
+            const config = {
+            headers: {
+                Authorization: `Bearer ${token}` // Thêm token vào header
+            }
+            }
+            console.log(config.headers)
             if (props.isEditMode) {
-                const response = await axios.put(`/user/sets/${props.existingSet.id}`, payload);  // API cập nhật
-                console.log('Set updated:', response.data);
-                emit('update', response.data); 
+                // const response = await axios.put(`/sets/${props.existingSet.id}`, payload, { headers: config.headers });  // API cập nhật
+                // console.log('Set updated:', response.data);
+                // emit('update', response.data); 
             } else {
-                // Gọi API POST thông qua proxy `/user`
-                const response = await axios.post('/user/sets', payload); // Đường dẫn tương đối
+                console.log("before create")
+                const response = await axios.post('http://localhost:8080/set', payload, { headers: config.headers }); 
                 console.log('Set created:', response.data);
                 emit('save', response.data); // Gửi sự kiện save với dữ liệu từ API
             }
+            
         } catch (error) {
             if (error.response) {
                 console.error('API Error:', error.response.status, error.response.data);
@@ -101,11 +110,16 @@
         showAddCardModal.value = false;
         visible.value = true
     };
+    const handleSaveData = () => {
+        if (setName.value.trim()) {
+            saveData();
+            console.log(setName.value)
+        }
+    };
 
-    watch(setName, saveData);
-    watch(rows, (newRows) => {
-        saveData(); 
-    }, { deep: true });
+    // watch(rows, (newRows) => {
+    //     saveData(); 
+    // }, { deep: true });
     watch(() => props.existingSet, (newExistingSet) => {
         if (newExistingSet && newExistingSet.words) {
             setName.value = newExistingSet.name; // Cập nhật tên set
@@ -126,7 +140,7 @@
             <img src="../assets/search_icon.svg" alt="Status">
             <div class="set-name">
                 <label for="set-name">Set:</label>
-                <input id="set-name" v-model="setName" placeholder="Enter set name" />
+                <input id="set-name" v-model="setName" placeholder="Enter set name" @blur="handleSaveData" />
             </div>
             <button @click="closeForm" class="close-btn">✖</button>
         </div>
@@ -141,11 +155,20 @@
             <span class="option-text">Private</span>
             <span v-if="selectedOption === 'Private'" class="checkmark">✔</span>
         </button>
-        <button @click.stop="selectOption('Group')" class="option-button">
-            <img src="../assets/lock.svg" alt="Group" class="option-icon" />
-            <span class="option-text">Group</span>
-            <span v-if="selectedOption === 'Group'" class="checkmark">✔</span>
-        </button>
+        <div class="option-container">
+            <button @click.stop="selectOption('Group')" class="option-button">
+                <img src="../assets/lock.svg" alt="Group" class="option-icon" />
+                <span class="option-text">Group</span>
+                <span v-if="selectedOption === 'Group'" class="checkmark">✔</span>
+            </button>
+            <input
+                v-if="selectedOption === 'Group'"
+                v-model="classId"
+                type="text"
+                placeholder="Enter class ID"
+                class="class-input"
+            />
+        </div>
     </div>
 
     <div class="table-container">
@@ -184,6 +207,9 @@
         <button @click="openAddCardModal" class="icon-button">
             <img src="../assets/add-word.svg" alt="" class="icon">
         </button>
+        <button @click="saveData" class="icon-button">
+            <img src="../assets/add-word.svg" alt="" class="icon">
+        </button>
       </div>
     </div>
     <AddCardModal :setName="setName" v-if="showAddCardModal" @close="closeAddCardModal" @save="addNewWord"></AddCardModal>
@@ -220,6 +246,24 @@
         flex-grow: 1;
         width: 100%;
     }
+
+    .option-container {
+        display: flex;
+        align-items: center;
+    }
+    
+    .option-button {
+        display: flex;
+        align-items: center;
+        margin-right: 8px; /* Khoảng cách giữa button và input */
+    }
+    
+    .class-input {
+        padding: 4px;
+        font-size: 14px;
+        width: 100px;
+        margin-right: 5px;
+    }    
 
     .set-name input {
         margin-left: 10px;
