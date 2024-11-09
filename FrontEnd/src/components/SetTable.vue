@@ -34,6 +34,9 @@
     //         console.error('Error fetching words:', error);
     //     }
     // };
+    const updateSetName = (newSetName) => {
+        setName.value = newSetName;
+    };
     const saveData  = async () => {
         const token = localStorage.getItem('token');
         const payload = {
@@ -51,11 +54,9 @@
             }
             if (props.isEditMode) {
                 const response = await axios.put('/set', payload, { headers: config.headers });  // API cập nhật
-                console.log('Set updated:', response.data);
-                emit('update', response.data); 
+                emit('update', response.data.data); 
             } else {
                 const response = await axios.post('/set', payload, { headers: config.headers }); 
-                console.log('Set created:', response.data.data);
                 console.log(response.data)
                 emit('save', response.data.data); 
             }
@@ -226,7 +227,7 @@
         </button>
       </div>
     </div>
-    <AddCardModal :setName="setName" v-if="showAddCardModal" @close="closeAddCardModal" @save="addNewWord"></AddCardModal>
+    <AddCardModal :setName="setName" :setId="props.existingSet.id" @update:setName="updateSetName" v-if="showAddCardModal" @close="closeAddCardModal" @save="addNewWord"></AddCardModal>
 </template>  
   
 <style scoped>

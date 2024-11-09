@@ -3,7 +3,7 @@
     import Card from './Set.vue';
     import setsData from '@/data/sets.json'
     import { ref } from 'vue';
-    import LibrabyBody from './LibrabyBody.vue';
+    import LibrabyBody from './LibraryBody.vue';
     import OverlayBackground from './OverlayBackground.vue';
        
     const status = ref(true);
