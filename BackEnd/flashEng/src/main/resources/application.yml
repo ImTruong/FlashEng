@@ -17,3 +17,8 @@ spring:
 
 jwt:
   secretKey: QhV1bbgiS2lzKg9ZCW2LyiOMr0popaPoaOdb4l+I68M=
+
+cloudinary:
+  cloudName: "dyzfar3j8"
+  apiKey: "548124688181912"
+  apiSecret: "W9iwNTkjjg_EQfAxJnx51zABj_Q"

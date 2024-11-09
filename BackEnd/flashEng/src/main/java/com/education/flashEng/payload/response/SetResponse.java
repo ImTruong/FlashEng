@@ -4,6 +4,8 @@ import com.education.flashEng.entity.UserEntity;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class SetResponse {
@@ -12,6 +14,7 @@ public class SetResponse {
     private String description;
     private String privacyStatus;
     private Long numberOfWords;
+    private List<WordListResponse> wordListResponses;
     private UserDetailResponse userDetailResponse;
 
     public void setUserDetailResponse(String fullName, String username, String email, String country) {

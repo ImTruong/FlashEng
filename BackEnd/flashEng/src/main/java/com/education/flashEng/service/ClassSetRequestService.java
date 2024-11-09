@@ -7,4 +7,5 @@ import com.education.flashEng.entity.UserEntity;
 
 public interface ClassSetRequestService {
     public ClassSetRequestEntity createSetRequest(SetEntity setEntity, UserEntity userEntity, ClassEntity classEntity);
+    public boolean acceptSetRequest(Long SetRequestId);
 }
