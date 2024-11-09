@@ -1,27 +1,55 @@
 <script setup>
-    import { ref, onMounted } from "vue";
-    import Header from "@/components/Header.vue"
-    import Card from "@/components/Set.vue"
-    import setsData from '@/data/sets.json'
-    import { useRouter } from "vue-router"; 
+import { ref, onMounted } from "vue";
+import Header from "@/components/Header.vue";
+import Card from "@/components/Set.vue";
+import { useRouter } from "vue-router"; 
+import axios from "axios";
 
-    const router = useRouter()
-    const sets = ref(setsData)
-    const displayedSets = ref([])
-    const showAllSetsRecent = () => {
-        displayedSets.value = sets.value; // Hiển thị toàn bộ khi nhấn "More..."
-    };
-    const showAllSets = () => {
-        router.push("/classes")
-    };
-    onMounted(() => {
-        displayedSets.value = sets.value.slice(0, 3);
-    });
+const router = useRouter();
+const sets = ref([]);
+const displayedSets = ref([]);
+
+// Hàm hiển thị toàn bộ dữ liệu khi nhấn "More..."
+const showAllSetsRecent = () => {
+    displayedSets.value = sets.value;
+};
+
+// Điều hướng đến trang "/classes" khi nhấn "More..."
+const showAllSets = () => {
+    router.push("/classes");
+};
+
+// Gọi API để lấy dữ liệu cho "Your Library"
+const fetchLibrarySets = async () => {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            console.warn("Token không tồn tại");
+            return;
+        }
+        const response = await axios.get("/set/private", {
+            headers: {
+                Authorization: `Bearer ${token}`  
+            }
+        });
+        // Lưu danh sách các set từ API
+        console.log(response)
+        sets.value = response.data.data;
+        displayedSets.value = sets.value.slice(0, 3);  // Hiển thị 3 set đầu tiên
+    } catch (error) {
+        console.error("Error fetching library sets:", error);
+    }
+};
+
+onMounted(() => {
+    fetchLibrarySets();
+});
 </script>
 
 <template>
     <Header />
     <div class="home">
+        <!-- Section Recent -->
         <h1 class="section-header">
             <span class="section-title">Recent</span>
             <span v-if="sets.length > 3" class="more-link" @click="showAllSetsRecent">More...</span>
@@ -35,7 +63,7 @@
 
         <h1 class="section-header">
             <span class="section-title">Your Library</span>
-            <span v-if="sets.length > 3" class="more-link"  @click="showAllSets">More...</span>
+            <span v-if="sets.length > 3" class="more-link" @click="showAllSets">More...</span>
         </h1>
         <div class="set-container">
             <Card 

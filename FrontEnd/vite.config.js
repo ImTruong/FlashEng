@@ -12,7 +12,8 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
-  },
+  }
+  ,
   server: {
     proxy: {
       '/user': {
@@ -20,6 +21,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: false, // Thêm secure: false để bỏ qua SSL khi thử nghiệm
       },
+      '/set': {
+        target: 'http://localhost:8080', // Địa chỉ của backend
+        changeOrigin: true,
+        secure: false,
+      }
     },
   }
 })

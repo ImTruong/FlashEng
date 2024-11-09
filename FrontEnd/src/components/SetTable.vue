@@ -18,32 +18,35 @@
     const selectedOption = ref('')
     const dropdownRef = ref(null)
     const showAddCardModal = ref(false);
-    const classId = ref()
+    const classId = ref('')
 
     const saveData  = async () => {
-        const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem('token');
         const payload = {
             name: setName.value,
             description: "Created set", // description có thể là null
             privacyStatus: selectedOption.value,
-            class_id: null, // class_id có thể là null
-        };
+            classId: null, // class_id có thể là null
+        }
+        // if (selectedOption.value === 'CLASS' && classId.value.trim()) {
+        //     payload.class_id = classId.value.trim();
+        // }
         try {
             const config = {
             headers: {
                 Authorization: `Bearer ${token}` // Thêm token vào header
             }
             }
-            console.log(config.headers)
             if (props.isEditMode) {
                 // const response = await axios.put(`/sets/${props.existingSet.id}`, payload, { headers: config.headers });  // API cập nhật
                 // console.log('Set updated:', response.data);
                 // emit('update', response.data); 
             } else {
-                console.log("before create")
-                const response = await axios.post('http://localhost:8080/set', payload, { headers: config.headers }); 
-                console.log('Set created:', response.data);
-                emit('save', response.data); // Gửi sự kiện save với dữ liệu từ API
+                console.log(payload.classId)
+                const response = await axios.post('/set', payload, { headers: config.headers }); 
+                console.log('Set created:', response.data.data);
+                console.log(response.data.data)
+                emit('save', response.data.data); // Gửi sự kiện save với dữ liệu từ API
             }
             
         } catch (error) {
@@ -92,10 +95,9 @@
         showSelectColumn.value = !showSelectColumn.value;
     };
 
-    const toggleOptions = (option) => {
-        showOptions.value = option; 
-        showOptions = false;
-    };
+    const toggleOptions = () => {
+    showOptions.value = !showOptions.value;
+};
 
     const selectOption = (option) => {
         selectedOption.value = option;
@@ -112,8 +114,15 @@
     };
     const handleSaveData = () => {
         if (setName.value.trim()) {
-            saveData();
-            console.log(setName.value)
+            if (selectedOption.value.trim()) {
+                if (selectedOption.value === 'CLASS' && !classId.value.trim()) {
+                    console.warn('Vui lòng nhập ID lớp khi chọn Group.');
+                    return; 
+                }
+                saveData();
+        } else {
+            console.warn('Vui lòng chọn Privacy Status.');
+            }
         }
     };
 
@@ -140,29 +149,29 @@
             <img src="../assets/search_icon.svg" alt="Status">
             <div class="set-name">
                 <label for="set-name">Set:</label>
-                <input id="set-name" v-model="setName" placeholder="Enter set name" @blur="handleSaveData" />
+                <input id="set-name" v-model="setName" placeholder="Enter set name" />
             </div>
             <button @click="closeForm" class="close-btn">✖</button>
         </div>
     <div v-show="showOptions" class="options-dropdown" ref="dropdownRef">
-        <button @click.stop="selectOption('Public')" class="option-button">
+        <button @click.stop="selectOption('PUBLIC')" class="option-button">
             <img src="../assets/globe.svg" alt="Public" class="option-icon" />
             <span class="option-text">Public</span>
-            <span v-if="selectedOption === 'Public'" class="checkmark">✔</span>
+            <span v-if="selectedOption === 'PUBLIC'" class="checkmark">✔</span>
         </button>
-        <button @click.stop="selectOption('Private')" class="option-button">
+        <button @click.stop="selectOption('PRIVATE')" class="option-button">
             <img src="../assets/lock.svg" alt="Private" class="option-icon" />
             <span class="option-text">Private</span>
-            <span v-if="selectedOption === 'Private'" class="checkmark">✔</span>
+            <span v-if="selectedOption === 'PRIVATE'" class="checkmark">✔</span>
         </button>
         <div class="option-container">
-            <button @click.stop="selectOption('Group')" class="option-button">
+            <button @click.stop="selectOption('CLASS')" class="option-button">
                 <img src="../assets/lock.svg" alt="Group" class="option-icon" />
                 <span class="option-text">Group</span>
-                <span v-if="selectedOption === 'Group'" class="checkmark">✔</span>
+                <span v-if="selectedOption === 'CLASS'" class="checkmark">✔</span>
             </button>
             <input
-                v-if="selectedOption === 'Group'"
+                v-if="selectedOption === 'CLASS'"
                 v-model="classId"
                 type="text"
                 placeholder="Enter class ID"
@@ -207,7 +216,7 @@
         <button @click="openAddCardModal" class="icon-button">
             <img src="../assets/add-word.svg" alt="" class="icon">
         </button>
-        <button @click="saveData" class="icon-button">
+        <button @click="handleSaveData" class="icon-button">
             <img src="../assets/add-word.svg" alt="" class="icon">
         </button>
       </div>
