@@ -1,9 +1,6 @@
 package com.education.flashEng.service.Impl;
 
-import com.education.flashEng.entity.ClassEntity;
-import com.education.flashEng.entity.ClassSetRequestEntity;
-import com.education.flashEng.entity.SetEntity;
-import com.education.flashEng.entity.UserEntity;
+import com.education.flashEng.entity.*;
 import com.education.flashEng.enums.AccessModifierType;
 import com.education.flashEng.exception.EntityNotFoundWithIdException;
 import com.education.flashEng.exception.ResourceAlreadyExistsException;
@@ -29,6 +26,10 @@ public class ClassSetRequestServiceImpl implements ClassSetRequestService {
     private SetRepository setRepository;
     @Autowired
     private ClassMemberRepository classMemberRepository;
+    @Autowired
+    private NotificationServiceImpl notificationService;
+    @Autowired
+    private NotificationServiceImpl notificationServiceImpl;
 
     @Transactional
     @Override
@@ -45,25 +46,66 @@ public class ClassSetRequestServiceImpl implements ClassSetRequestService {
     @Transactional
     @Override
     public boolean acceptSetRequest(Long SetRequestId) {
-//        UserEntity userEntity = userService.getUserFromSecurityContext();
-//        ClassSetRequestEntity classSetRequestEntity = classSetRequestRepository.findById(SetRequestId)
-//                .orElseThrow(() -> new EntityNotFoundWithIdException("Set Request", SetRequestId.toString()));
-//        ClassEntity classEntity = classSetRequestEntity.getClassEntity();
-//        List<UserEntity> adminOfClass = classMemberRepository.
-//        if(classSetRequestEntity.get){
-//            throw new AccessDeniedException("You do not permission to accept this request.");
-//        }
-//        SetEntity setEntity = classSetRequestEntity.getSetEntity();
-//        if(         setEntity.getPrivacyStatus().equals(AccessModifierType.getKeyfromValue("Class"))
-//                &&  setEntity.getClassEntity().equals(classEntity)){
-//            throw new ResourceAlreadyExistsException("Set is already in this class.");
-//        }else{
-//            setEntity.setClassEntity(classEntity);
-//            setEntity.setPrivacyStatus(AccessModifierType.getKeyfromValue("Class"));
-//            setRepository.save(setEntity);
-//            classSetRequestRepository.delete(classSetRequestEntity);
-//
+        UserEntity userEntity = userService.getUserFromSecurityContext();
+        ClassSetRequestEntity classSetRequestEntity = classSetRequestRepository.findById(SetRequestId)
+                .orElseThrow(() -> new EntityNotFoundWithIdException("Set Request", SetRequestId.toString()));
+        ClassEntity classEntity = classSetRequestEntity.getClassEntity();
+        boolean isAdmin = false;
+        for (ClassMemberEntity memberEntity : classEntity.getClassMemberEntityList()){
+            if(memberEntity.getRoleClassEntity().getName().equals("ADMIN")){
+                UserEntity user = memberEntity.getUserEntity();;
+                if(userEntity.equals(user)){
+                    isAdmin = true;
+                    break;
+                }
+            }
+        }
+        if(!isAdmin){
+            throw new AccessDeniedException("You do not permission to accept this request.");
+        }
+        SetEntity setEntity = classSetRequestEntity.getSetEntity();
+        if(setEntity.getPrivacyStatus().equals(AccessModifierType.getKeyfromValue("Class"))){
+            throw new ResourceAlreadyExistsException("Set is already in this class.");
+        }else{
+            setEntity.setClassEntity(classEntity);
+            setEntity.setPrivacyStatus(AccessModifierType.getKeyfromValue("Class"));
+            setRepository.save(setEntity);
+            classSetRequestRepository.delete(classSetRequestEntity);
+            notificationService.deleteAllRelatedNotificationsByNotificationMetaData("classSetRequestId", SetRequestId.toString());
+            notificationService.createAcceptRequestNotification(setEntity);
             return true;
-//        }
+        }
+    }
+
+    @Override
+    public boolean rejectSetRequest(Long SetRequestId) {
+        UserEntity userEntity = userService.getUserFromSecurityContext();
+        ClassSetRequestEntity classSetRequestEntity = classSetRequestRepository.findById(SetRequestId)
+                .orElseThrow(() -> new EntityNotFoundWithIdException("Set Request", SetRequestId.toString()));
+        ClassEntity classEntity = classSetRequestEntity.getClassEntity();
+        boolean isAdmin = false;
+        for (ClassMemberEntity memberEntity : classEntity.getClassMemberEntityList()){
+            if(memberEntity.getRoleClassEntity().getName().equals("ADMIN")){
+                UserEntity user = memberEntity.getUserEntity();;
+                if(userEntity.equals(user)){
+                    isAdmin = true;
+                    break;
+                }
+            }
+        }
+        if(!isAdmin){
+            throw new AccessDeniedException("You do not permission to accept this request.");
+        }
+        SetEntity setEntity = classSetRequestEntity.getSetEntity();
+        if(setEntity.getPrivacyStatus().equals(AccessModifierType.getKeyfromValue("Class"))){
+            throw new ResourceAlreadyExistsException("Set is already in this class.");
+        }else{
+            setEntity.setPrivacyStatus(AccessModifierType.getKeyfromValue("Private"));
+            setRepository.save(setEntity);
+            classSetRequestRepository.delete(classSetRequestEntity);
+            notificationService.deleteAllRelatedNotificationsByNotificationMetaData("classSetRequestId", SetRequestId.toString());
+            notificationService.createRejectRequestNotification(setEntity, classEntity);
+            return true;
+        }
     }
 }
