@@ -8,9 +8,15 @@
   const password = ref('');
   const email = ref('');
   const country = ref('');
+  const message = ref('');
 
   // Hàm đăng ký người dùng
   const registerUser = async () => {
+    if (!fullname.value || !username.value || !password.value || !email.value || !country.value) {
+      message.value = 'Please fill in all the fields.';
+      alert(message.value);
+      return
+    }
     try {
       // Gửi yêu cầu POST đến API
       const response = await axios.post('/user/register', {
@@ -20,8 +26,8 @@
         email: email.value,
         country: country.value
       });
-
-      alert("Registration successful")
+      message.value = "Registration successful";
+      alert(message.value);
       router.push('/login')
       fullname.value = '';
       username.value = '';
@@ -30,7 +36,6 @@
       country.value = '';
 
     } catch (error) {
-      // Xử lý lỗi
       console.error("Error data:", error.response?.data);
     }
   };

@@ -1,78 +1,79 @@
 <script setup>
-import Header from "@/components/Header.vue" // Import your header component
-  import {ref} from 'vue'
+  import Header from "@/components/Header.vue" // Import your header component
+  import {ref, onMounted} from 'vue'
+  import axios from "axios";
+
+  const changePw = ref(false);
 
   const user = ref({
-    name: '',
+    fullName: '',
+    username: '',
     email: '',
-    birthday: '',
     country: ''
   });
   const errorMessage = ref(null);
 
-// export default {
-//   components: {
-//     Header
-//   },
-//   data() {
-//     return {
-//       user: {
-//         name: '',
-//         email: '',
-//         birthday: '',
-//         country: '',
-//       },
-//     };
-//   },
-//   methods: {
-//     updateProfile() {
-//       // Logic to update profile
-//     },
-//     changePassword() {
-//       // Logic to change password
-//     },
-//   },
-// };
+
+
+  const fetchUserInfo = async () => {
+  try {
+    const token = localStorage.getItem('token') // Lấy token từ localStorage
+    if (!token) {
+      errorMessage.value = 'You must be logged in to view user information'
+      return
+    }
+
+    const response = await axios.get('/user', {
+      headers: {
+        Authorization: `Bearer ${token}`, // Đảm bảo gửi token trong header
+      },
+    })
+
+    user.value = response.data.data;
+  } catch (error) {
+    errorMessage.value = error.response ? error.response.data : 'An error occurred'
+    console.error('Error fetching user info:', error)
+  }
+
+};
+
+// Gọi `fetchUserInfo` khi component được mount
+onMounted(() => {
+  fetchUserInfo();
+});
+
 </script>
 
 
 <template>
     <div class="user-profile-page">
-      <!-- Header component -->
-      <Header></Header>
-  
+      <Header></Header>  
       <div class="profile-container">
-        
-  
-        <!-- Main profile content -->
         <main class="profile-content">
           <div class="profile-header">
             <div class="background"></div>
             <div class="avatar"></div>
-            <h2>User</h2>
+            <h2>{{ user.username }}</h2>
           </div>
           <form @submit.prevent="updateProfile">
             <div class="form-group">
-              <label for="name">Name</label>
-              <input v-model="user.name" id="name" type="text" />
+              <label for="name">Fullname</label>
+              <input v-model="user.fullName" id="name" type="text" />
             </div>
             <div class="form-group">
               <label for="email">Email</label>
               <input v-model="user.email" id="email" type="email" />
             </div>
             <div class="form-group">
-              <label for="birthday"></label>
-              <input v-model="user.birthday" id="birthday" type="date" />
-            </div>
-            <div class="form-group">
               <label for="country">Country</label>
               <input v-model="user.country" id="country" type="text" />
             </div>
             <div class="actions">
-              <button type="button" @click="changePassword">Change password</button>
+              <button type="button" @click="changePw = true">Change password</button>
               <button type="submit">Edit profile</button>
             </div>
           </form>
+          
         </main>
       </div>
     </div>

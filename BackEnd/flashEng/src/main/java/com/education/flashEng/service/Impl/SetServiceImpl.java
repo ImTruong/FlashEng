@@ -179,6 +179,7 @@ public class SetServiceImpl implements SetService {
         }
         else{
             modelMapper.map(updateSetRequest, setEntity);
+            setEntity.setClassEntity(null);
             setRepository.save(setEntity);
         }
         return true;
