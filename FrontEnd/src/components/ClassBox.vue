@@ -1,39 +1,65 @@
 <script setup>
-    import { defineProps, defineEmits } from 'vue';
-    import Card from './Set.vue';
-    import OverlayBackground from './OverlayBackground.vue';
-    import setsData from '@/data/sets.json'
-    import { ref, watch } from 'vue';
-    
+import { defineProps, defineEmits } from 'vue';
+import Card from './Set.vue';
+import OverlayBackground from './OverlayBackground.vue';
+import { ref, watch, onMounted } from 'vue';
+import axios from 'axios';
 
-    const { classItem, Overlay_background } = defineProps(['classItem', 'Overlay_background']);
+const { classItem, Overlay_background } = defineProps(['classItem', 'Overlay_background']);
+const emit = defineEmits();
 
-    const emit = defineEmits();
+function closeOverlay() {
+    emit('close');
+}
 
-    function closeOverlay(){
-        emit('close');
+const sets = ref([]);
+const icon = ref(false);
+const search = ref("");
+
+watch(search, () => {
+    sets.value = sets.value.filter(set => set.name.toLowerCase().includes(search.value.toLowerCase()));
+});
+
+// Hàm gọi API lấy danh sách sets
+async function fetchSets() {
+    try {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            console.error("Please login!");
+            return;
+        }
+        const response = await axios.get(`/set/class/${classItem.id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        console.log(response);  // Kiểm tra tất cả thông tin trả về từ API
+        sets.value = response.data.map(item => ({
+            id: item.id,
+            name: item.name,
+            terms: item.numberOfWords || 0,  // nếu số từ là null thì đặt là 0
+            owner: item.userDetailResponse?.username || '',  // lấy tên người dùng
+            status: item.privacyStatus.toLowerCase() || 'private',  // trạng thái mặc định 'private' nếu không có
+            words: item.wordListResponses || []  // nếu không có danh sách từ, trả về mảng trống
+        }));
+    } catch (error) {
+        console.error("Error fetching data:", error);
     }
+}
 
-    const sets = ref(setsData)
-    const icon = ref(false)
-    const search = ref("")
-
-    watch(search, () => {
-        sets.value = setsData.filter(set => set.name.toLowerCase().includes(search.value.toLowerCase()))
-    })
-
-    
+// Gọi API khi component được mount
+onMounted(fetchSets);
 </script>
 
 <template>
-    
     <OverlayBackground 
         :isVisible="Overlay_background" 
         @clickOverlay="closeOverlay" />
     <div class="classbox-container" v-if="Overlay_background"> 
         <div class="search-container">
             <input v-model.trim="search" type="text" placeholder="Search ..." class="search-bar"/>
-            <img src="../assets/search.svg" alt="Icon" class="search-icon" >
+            <img src="../assets/search.svg" alt="Icon" class="search-icon">
         </div>
         <div v-if="icon" class="icon">
             <img src="../assets/add_set.svg" alt="Icon" class="add-set-icon">
@@ -49,10 +75,10 @@
                 v-for="set in sets" 
                 :key="set.id" 
                 :set="set" />
-
         </div>
     </div>
 </template>
+
 
 <style scoped>
 
