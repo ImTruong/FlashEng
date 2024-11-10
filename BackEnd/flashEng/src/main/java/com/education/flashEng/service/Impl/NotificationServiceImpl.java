@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -188,6 +189,25 @@ public class NotificationServiceImpl implements NotificationService {
                 .notificationMetaDataEntity(notificationMetaDataEntity)
                 .isRead(false)
                 .type("CLASS_SET_REJECT")
+                .build();
+        notificationRepository.save(notificationEntity);
+        return true;
+    }
+
+    @Override
+    public boolean createStudySessionNotification(StudySessionEntity studySessionEntity, LocalDateTime reminderTime) {
+        NotificationMetaDataEntity notificationMetaDataEntity = NotificationMetaDataEntity.builder()
+                .key("WordId")
+                .value(studySessionEntity.getWordEntity().getId().toString())
+                .build();
+        notificationMetaDataRepository.save(notificationMetaDataEntity);
+        NotificationEntity notificationEntity = NotificationEntity.builder()
+                .userEntity(studySessionEntity.getUserEntity())
+                .message("Now is the moment to pick up '" + studySessionEntity.getWordEntity().getWord() + "' word")
+                .notificationMetaDataEntity(notificationMetaDataEntity)
+                .isRead(false)
+                .type("REMINDER_STUDY_SESSION")
+                .reminderTime(reminderTime)
                 .build();
         notificationRepository.save(notificationEntity);
         return true;
