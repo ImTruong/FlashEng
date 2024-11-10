@@ -37,12 +37,12 @@ const saveData = async () => {
             return
         }
         console.log(requestData);
+        console.log(token);
         const response = await axios.put('/user/password', requestData, {
             headers: {
-                Authorization: `Bearer ${token}`, // Đảm bảo gửi token trong header
+                Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
-            withCredentials: true, // Cho phép gửi cookie
         });
         // Gửi yêu cầu POST tới backend
         if (response.data.success) {
@@ -52,6 +52,8 @@ const saveData = async () => {
             errorMessage.value = 'Đã xảy ra lỗi khi thay đổi mật khẩu!';
         }
     } catch (error) {
+        console.error("Error:", error);
+        console.error("Response:", error.response);
         errorMessage.value = error.response?.data?.message || 'Lỗi kết nối tới server!';
     }
 };
@@ -148,8 +150,4 @@ button:hover {
     margin-bottom: 10px;
 }
 
-.success {
-    color: green;
-    margin-bottom: 10px;
-}
 </style>
