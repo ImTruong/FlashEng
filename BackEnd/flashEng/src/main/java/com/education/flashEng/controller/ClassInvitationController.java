@@ -24,8 +24,8 @@ public class ClassInvitationController {
 
     @PostMapping
     public ResponseEntity<?> inviteToClass(@RequestParam @NotNull(message = "classId is required") Long classId,
-                                           @RequestParam @NotNull(message = "inviteeId is required") Long inviteeId) {
-        ApiResponse<String> response = new ApiResponse<>(classInvitationService.inviteToClass(classId, inviteeId),"Invitation Sent Successfully",null);
+                                           @RequestParam @NotBlank(message = "inviteeUsername cannot be blank") String inviteeUsername) {
+        ApiResponse<String> response = new ApiResponse<>(classInvitationService.inviteToClass(classId, inviteeUsername),"Invitation Sent Successfully",null);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

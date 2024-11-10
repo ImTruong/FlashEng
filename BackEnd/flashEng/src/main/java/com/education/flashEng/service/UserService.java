@@ -10,6 +10,8 @@ public interface UserService {
     boolean register(RegisterRequest registerRequest);
     UserEntity getUserFromSecurityContext();
     UserEntity getUserById(Long id);
+
+    UserEntity getUserByUsername(String username);
     boolean update(UpdateUserRequest updateRequest);
     boolean updatePassword(UpdateUserPasswordRequest updateUserPasswordRequest);
     UserDetailResponse getUserDetailResponse();

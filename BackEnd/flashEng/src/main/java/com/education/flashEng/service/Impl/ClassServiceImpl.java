@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -88,4 +89,21 @@ public class ClassServiceImpl implements ClassService {
                 .numberOfSets(classEntity.getSetsEntityList().size())
                 .build();
     }
+
+    @Override
+    public List<ClassInformationResponse> getAllCurrentUserClasses() {
+        UserEntity user = userService.getUserFromSecurityContext();
+        List<ClassEntity> classEntityList = user.getClassMemberEntityList().stream()
+                .map(ClassMemberEntity::getClassEntity)
+                .toList();
+        return classEntityList.stream()
+                .map(classEntity -> ClassInformationResponse.builder()
+                        .classId(classEntity.getId())
+                        .className(classEntity.getName())
+                        .numberOfMembers(classEntity.getClassMemberEntityList().size())
+                        .numberOfSets(classEntity.getSetsEntityList().size())
+                        .build())
+                .toList();
+    }
+
 }

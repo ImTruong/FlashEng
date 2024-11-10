@@ -21,9 +21,15 @@ public class ClassController {
     @Autowired
     private ClassService classService;
 
-    @GetMapping("/{classId}")
+    @GetMapping("/public/{classId}")
     public ResponseEntity<?> getClassInformation(@PathVariable Long classId) {
         ApiResponse<?> response = new ApiResponse<>(true, "Class Information Fetched Successfully", classService.getClassInformation(classId));
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<?> getAllCurrentUserClasses() {
+        ApiResponse<?> response = new ApiResponse<>(true, "Classes Fetched Successfully", classService.getAllCurrentUserClasses());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

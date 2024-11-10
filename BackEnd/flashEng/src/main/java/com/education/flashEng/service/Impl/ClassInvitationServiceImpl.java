@@ -40,17 +40,17 @@ public class ClassInvitationServiceImpl implements ClassInvitationService {
 
     @Transactional
     @Override
-    public boolean inviteToClass(Long classId, Long inviteeId) {
-        UserEntity invitee = userService.getUserById(inviteeId);
+    public boolean inviteToClass(Long classId, String inviteeUsername) {
+        UserEntity invitee = userService.getUserByUsername(inviteeUsername);
         UserEntity inviter = userService.getUserFromSecurityContext();
         ClassEntity classEntity = classService.getClassById(classId);
         if (classEntity.getClassMemberEntityList().stream().noneMatch(classMemberEntity -> classMemberEntity.getUserEntity() == inviter))
             throw new AccessDeniedException("You are not authorized to invite to this class.");
         if (classEntity.getClassMemberEntityList().stream().anyMatch(classMemberEntity -> classMemberEntity.getUserEntity() == invitee))
             throw new AccessDeniedException("User is already a member of this class.");
-        if (classInvitationRepository.findByClassEntityIdAndInviteeEntityIdAndInviterEntityId(classId, inviteeId, inviter.getId()).isPresent())
+        if (classInvitationRepository.findByClassEntityIdAndInviteeEntityIdAndInviterEntityId(classId, invitee.getId(), inviter.getId()).isPresent())
             throw new AccessDeniedException("You have already invited this user to this class.");
-        if (classJoinRequestService.getClassJoinRequestByClassIdAndUserId(classId, inviteeId).isPresent())
+        if (classJoinRequestService.getClassJoinRequestByClassIdAndUserId(classId, invitee.getId()).isPresent())
             throw new AccessDeniedException("User has already requested to join this class.");
         ClassInvitationEntity classInvitationEntity = ClassInvitationEntity.builder()
                 .classEntity(classEntity)
