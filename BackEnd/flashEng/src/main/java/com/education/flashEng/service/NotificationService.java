@@ -2,6 +2,8 @@ package com.education.flashEng.service;
 
 import com.education.flashEng.entity.*;
 
+import java.time.LocalDateTime;
+
 public interface NotificationService {
     boolean createClassJoinRequestNotification(ClassJoinRequestEntity classJoinRequestEntity);
 
@@ -24,4 +26,6 @@ public interface NotificationService {
     boolean createAcceptRequestNotification(SetEntity setEntity);
 
     boolean createRejectRequestNotification(SetEntity setEntity, ClassEntity classEntity);
+
+    boolean createStudySessionNotification(StudySessionEntity studySessionEntity, LocalDateTime localDateTime);
 }

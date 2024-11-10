@@ -5,6 +5,7 @@ import com.education.flashEng.payload.request.ClassNameChangeRequest;
 import com.education.flashEng.payload.request.CreateClassRequest;
 import com.education.flashEng.payload.request.LoginRequest;
 import com.education.flashEng.payload.response.ApiResponse;
+import com.education.flashEng.payload.response.ClassMemberListReponse;
 import com.education.flashEng.service.ClassInvitationService;
 import com.education.flashEng.service.ClassService;
 import jakarta.validation.Valid;
@@ -35,7 +36,7 @@ public class ClassController {
 
     @PostMapping
     public ResponseEntity<?> createClass(@Valid @RequestBody CreateClassRequest createClassRequest) {
-        ApiResponse<String> response = new ApiResponse<>(classService.createClass(createClassRequest),"Class Created Successfully",null);
+        ApiResponse<ClassMemberListReponse> response = new ApiResponse<>(true,"Class Created Successfully", classService.createClass(createClassRequest));
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
