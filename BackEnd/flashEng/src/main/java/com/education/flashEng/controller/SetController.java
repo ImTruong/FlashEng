@@ -16,17 +16,17 @@ public class SetController {
     @Autowired
     SetService setService;
 
-    @GetMapping("/public")
+    @GetMapping
     public ResponseEntity<?> getPublicSets() {
-        ApiResponse<?> response = new ApiResponse<>(true, "Get All Public Sets Successfully", setService.getPublicSet());
+        ApiResponse<?> response = new ApiResponse<>(true, "Get All Public And Private Sets Successfully", setService.getPublicAndPrivateSet());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/private")
-    public ResponseEntity<?> getPrivateSets() {
-        ApiResponse<?> response = new ApiResponse<>(true, "Get All Private Sets Of Current User Successfully", setService.getPrivateSet());
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+//    @GetMapping("/private")
+//    public ResponseEntity<?> getPrivateSets() {
+//        ApiResponse<?> response = new ApiResponse<>(true, "Get All Private Sets Of Current User Successfully", setService.getPrivateSet());
+//        return new ResponseEntity<>(response, HttpStatus.OK);
+//    }
 
     @GetMapping("/class/{classId}")
     public ResponseEntity<?> getSetsOfClass(@PathVariable Long classId) {

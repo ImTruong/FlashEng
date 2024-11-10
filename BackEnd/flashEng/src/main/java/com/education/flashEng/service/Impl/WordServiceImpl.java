@@ -6,7 +6,8 @@ import com.education.flashEng.entity.WordEntity;
 import com.education.flashEng.exception.EntityNotFoundWithIdException;
 import com.education.flashEng.payload.request.CreateWordRequest;
 import com.education.flashEng.payload.request.UpdateWordRequest;
-import com.education.flashEng.payload.response.WordListResponse;
+import com.education.flashEng.payload.response.WordResponse;
+import com.education.flashEng.payload.response.WordResponse;
 import com.education.flashEng.repository.SetRepository;
 import com.education.flashEng.repository.WordRepository;
 import com.education.flashEng.service.WordService;
@@ -36,7 +37,7 @@ public class WordServiceImpl implements WordService {
 
     @Transactional
     @Override
-    public boolean createWord(CreateWordRequest createWordRequest){
+    public WordResponse createWord(CreateWordRequest createWordRequest){
         UserEntity user = userServiceImpl.getUserFromSecurityContext();
 
         if(createWordRequest.getImage().isEmpty()){
@@ -63,15 +64,17 @@ public class WordServiceImpl implements WordService {
             String publicId = uploadResult.get("publicId");
             wordEntity.setImage(imageUrl);
             wordEntity.setImagePublicId(publicId);
-            wordRepository.save(wordEntity);
+            WordEntity wordSaved = wordRepository.save(wordEntity);
+            WordResponse wordResponse = new WordResponse();
+            modelMapper.map(wordSaved, wordResponse);
+            return wordResponse;
         }catch (IOException e){
             throw new IllegalArgumentException("Failed to upload file to Cloudinary");
         }
-        return true;
     }
 
     @Override
-    public List<WordListResponse> getWordBySetId(Long setId) {
+    public List<WordResponse> getWordBySetId(Long setId) {
         UserEntity user = userServiceImpl.getUserFromSecurityContext();
         SetEntity setEntity = setRepository.findById(setId)
                 .orElseThrow(() -> new EntityNotFoundWithIdException("SetEntity", setId.toString()));
@@ -79,9 +82,9 @@ public class WordServiceImpl implements WordService {
             throw new IllegalArgumentException("You do not permission to get word in this set");
         }
         List<WordEntity> wordEntities = wordRepository.findAllBySetEntityId(setId);
-        List<WordListResponse> wordListResponses = new ArrayList<>();
+        List<WordResponse> wordListResponses = new ArrayList<>();
         for(WordEntity wordEntity : wordEntities){
-            WordListResponse wordListResponse = new WordListResponse();
+            WordResponse wordListResponse = new WordResponse();
             modelMapper.map(wordEntity, wordListResponse);
             wordListResponses.add(wordListResponse);
         }
