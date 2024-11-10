@@ -15,8 +15,6 @@
         <input type="text">
         <label for="">New password</label>
         <input type="text">
-        
-
     </div>
 </template>
 

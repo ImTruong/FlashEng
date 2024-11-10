@@ -6,12 +6,17 @@
     import { useStore } from 'vuex';
     const store = useStore();
     
-    const classes = ref(classesData)
+    const classes = computed(() => store.getters.getClasses)
     const sets = computed(() => store.getters.getSets);
 
     onMounted(() => {
-        store.dispatch('fetchLibrarySets');  
-    })
+        Promise.all([
+            store.dispatch('fetchLibrarySets'),
+            store.dispatch('fetchClassData')
+        ]).catch((error) => {
+            console.error("Error fetching data:", error);
+        });
+    });
    
 </script>
 
