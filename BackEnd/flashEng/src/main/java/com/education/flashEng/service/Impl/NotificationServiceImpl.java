@@ -197,8 +197,8 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public boolean createStudySessionNotification(StudySessionEntity studySessionEntity, LocalDateTime reminderTime) {
         NotificationMetaDataEntity notificationMetaDataEntity = NotificationMetaDataEntity.builder()
-                .key("studySessionId")
-                .value(studySessionEntity.getId().toString())
+                .key("WordId")
+                .value(studySessionEntity.getWordEntity().getId().toString())
                 .build();
         notificationMetaDataRepository.save(notificationMetaDataEntity);
         NotificationEntity notificationEntity = NotificationEntity.builder()

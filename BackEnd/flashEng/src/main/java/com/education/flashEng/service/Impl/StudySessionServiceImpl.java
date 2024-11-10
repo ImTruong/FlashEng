@@ -6,10 +6,12 @@ import com.education.flashEng.entity.UserEntity;
 import com.education.flashEng.entity.WordEntity;
 import com.education.flashEng.exception.EntityNotFoundWithIdException;
 import com.education.flashEng.payload.request.StudySessionRequest;
+import com.education.flashEng.payload.response.StatisticResponse;
 import com.education.flashEng.repository.StudySessionRepository;
 import com.education.flashEng.repository.WordRepository;
 import com.education.flashEng.service.StudySessionService;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -19,29 +21,26 @@ import java.util.Objects;
 
 @Service
 public class StudySessionServiceImpl implements StudySessionService {
-    private final UserServiceImpl userServiceImpl;
-    private final ModelMapper modelMapper;
-    private final WordRepository wordRepository;
-    private final StudySessionRepository studySessionRepository;
-    private final NotificationServiceImpl notificationServiceImpl;
-
-    public StudySessionServiceImpl(UserServiceImpl userServiceImpl, ModelMapper modelMapper, WordRepository wordRepository, StudySessionRepository studySessionRepository, NotificationServiceImpl notificationServiceImpl) {
-        this.userServiceImpl = userServiceImpl;
-        this.modelMapper = modelMapper;
-        this.wordRepository = wordRepository;
-        this.studySessionRepository = studySessionRepository;
-        this.notificationServiceImpl = notificationServiceImpl;
-    }
+    @Autowired
+    private  UserServiceImpl userServiceImpl;
+    @Autowired
+    private  ModelMapper modelMapper;
+    @Autowired
+    private  WordRepository wordRepository;
+    @Autowired
+    private  StudySessionRepository studySessionRepository;
+    @Autowired
+    private  NotificationServiceImpl notificationServiceImpl;
 
     @Override
     public boolean createStudySession(StudySessionRequest studySessionRequest) {
         UserEntity currentUser = userServiceImpl.getUserFromSecurityContext();
         StudySessionEntity studySessionEntity = new StudySessionEntity();
+        System.out.println(studySessionRequest.getWordId());
         WordEntity wordEntity = wordRepository.findById(studySessionRequest.getWordId())
                 .orElseThrow(() -> new EntityNotFoundWithIdException("Word", studySessionRequest.getWordId().toString()));
-        if(Objects.equals(studySessionEntity.getWordEntity().getSetEntity().getPrivacyStatus(), "CLASS")){
-            //Bug
-            List<ClassMemberEntity> classMemberEntities = studySessionEntity.getWordEntity().getSetEntity().getClassEntity().getClassMemberEntityList();
+        if(Objects.equals(wordEntity.getSetEntity().getPrivacyStatus(), "CLASS")){
+            List<ClassMemberEntity> classMemberEntities = wordEntity.getSetEntity().getClassEntity().getClassMemberEntityList();
             for(ClassMemberEntity classMemberEntity : classMemberEntities){
                 if(Objects.equals(classMemberEntity.getUserEntity().getId(), currentUser.getId())){
                     studySessionEntity.setUserEntity(currentUser);
@@ -62,6 +61,12 @@ public class StudySessionServiceImpl implements StudySessionService {
             notificationServiceImpl.createStudySessionNotification(studySession, setReminderTimeBasedOnLevel(studySession.getDifficulty()));
         }
         return true;
+    }
+
+    @Override
+    public List<StatisticResponse> getDailyWordCountByUserId() {
+        Long userId = userServiceImpl.getUserFromSecurityContext().getId();
+        return studySessionRepository.findDailyWordCountByUserId(userId);
     }
 
     public LocalDateTime setReminderTimeBasedOnLevel(String difficulty) {

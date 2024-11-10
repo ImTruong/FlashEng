@@ -8,10 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/study")
@@ -22,7 +19,13 @@ public class StudySessionController {
 
     @PostMapping
     public ResponseEntity<?> createStudySession(@Valid @RequestBody StudySessionRequest studySessionRequest  ) {
-        ApiResponse<String> response = new ApiResponse<>(studySessionService.createStudySession(studySessionRequest),"Class Created Successfully",null);
+        ApiResponse<String> response = new ApiResponse<>(studySessionService.createStudySession(studySessionRequest),"Study Session Created Successfully",null);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getAllStatisticsByUserId() {
+        ApiResponse<?> response = new ApiResponse<>(true,"Get Statistic Successfully",studySessionService.getDailyWordCountByUserId());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
