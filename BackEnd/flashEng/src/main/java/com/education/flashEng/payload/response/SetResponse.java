@@ -14,7 +14,7 @@ public class SetResponse {
     private String description;
     private String privacyStatus;
     private Long numberOfWords;
-    private List<WordListResponse> wordListResponses;
+    private List<WordResponse> wordResponses;
     private UserDetailResponse userDetailResponse;
 
     public void setUserDetailResponse(String fullName, String username, String email, String country) {

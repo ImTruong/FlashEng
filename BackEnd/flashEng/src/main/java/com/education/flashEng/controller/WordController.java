@@ -20,7 +20,7 @@ public class WordController {
 
     @PostMapping
     public ResponseEntity<?> createWord(@Valid @ModelAttribute CreateWordRequest createWordRequest){
-        ApiResponse<?> response = new ApiResponse<>(wordService.createWord(createWordRequest), "Create Word Successfully", null);
+        ApiResponse<?> response = new ApiResponse<>(true, "Create Word Successfully", wordService.createWord(createWordRequest));
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
