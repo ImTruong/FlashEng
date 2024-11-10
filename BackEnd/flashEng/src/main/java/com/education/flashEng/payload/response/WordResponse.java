@@ -7,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class WordListResponse {
+public class WordResponse {
     private Long id;
     private String word;
     private String ipa;
