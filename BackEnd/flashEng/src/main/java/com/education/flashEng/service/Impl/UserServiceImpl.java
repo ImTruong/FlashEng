@@ -97,5 +97,10 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(user, UserDetailResponse.class);
     }
 
+    @Override
+    public UserEntity getUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+    }
 
 }

@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface ClassInvitationService {
 
-     boolean inviteToClass(Long classId, Long inviteeID);
+     boolean inviteToClass(Long classId, String inviteeUsername);
 
      boolean acceptInvitation(Long invitationId);
 
