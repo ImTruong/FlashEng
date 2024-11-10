@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -131,5 +132,85 @@ public class NotificationServiceImpl implements NotificationService {
         return true;
     }
 
+    @Transactional
+    @Override
+    public boolean createClassSetRequestNotification(ClassSetRequestEntity classSetRequestEntity) {
+        NotificationMetaDataEntity notificationMetaDataEntity = NotificationMetaDataEntity.builder()
+                .key("classSetRequestId")
+                .value(classSetRequestEntity.getId().toString())
+                .build();
+        notificationMetaDataRepository.save(notificationMetaDataEntity);
+        ClassEntity classEntity = classSetRequestEntity.getClassEntity();
+        for (ClassMemberEntity memberEntity : classEntity.getClassMemberEntityList()) {
+            if (memberEntity.getRoleClassEntity().getName().equals("ADMIN")) {
+                UserEntity user = memberEntity.getUserEntity();
+                NotificationEntity notificationEntity = NotificationEntity.builder()
+                        .userEntity(user)
+                        .message("User " + classSetRequestEntity.getUserEntity().getUsername() + " has requested to create set in class " + classEntity.getName())
+                        .notificationMetaDataEntity(notificationMetaDataEntity)
+                        .isRead(false)
+                        .type("CLASS_SET_REQUEST")
+                        .build();
+                notificationRepository.save(notificationEntity);
+            }
+        }
+        return true;
+    }
+
+    @Transactional
+    @Override
+    public boolean createAcceptRequestNotification(SetEntity setEntity) {
+        NotificationMetaDataEntity notificationMetaDataEntity = NotificationMetaDataEntity.builder()
+                .key("setId")
+                .value(setEntity.getId().toString())
+                .build();
+        notificationMetaDataRepository.save(notificationMetaDataEntity);
+        NotificationEntity notificationEntity = NotificationEntity.builder()
+                .userEntity(setEntity.getUserEntity())
+                .message("Your set request in class " + setEntity.getClassEntity().getName() + " has been accepted.")
+                .notificationMetaDataEntity(notificationMetaDataEntity)
+                .isRead(false)
+                .type("CLASS_SET_ACCEPT")
+                .build();
+        notificationRepository.save(notificationEntity);
+        return true;
+    }
+
+    @Override
+    public boolean createRejectRequestNotification(SetEntity setEntity, ClassEntity classEntity) {
+        NotificationMetaDataEntity notificationMetaDataEntity = NotificationMetaDataEntity.builder()
+                .key("setId")
+                .value(setEntity.getId().toString())
+                .build();
+        notificationMetaDataRepository.save(notificationMetaDataEntity);
+        NotificationEntity notificationEntity = NotificationEntity.builder()
+                .userEntity(setEntity.getUserEntity())
+                .message("Your set request in class " + classEntity.getName() + " has been rejected.")
+                .notificationMetaDataEntity(notificationMetaDataEntity)
+                .isRead(false)
+                .type("CLASS_SET_REJECT")
+                .build();
+        notificationRepository.save(notificationEntity);
+        return true;
+    }
+
+    @Override
+    public boolean createStudySessionNotification(StudySessionEntity studySessionEntity, LocalDateTime reminderTime) {
+        NotificationMetaDataEntity notificationMetaDataEntity = NotificationMetaDataEntity.builder()
+                .key("WordId")
+                .value(studySessionEntity.getWordEntity().getId().toString())
+                .build();
+        notificationMetaDataRepository.save(notificationMetaDataEntity);
+        NotificationEntity notificationEntity = NotificationEntity.builder()
+                .userEntity(studySessionEntity.getUserEntity())
+                .message("Now is the moment to pick up '" + studySessionEntity.getWordEntity().getWord() + "' word")
+                .notificationMetaDataEntity(notificationMetaDataEntity)
+                .isRead(false)
+                .type("REMINDER_STUDY_SESSION")
+                .reminderTime(reminderTime)
+                .build();
+        notificationRepository.save(notificationEntity);
+        return true;
+    }
 
 }

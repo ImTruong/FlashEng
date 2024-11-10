@@ -107,4 +107,24 @@ public class ClassServiceImpl implements ClassService {
                 .toList();
     }
 
+    @Override
+    public List<ClassInformationResponse> findClassByName(String name) {
+        name = "%" + name + "%";
+        List<ClassEntity> classEntityList = classRepository.findAllByNameLike(name);
+        return classEntityList.stream()
+                .map(classEntity -> ClassInformationResponse.builder()
+                        .classId(classEntity.getId())
+                        .className(classEntity.getName())
+                        .numberOfMembers(classEntity.getClassMemberEntityList().size())
+                        .numberOfSets(classEntity.getSetsEntityList().size())
+                        .build())
+                .toList();
+    }
+
+    @Override
+    public boolean deleteClassByEntity(ClassEntity classEntity) {
+        classRepository.delete(classEntity);
+        return true;
+    }
+
 }

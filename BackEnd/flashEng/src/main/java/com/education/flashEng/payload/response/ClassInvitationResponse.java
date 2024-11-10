@@ -11,7 +11,7 @@ public class ClassInvitationResponse {
 
     private ClassInformationResponse classInformationResponse;
 
-    private String inviterName;
+    private String inviterUsername;
 
     private Long invitationId;
 

@@ -1,0 +1,211 @@
+<script setup>
+  import Header from "@/components/Header.vue" // Import your header component
+  import ChangePassword from "@/components/ChangePassword.vue";
+  import {ref, onMounted} from 'vue'
+  import axios from "axios";
+
+  const isChangePasswordVisible = ref(false);
+  const user = ref({
+    fullName: '',
+    username: '',
+    email: '',
+    country: ''
+  });
+  const errorMessage = ref(null);
+  const fetchUserInfo = async () => {
+  try {
+    const token = localStorage.getItem('token') // Lấy token từ localStorage
+    if (!token) {
+      errorMessage.value = 'You must be logged in to view user information'
+      return
+    }
+    const response = await axios.get('/user', {
+      headers: {
+        Authorization: `Bearer ${token}`, // Đảm bảo gửi token trong header
+      },
+    })
+    user.value = response.data.data;
+  } catch (error) {
+    errorMessage.value = error.response ? error.response.data : 'An error occurred'
+    console.error('Error fetching user info:', error)
+  }
+};
+
+const updateProfile = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      errorMessage.value = "You must be logged in to update user information";
+      return;
+    }
+
+    // Gửi request PUT để cập nhật thông tin user
+    const response = await axios.put("/user",
+      {
+        fullName: user.value.fullName,
+        email: "",
+        country: user.value.country
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    alert("User information updated successfully!");
+  } catch (error) {
+    errorMessage.value = error.response ? error.response.data : "An error occurred";
+    console.error("Error updating user info:", error);
+  }
+
+};
+
+// Gọi `fetchUserInfo` khi component được mount
+onMounted(() => {
+  fetchUserInfo();
+});
+
+  // Phương thức hiển thị form ChangePassword
+const showChangePasswordForm = () => {
+  isChangePasswordVisible.value = true;
+};
+
+// Phương thức xử lý khi đóng form ChangePassword
+const handleCloseChangePassword = () => {
+  isChangePasswordVisible.value = false;
+};
+
+// Phương thức xử lý khi lưu mật khẩu mới
+const handleSavePassword = (data) => {
+  console.log('Mật khẩu mới:', data);
+  isChangePasswordVisible.value = false;
+};
+
+</script>
+
+
+<template>
+    <div class="user-profile-page">
+      <Header></Header>  
+      <div class="profile-container">
+        <main class="profile-content">
+          <div class="profile-header">
+            <div class="background"></div>
+            <div class="avatar"></div>
+            <h2>{{ user.username }}</h2>
+          </div>
+          <form @submit.prevent="updateProfile">
+            <div class="form-group">
+              <label for="name">Fullname</label>
+              <input v-model="user.fullName" id="name" type="text" />
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input v-model="user.email" id="email" type="email" />
+            </div>
+            <div class="form-group">
+              <label for="country">Country</label>
+              <input v-model="user.country" id="country" type="text" />
+            </div>
+            <div class="actions">
+              <button type="button" @click="showChangePasswordForm">Change password</button>
+              <button type="submit">Edit profile</button>
+            </div>
+
+
+          </form>
+        </main>
+      </div>
+      <ChangePassword
+      v-if="isChangePasswordVisible"
+      @close="handleCloseChangePassword"
+      @save="handleSavePassword"
+    ></ChangePassword>
+    </div>
+  </template>
+  
+
+  
+  <style scoped>
+  .user-profile-page {
+    display: flex;
+    flex-direction: column;
+    padding: 0 20vw;
+  }
+  
+  .profile-container {
+    display: flex;
+  }
+  
+  
+  .profile-content {
+    flex: 1;
+    margin-top: 50.67px;
+    /* max-width: ; */
+  }
+  
+  .profile-header {
+    width: 100%;
+    /* display: flex; */
+    align-items: center;
+    margin-bottom: 20px;
+    /* background-color: #007bff; */
+    /* height: 150px; */
+  }
+  
+  .background{
+    background-color: #cacaca;
+    height: 150px;
+    width: 100%;
+  }
+
+  
+  .avatar {
+    margin: -50px 20px 0px 20px;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #d9ecf2;
+  }
+
+  .profile-header h2{
+    /* margin-top: -80px; */
+    margin: -65px 0 50px 105px ;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .actions {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .actions button {
+    padding: 10px 15px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .actions button:first-of-type {
+    background-color: #6c757d;
+  }
+  </style>
+  

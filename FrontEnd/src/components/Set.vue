@@ -1,0 +1,159 @@
+<script setup>
+  import {ref, defineProps} from "vue"
+  import {useRouter} from "vue-router"
+  import SetTable from "../components/SetTable.vue"
+
+  const hover  = ref(false)
+  const router = useRouter()
+  const {set} = defineProps(['set'])
+  const setTable = ref(false); 
+  const existingSet = ref({})
+  const isEditMode = ref(false)
+
+  const navigateToSet = () => {
+    router.push(`/set/${set.id}`);
+  }
+
+  const editSet = () => {
+    showSetTable(true, set)
+  }
+
+  const gameSet = () => {
+    console.log(`Editing set ${set.id}`)
+  }
+
+  const studySet = () => {
+    router.push(`/flashcard/${set.id}`)
+  }
+
+  const deleteSet = () => {
+    console.log(`Deleting set ${set.id}`)
+  }
+
+  const showSetTable = (editMode, existingSetData) => {
+    setTable.value = true; 
+    isEditMode.value = editMode; 
+    existingSet.value = existingSetData;
+    console.log('Existing Set:', existingSet.value);
+  }
+
+  const closeSetTable = () => {
+    setTable.value = false;
+  };
+</script>
+
+<template>
+    <div class="card" @mouseover="hover = true" @mouseleave="hover = false" >
+      <div class="card-text" @click="navigateToSet">
+        <h2>{{ set.name }}</h2>
+        <p class="number-terms">{{ set.numberOfWords }} terms</p>
+        <p>{{ set.userDetailResponse.fullName}}</p>
+      </div>
+      <div class="set-option">
+        <div class="icon-container" @click.stop="studySet" >
+          <router-link to="/flashcard" class="study"></router-link>
+          <img src="../assets/study.svg" alt="Study">
+        </div>
+        <div class="icon-container" @click.stop="gameSet" >
+          <img src="../assets/game.svg" alt="Game">
+        </div>
+        <div class="icon-container" @click.stop="editSet" >
+          <img src="../assets/edit.svg" alt="Edit">
+        </div>
+        <div class="icon-container" @click.stop="deleteSet" >
+          <img src="../assets/delete.svg" alt="Delete">
+        </div>
+      </div>
+    </div>
+    <SetTable 
+        v-if="setTable" 
+        :isEditMode="isEditMode" 
+        :existingSet="existingSet" 
+        @close="closeSetTable" 
+      />
+</template>
+  
+
+<style scoped>
+  .card {
+    margin-left: 10px;
+    width: 28%;
+    min-width: 280px;
+    height: 160px;
+    overflow: hidden;
+    border-radius: 4%;
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 35px;
+    cursor: pointer;
+    position: relative;
+  }
+  
+  .card:hover {
+    transform: scale(1.05);
+    background-color:#e6e6e6;
+  }
+
+  .card-text {
+      position: absolute;
+      padding: 10px;
+  }
+
+  .card-text h2 {
+      font-weight: 500;
+
+  }
+
+  .card-text p {
+      color: #777;
+      margin-top: 5px;
+      margin-bottom: 40px;
+  }
+
+  .number-terms{
+      background-color: rgba(105, 105, 148, 0.2);
+      border-radius: 5px;
+      width: 60px;
+      height: 25px;
+      text-align: center;
+  }
+
+  .set-option {
+    /* position: absolute; */
+    display: flex;
+    gap: 10px;
+    visibility: hidden;
+    transition: visibility 0.1s ease;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    flex-wrap: wrap;
+  }
+
+  .set-option .icon-container{
+    width: 60px;
+    height: 40px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card:hover .icon-container {
+    visibility: visible;
+  }
+
+  .card:hover .card-text {
+    visibility: hidden;
+  }
+
+  .set-option img {
+    width: 90px;
+  }
+
+  .set-option .icon-container:hover {
+    transform: scale(1.1);
+    cursor: pointer;
+
+  }
+
+</style>

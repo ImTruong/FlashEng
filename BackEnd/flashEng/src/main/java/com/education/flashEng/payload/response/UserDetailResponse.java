@@ -18,4 +18,10 @@ public class UserDetailResponse {
 
     private String country;
 
+    public UserDetailResponse(String fullName, String username, String email, String country) {
+        this.fullName = fullName;
+        this.username = username;
+        this.email = email;
+        this.country = country;
+    }
 }

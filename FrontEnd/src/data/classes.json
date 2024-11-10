@@ -1,0 +1,28 @@
+[
+    { 
+        "id": 8,
+        "name": "D22",
+        "sets": 1, 
+        "members": 5,
+        "members-list":[
+            {
+                "username": "ptitstudent1",
+                "role": "admin"
+            },
+            {
+                "username": "ptitstudent2",
+                "role": "member"
+            },
+            {
+                "username": "ptitstudent3",
+                "role": "member"
+            }
+        ] 
+    },
+    { 
+        "id": 2, 
+        "name": "D22_2", 
+        "sets": 1, 
+        "members": 5 
+    }
+]
