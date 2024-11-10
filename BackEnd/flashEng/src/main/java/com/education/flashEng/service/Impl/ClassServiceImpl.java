@@ -7,6 +7,7 @@ import com.education.flashEng.entity.UserEntity;
 import com.education.flashEng.exception.EntityNotFoundWithIdException;
 import com.education.flashEng.payload.request.CreateClassRequest;
 import com.education.flashEng.payload.response.ClassInformationResponse;
+import com.education.flashEng.payload.response.ClassMemberListReponse;
 import com.education.flashEng.repository.ClassRepository;
 import com.education.flashEng.service.ClassMemberService;
 import com.education.flashEng.service.ClassService;
@@ -42,7 +43,7 @@ public class ClassServiceImpl implements ClassService {
 
     @Transactional
     @Override
-    public boolean createClass(CreateClassRequest createClassRequest) {
+    public ClassMemberListReponse createClass(CreateClassRequest createClassRequest) {
         UserEntity user = userService.getUserFromSecurityContext();
 
         ClassEntity classEntity = modelMapper.map(createClassRequest, ClassEntity.class);
@@ -57,8 +58,8 @@ public class ClassServiceImpl implements ClassService {
                 .build();
 
         classMemberService.saveClassMember(classMemberEntity);
-
-        return true;
+        classEntity.getClassMemberEntityList().add(classMemberEntity);
+        return classMemberService.getAllMembers(classEntity.getId());
     }
 
     @Override
