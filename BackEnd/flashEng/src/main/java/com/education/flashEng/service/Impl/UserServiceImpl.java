@@ -13,7 +13,6 @@ import com.education.flashEng.service.UserService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -97,4 +96,6 @@ public class UserServiceImpl implements UserService {
         UserEntity user = getUserFromSecurityContext();
         return modelMapper.map(user, UserDetailResponse.class);
     }
+
+
 }

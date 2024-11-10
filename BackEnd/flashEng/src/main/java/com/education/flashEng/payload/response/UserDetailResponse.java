@@ -8,6 +8,8 @@ import lombok.*;
 @Builder
 public class UserDetailResponse {
 
+    private Long id;
+
     private String fullName;
 
     private String username;

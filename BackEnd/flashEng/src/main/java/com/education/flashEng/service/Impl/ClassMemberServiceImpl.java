@@ -65,8 +65,8 @@ public class ClassMemberServiceImpl implements ClassMemberService {
             throw new AccessDeniedException("You are not authorized to change roles in this class.");
         ClassMemberEntity memberEntity = classMemberRepository.findByClassEntityIdAndUserEntityId(classId, userId)
                 .orElseThrow(() -> new EntityNotFoundWithIdException("Class Member", userId.toString()));
-        if (memberEntity.getRoleClassEntity().getName().equals("ADMIN"))
-            throw new AccessDeniedException("You can't change the role of an admin.");
+        if (userId == user.getId())
+            throw new AccessDeniedException("You can`t change your own role.");
         memberEntity.setRoleClassEntity(roleClassService.getRoleClassByName(role.toUpperCase()));
         classMemberRepository.save(memberEntity);
         return true;
