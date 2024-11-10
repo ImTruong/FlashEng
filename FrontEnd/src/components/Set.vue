@@ -47,7 +47,7 @@
       <div class="card-text" @click="navigateToSet">
         <h2>{{ set.name }}</h2>
         <p class="number-terms">{{ set.numberOfWords }} terms</p>
-        <p>{{ set.userDetailResponse.fullName }}</p>
+        <p>{{ set.userDetailResponse.fullName}}</p>
       </div>
       <div class="set-option">
         <div class="icon-container" @click.stop="studySet" >
