@@ -26,6 +26,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: false
       },
+      '/word': {
+        target: 'http://localhost:8080', // Địa chỉ backend
+        changeOrigin: true,
+        secure: false
+      },
     }
   }
 })

@@ -1,46 +1,82 @@
 <script setup>
-import { ref, defineEmits, defineProps } from 'vue';
-import OverlayBackground from '../components/OverlayBackground.vue';
+  import axios from 'axios';
+  import { ref, defineEmits, defineProps } from 'vue';
+  import OverlayBackground from '../components/OverlayBackground.vue';
 
-const emit = defineEmits(['close', 'save']);
-const visible = ref(true);
+  const emit = defineEmits(['close', 'save']);
+  const visible = ref(true);
+  const props = defineProps({
+    setName: {
+      type: String,
+      default: ""
+    },
+    setId: {
+      type: Number,
+      default: null
+    }
+  });
 
-const props = defineProps({
-  setName: {
-    type: String,
-    default: ""
-  }
-});
+  const newWord = ref({
+    word: '',
+    ipa: '',
+    audio: 'temporary',
+    definition: '',
+    example: '',
+    image: null,
+  });
 
-const newWord = ref({
-  word: '',
-  ipa: '',
-  definition: '',
-  example: '',
-  image: null,
-});
+  // const handleImageUpload = (event) => {
+  //   newWord.value.image = event.target.files[0];
+  // };
 
+  const handleImageUpload = (event) => {
+    if (event.target.files && event.target.files[0]) {
+      newWord.value.image = event.target.files[0];
+    } else {
+      console.log('No file selected');
+    }
+  };
+  const closeForm = () => {
+    emit('close');
+    visible.value = false;
+  };
 
+  const saveData = async () => {
+    const token = localStorage.getItem('token');
+    const formData = new FormData(); // Tạo đối tượng FormData
+    formData.append('setId', props.setId)
+    formData.append('word', newWord.value.word)
+    formData.append('ipa', newWord.value.ipa)
+    formData.append('audio', newWord.value.audio)
+    formData.append('definition', newWord.value.definition)
+    formData.append('example', newWord.value.example)
+    if (newWord.value.image) {
+      formData.append('image', newWord.value.image)
+    }
+    try {
+      const config = {
+        headers: {
+            Authorization: `Bearer ${token}` // Thêm token vào header
+        }
+      }
+      const response = await axios.post('/word', formData, config);
+      console.log(response.data)
+      emit('save', response.data);
+      if (response.status === 200) {
+        closeForm();
+        alert('Word saved successfully!');
+      } else {
+        alert('Failed to save word');
+      }
+    } catch (error) {
+        console.error('Error saving word:', error);
+        alert('An error occurred while saving the word');
+    }
+  };
 
-const handleImageUpload = (event) => {
-  newWord.value.image = event.target.files[0];
-};
-
-// Phương thức đóng form, phát sự kiện 'close'
-const closeForm = () => {
-  emit('close');
-  visible.value = false;
-};
-
-// Phương thức lưu dữ liệu, phát sự kiện 'save' cùng dữ liệu từ mới
-const saveData = () => {
-  emit('save', newWord.value);
-  closeForm(); // Đóng form sau khi lưu
-};
-
-const updateSetName = (event) => {
-  emit('update:setName', event.target.value);
-};
+  const updateSetName = (event) => {
+    emit('update:setName', event.target.value);
+  };
 
 </script>
 <template>
@@ -72,7 +108,6 @@ const updateSetName = (event) => {
         </div>
         <div class="form-group">
           <label for="image">Image:</label>
-          <!-- Input file hidden -->
           <input type="file" @change="handleImageUpload" ref="fileInput" style="display: none;" />
           <img src="../assets/add_img.svg" alt="Upload Icon" class="icon-upload" @click="$refs.fileInput.click()" />
         </div>

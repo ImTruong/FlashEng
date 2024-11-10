@@ -4,7 +4,7 @@
     import InvitationBox from './InvitationBox.vue';
     import Card from "../components/Set.vue"
     import {ref} from "vue"
-    import { defineProps, defineEmits } from 'vue';
+    import { defineProps} from 'vue';
 
     const {sets, classes} = defineProps(['sets','classes']);
 

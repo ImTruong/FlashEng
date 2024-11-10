@@ -1,55 +1,32 @@
 <script setup>
-import { defineProps, defineEmits } from 'vue';
-import Card from './Set.vue';
-import OverlayBackground from './OverlayBackground.vue';
-import { ref, watch, onMounted } from 'vue';
-import axios from 'axios';
+    import { onMounted, computed, defineProps, defineEmits } from 'vue';
+    import Card from './Set.vue';
+    import OverlayBackground from './OverlayBackground.vue';
+    import { ref, watch } from 'vue';
+    import { useStore } from 'vuex';
+    const store = useStore();
+    
+    const sets = computed(() => store.getters.getSets);
 
-const { classItem, Overlay_background } = defineProps(['classItem', 'Overlay_background']);
-const emit = defineEmits();
+    onMounted(() => {
+        store.dispatch('fetchLibrarySets');  
+    })
+    const { classItem, Overlay_background } = defineProps(['classItem', 'Overlay_background']);
+
+    const emit = defineEmits();
 
 function closeOverlay() {
     emit('close');
 }
 
-const sets = ref([]);
-const icon = ref(false);
-const search = ref("");
+    const icon = ref(false)
+    const search = ref("")
 
-watch(search, () => {
-    sets.value = sets.value.filter(set => set.name.toLowerCase().includes(search.value.toLowerCase()));
-});
+    watch(search, () => {
+        sets.value = sets.filter(set => set.name.toLowerCase().includes(search.value.toLowerCase()))
+    })
 
-// Hàm gọi API lấy danh sách sets
-async function fetchSets() {
-    try {
-        const token = localStorage.getItem('token');
-
-        if (!token) {
-            console.error("Please login!");
-            return;
-        }
-        const response = await axios.get(`/set/class/${classItem.id}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-        console.log(response);  // Kiểm tra tất cả thông tin trả về từ API
-        sets.value = response.data.map(item => ({
-            id: item.id,
-            name: item.name,
-            terms: item.numberOfWords || 0,  // nếu số từ là null thì đặt là 0
-            owner: item.userDetailResponse?.username || '',  // lấy tên người dùng
-            status: item.privacyStatus.toLowerCase() || 'private',  // trạng thái mặc định 'private' nếu không có
-            words: item.wordListResponses || []  // nếu không có danh sách từ, trả về mảng trống
-        }));
-    } catch (error) {
-        console.error("Error fetching data:", error);
-    }
-}
-
-// Gọi API khi component được mount
-onMounted(fetchSets);
+    
 </script>
 
 <template>
