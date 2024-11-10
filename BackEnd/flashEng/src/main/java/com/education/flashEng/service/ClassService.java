@@ -18,4 +18,8 @@ public interface ClassService {
     ClassInformationResponse getClassInformation(Long classId);
 
     List<ClassInformationResponse> getAllCurrentUserClasses();
+
+    List<ClassInformationResponse> findClassByName(String name);
+
+    boolean deleteClassByEntity(ClassEntity classEntity);
 }

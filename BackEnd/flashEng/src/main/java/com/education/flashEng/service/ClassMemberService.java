@@ -13,4 +13,6 @@ public interface ClassMemberService {
     boolean changeRole(Long userId, Long classId, String role);
 
     ClassMemberListReponse getAllMembers(Long classId);
+
+    boolean leaveClass(Long classId);
 }
