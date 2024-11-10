@@ -1,17 +1,15 @@
 package com.education.flashEng.service;
 
-import com.education.flashEng.entity.ClassInvitationEntity;
-import com.education.flashEng.entity.ClassJoinRequestEntity;
-import com.education.flashEng.entity.NotificationEntity;
-import com.education.flashEng.entity.NotificationMetaDataEntity;
-import com.education.flashEng.payload.response.NotificationResponse;
+import com.education.flashEng.entity.*;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 public interface NotificationService {
     boolean createClassJoinRequestNotification(ClassJoinRequestEntity classJoinRequestEntity);
 
     boolean createClassInvitationNotification(ClassInvitationEntity classInvitationEntity);
+
+    NotificationMetaDataEntity getNotificationMetaDataEntityByKeyAndValue(String key, String value);
 
     boolean deleteAllRelatedNotificationsByNotificationMetaData(String key, String value);
 
@@ -23,5 +21,11 @@ public interface NotificationService {
 
     boolean createRejectedClassInvitationNotification(ClassInvitationEntity classInvitationEntity);
 
-    List<NotificationResponse> getAllCurrentUserNotifications();
+    boolean createClassSetRequestNotification(ClassSetRequestEntity classSetRequestEntity);
+
+    boolean createAcceptRequestNotification(SetEntity setEntity);
+
+    boolean createRejectRequestNotification(SetEntity setEntity, ClassEntity classEntity);
+
+    boolean createStudySessionNotification(StudySessionEntity studySessionEntity, LocalDateTime localDateTime);
 }

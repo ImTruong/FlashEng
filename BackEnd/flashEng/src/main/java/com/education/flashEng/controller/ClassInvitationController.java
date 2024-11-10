@@ -22,6 +22,18 @@ public class ClassInvitationController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("/user")
+    public ResponseEntity<?> getAllCurrentUserClassInvitations() {
+        ApiResponse<?> response = new ApiResponse<>(true, "User's Class Invitations Fetched Successfully", classInvitationService.getAllCurrentUserClassInvitations());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getAllClassInvitations(@RequestParam @NotNull(message = "classId is required") Long classId) {
+        ApiResponse<?> response = new ApiResponse<>(true, "Class Invitations Fetched Successfully", classInvitationService.getAllClassInvitations(classId));
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<?> inviteToClass(@RequestParam @NotNull(message = "classId is required") Long classId,
                                            @RequestParam @NotBlank(message = "inviteeUsername cannot be blank") String inviteeUsername) {

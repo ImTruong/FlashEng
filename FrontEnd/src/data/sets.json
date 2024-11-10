@@ -1,0 +1,170 @@
+[
+    {
+        "id": 1,
+        "name": "Fruit",
+        "terms": 5,
+        "owner": "ptitstudent1",
+        "status": "private",
+        "words": [
+            {  
+                "id": 1,
+                "word": "apple",
+                "ipa": "/ˈæp.əl/",
+                "definition": "táo",
+                "example": "She ate an apple for breakfast.",
+                "image": "https://example.com/images/apple.jpg"
+            },
+            {
+                "id": 2,
+                "word": "banana",
+                "ipa": "/bəˈnæn.ə/",
+                "definition": "chuối",
+                "example": "He likes to have a banana with his cereal.",
+                "image": "https://example.com/images/banana.jpg"
+            },
+            {
+                "id": 3,
+                "word": "orange",
+                "ipa": "/ˈɔːr.ɪndʒ/",
+                "definition": "cam",
+                "example": "I drink orange juice every morning.",
+                "image": "https://example.com/images/orange.jpg"
+            },
+            {
+                "id": 4,
+                "word": "grape",
+                "ipa": "/ɡreɪp/",
+                "definition": "nho",
+                "example": "The grape is sweet and juicy.",
+                "image": "https://example.com/images/grape.jpg"
+            },
+            {
+                "id": 5,
+                "word": "watermelon",
+                "ipa": "/ˈwɔː.tərˌmel.ən/",
+                "definition": "dưa hấu",
+                "example": "We had watermelon at the picnic.",
+                "image": "https://example.com/images/watermelon.jpg"
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "name": "Noun",
+        "terms": 3,
+        "owner": "ptitstudent2",
+        "status": "private",
+        "words": [
+            {  
+                "id": 1,
+                "word": "apple",
+                "ipa": "/ˈæp.əl/",
+                "definition": "táo",
+                "example": "She ate an apple for breakfast.",
+                "image": "http://res.cloudinary.com/dyzfar3j8/image/upload/v1731118598/flashEng/1/pitxi702rtugqwb7lm6l.png"
+            },
+            {
+                "id": 2,
+                "word": "banana",
+                "ipa": "/bəˈnæn.ə/",
+                "definition": "chuối",
+                "example": "He likes to have a banana with his cereal.",
+                "image": "https://images.immediate.co.uk/production/volatile/sites/30/2017/01/Bunch-of-bananas-67e91d5.jpg?quality=90&resize=440,400"
+            },
+            {
+                "id": 3,
+                "word": "orange",
+                "ipa": "/ˈɔːr.ɪndʒ/",
+                "definition": "cam",
+                "example": "I drink orange juice every morning.",
+                "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSa2cYfV0Q7fxNoQpNly2bcCaJUOXnbl73y9A&s"
+            },
+            {
+                "id": 4,
+                "word": "grape",
+                "ipa": "/ɡreɪp/",
+                "definition": "nho",
+                "example": "The grape is sweet and juicy.",
+                "image": "https://canadianfoodfocus.org/wp-content/uploads/2020/09/table-grapes.jpg"
+            },
+            {
+                "id": 5,
+                "word": "watermelon",
+                "ipa": "/ˈwɔː.tərˌmel.ən/",
+                "definition": "dưa hấu",
+                "example": "We had watermelon at the picnic.",
+                "image": "https://static.toiimg.com/thumb/msid-109932142,width-1070,height-580,imgsize-63592,resizemode-75,overlay-toi_sw,pt-32,y_pad-40/photo.jpg"
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "name": "School",
+        "terms": 7,
+        "owner": "ptitstudent3",
+        "status": "private",
+        "words": [
+            {  
+                "id": 1,
+                "word": "apple",
+                "ipa": "/ˈæp.əl/",
+                "definition": "táo",
+                "example": "She ate an apple for breakfast.",
+                "image": "https://example.com/images/apple.jpg"
+            },
+            {
+                "id": 2,
+                "word": "banana",
+                "ipa": "/bəˈnæn.ə/",
+                "definition": "chuối",
+                "example": "He likes to have a banana with his cereal.",
+                "image": "https://example.com/images/banana.jpg"
+            },
+            {
+                "id": 3,
+                "word": "orange",
+                "ipa": "/ˈɔːr.ɪndʒ/",
+                "definition": "cam",
+                "example": "I drink orange juice every morning.",
+                "image": "https://example.com/images/orange.jpg"
+            },
+            {
+                "id": 4,
+                "word": "grape",
+                "ipa": "/ɡreɪp/",
+                "definition": "nho",
+                "example": "The grape is sweet and juicy.",
+                "image": "https://example.com/images/grape.jpg"
+            },
+            {
+                "id": 5,
+                "word": "watermelon",
+                "ipa": "/ˈwɔː.tərˌmel.ən/",
+                "definition": "dưa hấu",
+                "example": "We had watermelon at the picnic.",
+                "image": "https://example.com/images/watermelon.jpg"
+            }
+        ]
+    },
+    {
+        "id": 4,
+        "name": "Country",
+        "terms": 9,
+        "owner": "ptitstudent1",
+        "status": "private"
+    },
+    {
+        "id": 5,
+        "name": "Vegetable",
+        "terms": 3,
+        "owner": "ptitstudent2",
+        "status": "private"
+    },
+    {
+        "id": 6,
+        "name": "Food",
+        "terms": 7,
+        "owner": "ptitstudent3",
+        "status": "private"
+    }
+]

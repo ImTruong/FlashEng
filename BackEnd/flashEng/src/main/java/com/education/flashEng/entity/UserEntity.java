@@ -1,6 +1,9 @@
 package com.education.flashEng.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -10,7 +13,6 @@ import java.util.List;
 
 @Setter
 @Getter
-
 @Entity
 @Table(name = "users")
 
@@ -41,7 +43,8 @@ public class UserEntity {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "userEntity")
+    @OneToMany(mappedBy = "userEntity", fetch = FetchType.LAZY)
+    @JsonIgnore // Bỏ qua trường này khi tuần tự hóa JSON
     private List<SetEntity> setsEntityList;
 
     @OneToMany(mappedBy = "userEntity")
