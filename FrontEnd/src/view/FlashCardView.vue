@@ -83,9 +83,17 @@
         border: none;
     }
 
-    .flashcard-image {
-        width: 60%;
-        height: auto;
+    .flashcard {
+        width: 100%;
+        max-width: 300px; 
+        margin: 0 auto;
+        text-align: center;
+    }
+    
+    .flashcard img {
+        max-width: 100%; /* Ảnh sẽ không vượt quá chiều rộng của flashcard */
+        height: auto; 
+        object-fit: cover; 
         border-radius: 8px;
     }
 

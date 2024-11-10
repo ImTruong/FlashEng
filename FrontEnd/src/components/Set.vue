@@ -23,7 +23,7 @@
   }
 
   const studySet = () => {
-    console.log(`Viewing set ${set.id}`)
+    router.push(`/flashcard/${set.id}`)
   }
 
   const deleteSet = () => {
@@ -46,11 +46,12 @@
     <div class="card" @mouseover="hover = true" @mouseleave="hover = false" >
       <div class="card-text" @click="navigateToSet">
         <h2>{{ set.name }}</h2>
-        <p class="number-terms">{{ set.terms }} terms</p>
-        <p>{{ set.owner }}</p>
+        <p class="number-terms">{{ set.numberOfWords }} terms</p>
+        <p>{{ set.userDetailResponse.fullName }}</p>
       </div>
       <div class="set-option">
         <div class="icon-container" @click.stop="studySet" >
+          <router-link to="/flashcard" class="study"></router-link>
           <img src="../assets/study.svg" alt="Study">
         </div>
         <div class="icon-container" @click.stop="gameSet" >

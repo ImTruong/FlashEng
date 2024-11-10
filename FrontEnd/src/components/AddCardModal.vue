@@ -125,12 +125,12 @@ const updateSetName = (event) => {
   }
 
   .set-name input {
-      margin-left: 10px;
-      padding: 5px;
-      border: 1px solid black;
-      border-radius: 4px;
-      text-align: center; 
-      width: 200px;
+    margin-left: 10px;
+    padding: 5px;
+    border: 1px solid black;
+    border-radius: 4px;
+    text-align: center; 
+    width: 200px;
   }
 
   .close-btn {

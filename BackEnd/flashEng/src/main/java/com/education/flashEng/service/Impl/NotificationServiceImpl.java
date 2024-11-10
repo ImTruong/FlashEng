@@ -131,6 +131,7 @@ public class NotificationServiceImpl implements NotificationService {
         return true;
     }
 
+    @Transactional
     @Override
     public boolean createClassSetRequestNotification(ClassSetRequestEntity classSetRequestEntity) {
         NotificationMetaDataEntity notificationMetaDataEntity = NotificationMetaDataEntity.builder()
@@ -155,5 +156,41 @@ public class NotificationServiceImpl implements NotificationService {
         return true;
     }
 
+    @Transactional
+    @Override
+    public boolean createAcceptRequestNotification(SetEntity setEntity) {
+        NotificationMetaDataEntity notificationMetaDataEntity = NotificationMetaDataEntity.builder()
+                .key("setId")
+                .value(setEntity.getId().toString())
+                .build();
+        notificationMetaDataRepository.save(notificationMetaDataEntity);
+        NotificationEntity notificationEntity = NotificationEntity.builder()
+                .userEntity(setEntity.getUserEntity())
+                .message("Your set request in class " + setEntity.getClassEntity().getName() + " has been accepted.")
+                .notificationMetaDataEntity(notificationMetaDataEntity)
+                .isRead(false)
+                .type("CLASS_SET_ACCEPT")
+                .build();
+        notificationRepository.save(notificationEntity);
+        return true;
+    }
+
+    @Override
+    public boolean createRejectRequestNotification(SetEntity setEntity, ClassEntity classEntity) {
+        NotificationMetaDataEntity notificationMetaDataEntity = NotificationMetaDataEntity.builder()
+                .key("setId")
+                .value(setEntity.getId().toString())
+                .build();
+        notificationMetaDataRepository.save(notificationMetaDataEntity);
+        NotificationEntity notificationEntity = NotificationEntity.builder()
+                .userEntity(setEntity.getUserEntity())
+                .message("Your set request in class " + classEntity.getName() + " has been rejected.")
+                .notificationMetaDataEntity(notificationMetaDataEntity)
+                .isRead(false)
+                .type("CLASS_SET_REJECT")
+                .build();
+        notificationRepository.save(notificationEntity);
+        return true;
+    }
 
 }

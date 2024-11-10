@@ -1,10 +1,10 @@
 <script setup>
+    import axios from 'axios';
     import { ref, watch, defineEmits, defineProps} from 'vue';
     import OverlayBackground from '../components/OverlayBackground.vue'
     import AddCardModal from '../components/AddCardModal.vue'
 
     const emit = defineEmits(['close', 'save', 'update']);
-
     const props = defineProps(['isEditMode', 'existingSet']);
 
     const visible = ref(true); 
@@ -16,27 +16,62 @@
     const selectedOption = ref('')
     const dropdownRef = ref(null)
     const showAddCardModal = ref(false);
+    const classId = ref('')
 
-    const saveData = () => {
+    // const fetchWords = async (setId) => {
+    //     const token = localStorage.getItem('token');
+    //     const config = {
+    //         headers: {
+    //             Authorization: `Bearer ${token}`
+    //         }
+    //     };
+
+    //     try {
+    //         const response = await axios.get(`/set/${setId}/words`, config); // Gọi API GET để lấy từ
+    //         console.log('Words fetched:', response.data);
+    //         rows.value = response.data.data; // Cập nhật danh sách từ
+    //     } catch (error) {
+    //         console.error('Error fetching words:', error);
+    //     }
+    // };
+    const saveData  = async () => {
+        const token = localStorage.getItem('token');
         const payload = {
-            id: props.isEditMode ? props.existingSet.id : null, // Lấy ID từ existingSet nếu đang ở chế độ chỉnh sửa
-            setName: setName.value,
-            rows: rows.value,
-            selectedWords: selectedWords.value
-        };
-        if (props.isEditMode) {
-            emit('update', payload); // Gửi sự kiện update nếu ở chế độ chỉnh sửa
-        } else {
-            emit('save', payload); // Gửi sự kiện save nếu không phải ở chế độ chỉnh sửa
+            setId: props.isEditMode ? props.existingSet.id : null,
+            name: setName.value,
+            description: "Created set", // description có thể là null
+            privacyStatus: selectedOption.value,
+            classId: classId.value | null // class_id có thể là null
+        }
+        try {
+            const config = {
+            headers: {
+                Authorization: `Bearer ${token}` // Thêm token vào header
+            }
+            }
+            if (props.isEditMode) {
+                const response = await axios.put('/set', payload, { headers: config.headers });  // API cập nhật
+                console.log('Set updated:', response.data);
+                emit('update', response.data); 
+            } else {
+                const response = await axios.post('/set', payload, { headers: config.headers }); 
+                console.log('Set created:', response.data.data);
+                console.log(response.data)
+                emit('save', response.data.data); 
+            }
+        } catch (error) {
+            if (error.response) {
+                console.error('API Error:', error.response.status, error.response.data);
+            } else {
+                console.error('Network or Axios error:', error.message);
+            }
         }
     };
 
     const addNewWord = (newWord) => {
         if (rows.value[0].word === '') {
-        // Nếu dòng đầu tiênc có giá trị null hoặc rỗng, thay thế nó
             rows.value[0] = newWord;
         } else {
-            // Nếu không, thêm từ mới vào cuối mảng
             rows.value.push(newWord);
         }
     };
@@ -68,10 +103,9 @@
         showSelectColumn.value = !showSelectColumn.value;
     };
 
-    const toggleOptions = (option) => {
-        showOptions.value = option; 
-        showOptions = false;
-    };
+    const toggleOptions = () => {
+    showOptions.value = !showOptions.value;
+};
 
     const selectOption = (option) => {
         selectedOption.value = option;
@@ -86,11 +120,20 @@
         showAddCardModal.value = false;
         visible.value = true
     };
+    const handleSaveData = () => {
+        if (setName.value.trim()) {
+            if (selectedOption.value.trim()) {
+                if (selectedOption.value === 'CLASS' && !classId.value.trim()) {
+                    console.warn('Vui lòng nhập ID lớp khi chọn Group.');
+                    return; 
+                }
+                saveData();
+        } else {
+            console.warn('Vui lòng chọn Privacy Status.');
+            }
+        }
+    };
 
-    watch(setName, saveData);
-    watch(rows, (newRows) => {
-        saveData(); 
-    }, { deep: true });
     watch(() => props.existingSet, (newExistingSet) => {
         if (newExistingSet && newExistingSet.words) {
             setName.value = newExistingSet.name; // Cập nhật tên set
@@ -116,21 +159,30 @@
             <button @click="closeForm" class="close-btn">✖</button>
         </div>
     <div v-show="showOptions" class="options-dropdown" ref="dropdownRef">
-        <button @click.stop="selectOption('Public')" class="option-button">
+        <button @click.stop="selectOption('PUBLIC')" class="option-button">
             <img src="../assets/globe.svg" alt="Public" class="option-icon" />
             <span class="option-text">Public</span>
-            <span v-if="selectedOption === 'Public'" class="checkmark">✔</span>
+            <span v-if="selectedOption === 'PUBLIC'" class="checkmark">✔</span>
         </button>
-        <button @click.stop="selectOption('Private')" class="option-button">
+        <button @click.stop="selectOption('PRIVATE')" class="option-button">
             <img src="../assets/lock.svg" alt="Private" class="option-icon" />
             <span class="option-text">Private</span>
-            <span v-if="selectedOption === 'Private'" class="checkmark">✔</span>
+            <span v-if="selectedOption === 'PRIVATE'" class="checkmark">✔</span>
         </button>
-        <button @click.stop="selectOption('Group')" class="option-button">
-            <img src="../assets/lock.svg" alt="Group" class="option-icon" />
-            <span class="option-text">Group</span>
-            <span v-if="selectedOption === 'Group'" class="checkmark">✔</span>
-        </button>
+        <div class="option-container">
+            <button @click.stop="selectOption('CLASS')" class="option-button">
+                <img src="../assets/lock.svg" alt="Group" class="option-icon" />
+                <span class="option-text">Class</span>
+                <span v-if="selectedOption === 'CLASS'" class="checkmark">✔</span>
+            </button>
+            <input
+                v-if="selectedOption === 'CLASS'"
+                v-model="classId"
+                type="text"
+                placeholder="Enter class ID"
+                class="class-input"
+            />
+        </div>
     </div>
 
     <div class="table-container">
@@ -169,6 +221,9 @@
         <button @click="openAddCardModal" class="icon-button">
             <img src="../assets/add-word.svg" alt="" class="icon">
         </button>
+        <button @click="handleSaveData" class="icon-button">
+            <img src="../assets/add-word.svg" alt="" class="icon">
+        </button>
       </div>
     </div>
     <AddCardModal :setName="setName" v-if="showAddCardModal" @close="closeAddCardModal" @save="addNewWord"></AddCardModal>
@@ -205,6 +260,24 @@
         flex-grow: 1;
         width: 100%;
     }
+
+    .option-container {
+        display: flex;
+        align-items: center;
+    }
+    
+    .option-button {
+        display: flex;
+        align-items: center;
+        margin-right: 8px; /* Khoảng cách giữa button và input */
+    }
+    
+    .class-input {
+        padding: 4px;
+        font-size: 14px;
+        width: 100px;
+        margin-right: 5px;
+    }    
 
     .set-name input {
         margin-left: 10px;
