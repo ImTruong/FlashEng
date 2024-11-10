@@ -104,6 +104,20 @@
         showAddMember.value = false;
         visible.value = true
     };
+    
+    const handleSaveData = () => {
+        if (setName.value.trim()) {
+            if (selectedOption.value.trim()) {
+                if (selectedOption.value === 'CLASS' && !classId.value.trim()) {
+                    console.warn('Vui lòng nhập ID lớp khi chọn Group.');
+                    return; 
+                }
+                saveData();
+        } else {
+            console.warn('Vui lòng chọn Privacy Status.');
+            }
+        }
+    };
 
 </script>
 
@@ -156,6 +170,9 @@
             <img src="../assets/delete-word.svg" alt="" class="icon">
         </button>
         <button @click="openAddMember" class="icon-button">
+            <img src="../assets/add-word.svg" alt="" class="icon">
+        </button>
+        <button @click="handleSaveData" class="icon-button">
             <img src="../assets/add-word.svg" alt="" class="icon">
         </button>
     </div>

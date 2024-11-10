@@ -3,7 +3,7 @@
     import Card from './Set.vue';
     import setsData from '@/data/sets.json'
     import { ref } from 'vue';
-    import LibrabyBody from './LibraryBody.vue';
+    import LibraryBody from './LibraryBody.vue';
     import OverlayBackground from './OverlayBackground.vue';
        
     const status = ref(true);
@@ -29,7 +29,7 @@
             <h1>{{ searchQuery }}</h1>
             <img src="../assets/close.svg" alt="Icon" class="close-icon" @click="closeOverlay">
         </div> 
-        <LibrabyBody
+        <LibraryBody
         class = "libraryBody"
         :sets="sets"
         :classes="classes"
