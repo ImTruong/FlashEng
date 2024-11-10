@@ -69,6 +69,7 @@ const saveData = async () => {
         <div class="header">
             <h1>Change password</h1>
         </div>
+        <img src="../assets/close.svg" alt="Icon" class="close-icon" @click="closeForm">
         <div class="password">
             <label>Current password</label>
             <input type="text" v-model="currentPassword">
@@ -115,6 +116,11 @@ const saveData = async () => {
         /* height: 30px; */
         margin-bottom: 30px;
         text-align: center;
+    }
+    .close-icon{
+        position: absolute;
+        top: 10px;
+        right:10px;
     }
     
     

@@ -40,7 +40,7 @@ const updateProfile = async () => {
     }
 
     // Gửi request PUT để cập nhật thông tin user
-    const response = await axios.put("/user/update",
+    const response = await axios.put("/user",
       {
         fullName: user.value.fullName,
         email: "",
@@ -53,8 +53,7 @@ const updateProfile = async () => {
       }
     );
 
-    user.value = response.data.data;
-    errorMessage.value = "User information updated successfully!";
+    alert("User information updated successfully!");
   } catch (error) {
     errorMessage.value = error.response ? error.response.data : "An error occurred";
     console.error("Error updating user info:", error);

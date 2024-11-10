@@ -20,6 +20,7 @@
     const showSearch = ref(false);
     // const membersData = ref([])
     const showAddMember = ref(false);
+    const roleFilter = ref("Role");
 
     
     // Hàm lưu vào database
@@ -57,6 +58,7 @@
             }
             }
             if (props.isEditMode) {
+                
                 const response = await axios.put('/class', payload, { headers: config.headers });  // API cập nhật
                 emit('update', response.data.data); 
             } else {
@@ -168,7 +170,13 @@
               <tr>
                 <th v-if="showSelectColumn" class="select-column">Select</th>
                 <th class="username-column">Username</th>
-                <th>Role</th>
+                <th>
+                    <select class="role-option" v-model="roleFilter">
+                        <option value="Role">Role</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Member" selected>Member</option>
+                    </select>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -255,6 +263,8 @@
         flex-grow: 1;
     }
 
+
+
     .class-name input {
         margin-left: 10px;
         padding: 5px;
@@ -288,6 +298,18 @@
         /* text-align: center;  */
     }
 
+    .class-table th select{
+        background-color: #A8D5E5;
+        width: 60%;
+        border: none;
+
+    }
+    
+    .class-table th option{
+        height: 25px;
+        background-color: #ffffff;
+    }
+
 
     .class-table td {
         padding: 5px;
@@ -304,7 +326,7 @@
     }
 
     .role-option {
-        width: 80%;
+        width: 60%;
         height: 25px;
         border: none;
     }
