@@ -3,21 +3,22 @@
     import OverlayBackground from '../components/OverlayBackground.vue'
     // import { debounce } from 'lodash'; // Nếu bạn sử dụng lodash
     import AddMember from './AddMember.vue';
+    import axios from 'axios';
 
     const emit = defineEmits(['close', 'save']);
 
     const props = defineProps(['isEditMode', 'existingClass']);
 
     const visible = ref(true); 
-    const className = ref('');
-    const rows = ref([{ username: '', role: ''}]);
+    const className = ref(props.isEditMode ? props.existingSet.name : '');
+    const rows = ref(props.isEditMode ? props.existingSet.user : [{ username: '', role: 'Member'}]);
     const selectedUsers = ref([]); // Danh sách các từ được chọn
     const showSelectColumn = ref(false);
     const selectedOption = ref('')
     const dropdownRef = ref(null)
     const search = ref("")
     const showSearch = ref(false);
-    const membersData = ref([])
+    // const membersData = ref([])
     const showAddMember = ref(false);
 
     
@@ -38,6 +39,39 @@
     // watch(rows, (newRows) => {
     //     saveToDatabaseDebounced(); // Gọi hàm lưu dữ liệu
     // }, { deep: true });
+
+    const updateClassName = (newClassName) => {
+        className.value = newClassName;
+    };
+
+    const saveData  = async () => {
+        const token = localStorage.getItem('token');
+        const payload = {
+            classId: props.isEditMode ? props.existingClass.id : null,
+            name: className.value,
+        }
+        try {
+            const config = {
+            headers: {
+                Authorization: `Bearer ${token}` // Thêm token vào header
+            }
+            }
+            if (props.isEditMode) {
+                const response = await axios.put('/class', payload, { headers: config.headers });  // API cập nhật
+                emit('update', response.data.data); 
+            } else {
+                const response = await axios.post('/class', payload, { headers: config.headers }); 
+                console.log(response.data)
+                emit('save', response.data.data); 
+            }
+        } catch (error) {
+            if (error.response) {
+                console.error('API Error:', error.response.status, error.response.data);
+            } else {
+                console.error('Network or Axios error:', error.message);
+            }
+        }
+    };
 
     const addMember = (newMember) => {
         if(row.value[0].username === ''){
@@ -75,16 +109,10 @@
         showSelectColumn.value = !showSelectColumn.value;
     };
 
-
-
-    const saveData = () => {
-        emit('save', { className: className.value, rows: rows.value, selectedUsers: selectedUsers.value });
+    const toggleOptions = () => {
+        showOptions.value = !showOptions.value;
     };
 
-    const selectOption = (option) => {
-        selectedOption.value = option;
-        showOptions.value = false; // Ẩn dropdown khi đã chọn
-    };
 
     watch(search, () =>{
         if(showSearch){
@@ -106,18 +134,17 @@
     };
     
     const handleSaveData = () => {
-        if (setName.value.trim()) {
-            if (selectedOption.value.trim()) {
-                if (selectedOption.value === 'CLASS' && !classId.value.trim()) {
-                    console.warn('Vui lòng nhập ID lớp khi chọn Group.');
-                    return; 
-                }
-                saveData();
-        } else {
-            console.warn('Vui lòng chọn Privacy Status.');
-            }
+        if (className.value.trim()) {
+            saveData();
+        } 
+        else {
+            alert("Class name is empty!");
         }
     };
+
+    const getMember = async () =>{
+
+    }
 
 </script>
 
@@ -151,13 +178,20 @@
                     <th class="username-column">ptitstudent1</th>
                     <th class="role">Admin</th>
               </tr> -->
-              <tr v-for="(row, index) in rows" :key="index">
-                <td v-if="showSelectColumn">
-                    <input type="checkbox" @change="toggleSelectMember(row.username)" :checked="selectedUsers.includes(row.username)" />
-                </td>
-                <td class="username-column"><input v-model="row.username" placeholder="Username" /></td>
-                <td class="role"><p>Member</p></td>
-              </tr>
+                <tr v-for="(row, index) in rows" :key="index">
+                    <td v-if="showSelectColumn">
+                        <input type="checkbox" @change="toggleSelectMember(row.username)" :checked="selectedUsers.includes(row.username)" />
+                    </td>
+                    <td class="username-column"><input v-model="row.username" placeholder="Username" /></td>
+                    <td class="role">
+                        <!-- Thay input bằng select -->
+                        <select class="role-option" v-model="row.role">
+                            <!-- <option value="" disabled>Role</option> -->
+                            <option value="Admin">Admin</option>
+                            <option value="Member" selected>Member</option>
+                        </select>
+                    </td>              
+                </tr>
             </tbody>
           </table>
     </div>
@@ -173,7 +207,7 @@
             <img src="../assets/add-word.svg" alt="" class="icon">
         </button>
         <button @click="handleSaveData" class="icon-button">
-            <img src="../assets/add-word.svg" alt="" class="icon">
+            <img src="../assets/save.svg" alt="" class="icon">
         </button>
     </div>
     </div>
@@ -268,6 +302,14 @@
         border: 1px solid #ccc;
         border-radius: 4px;
     }
+
+    .role-option {
+        width: 80%;
+        height: 25px;
+        border: none;
+    }
+
+
 
     .select-column {
         width: 50px; /* Chiều rộng cho cột Select */

@@ -31,30 +31,34 @@ const saveData = async () => {
     };
 
     try {
-        const token = localStorage.getItem('token') // Lấy token từ localStorage
+        // Get the token from localStorage
+        const token = localStorage.getItem('token');
         if (!token) {
-            errorMessage.value = 'You must be logged in to view user information'
-            return
+            errorMessage.value = 'You must be logged in to view user information';
+            return;
         }
+
+        // Log the request data and token for debugging purposes
         console.log(requestData);
         console.log(token);
+
+        // Send a PUT request to the /user/password endpoint with the token in the Authorization header
         const response = await axios.put('/user/password', requestData, {
             headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`, // Attach the token in the request headers
             },
         });
-        // Gửi yêu cầu POST tới backend
+
+        // Handle successful response (uncomment if necessary)
         if (response.data.success) {
-            emit('save', requestData);
+            emit('save', { newPassword: newPassword.value });
             closeForm();
         } else {
-            errorMessage.value = 'Đã xảy ra lỗi khi thay đổi mật khẩu!';
+            errorMessage.value = 'An error occurred while changing the password!';
         }
-    } catch (error) {
-        console.error("Error:", error);
-        console.error("Response:", error.response);
-        errorMessage.value = error.response?.data?.message || 'Lỗi kết nối tới server!';
+        } catch (error) {
+        // Handle errors (e.g., server issues, invalid response)
+        errorMessage.value = error.response?.data?.message || 'Error connecting to the server!';
     }
 };
 </script>
@@ -80,7 +84,6 @@ const saveData = async () => {
 
         <!-- Hiển thị thông báo lỗi và thành công -->
         <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
-        <p v-if="successMessage" class="success">{{ successMessage }}</p>
 
         <!-- Nút hành động -->
         <div class="button-container">

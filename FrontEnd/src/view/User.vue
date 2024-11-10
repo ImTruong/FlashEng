@@ -40,8 +40,7 @@ const updateProfile = async () => {
     }
 
     // Gửi request PUT để cập nhật thông tin user
-    const response = await axios.put(
-      "/user/update",
+    const response = await axios.put("/user/update",
       {
         fullName: user.value.fullName,
         email: "",

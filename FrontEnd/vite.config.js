@@ -19,8 +19,7 @@ export default defineConfig({
       '/user': {
         target: 'http://localhost:8080', // Địa chỉ backend
         changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/user/, '/user'), // Không thay đổi nếu endpoint đã bắt đầu bằng /user
+        secure: false,    
       },
       '/set': {
         target: 'http://localhost:8080', // Địa chỉ backend
@@ -29,6 +28,11 @@ export default defineConfig({
       },
       '/word': {
         target: 'http://localhost:8080', // Địa chỉ backend
+        changeOrigin: true,
+        secure: false
+      },
+      '/class': {
+        target: 'http://localhost:8080', 
         changeOrigin: true,
         secure: false
       },
