@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -36,7 +37,7 @@ public class ClassEntity {
     private List<ClassSetRequestEntity> classSetRequestEntityList;
 
     @OneToMany(mappedBy = "classEntity")
-    private List<ClassMemberEntity> classMemberEntityList;
+    private List<ClassMemberEntity> classMemberEntityList = new ArrayList<>();
 
     @OneToMany(mappedBy = "classEntity")
     private List<ClassJoinRequestEntity> classJoinRequestEntityList;
