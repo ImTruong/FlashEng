@@ -2,45 +2,66 @@
     import { onMounted, computed, defineProps, defineEmits } from 'vue';
     import Card from './Set.vue';
     import OverlayBackground from './OverlayBackground.vue';
+    import ClassTable from './ClassTable.vue';
     import { ref, watch } from 'vue';
     import { useStore } from 'vuex';
+
     const store = useStore();
-    
+    const classTable = ref(false);
     const sets = computed(() => store.getters.getSets);
+    const filteredSets = ref([]);
+    const visible = ref(true);
 
-    onMounted(() => {
-        store.dispatch('fetchLibrarySets');  
-    })
     const { classItem, Overlay_background } = defineProps(['classItem', 'Overlay_background']);
-
     const emit = defineEmits();
 
-function closeOverlay() {
-    emit('close');
-}
+    const icon = ref(false);
+    const search = ref("");
 
-    const icon = ref(false)
-    const search = ref("")
+    onMounted(() => {
+        store.dispatch('fetchLibrarySets');
+        filteredSets.value = sets.value;
+    });
 
+    // Hàm đóng overlay
+    function closeOverlay() {
+        emit('close');
+    }
+
+    // Hàm hiển thị bảng ClassTable
+    const showClassTable = () => {
+        classTable.value = true;
+        visible.value = false;
+        icon.value = false;
+    };
+
+    // Hàm đóng bảng ClassTable
+    const closeClassTable = () => {
+        classTable.value = false;
+        visible.value = true;
+    };
+
+    // Theo dõi thay đổi trong ô tìm kiếm và cập nhật danh sách `filteredSets`
     watch(search, () => {
-        sets.value = sets.filter(set => set.name.toLowerCase().includes(search.value.toLowerCase()))
-    })
-
-    
+        filteredSets.value = sets.value.filter(set =>
+            set.name.toLowerCase().includes(search.value.toLowerCase())
+        );
+    });
 </script>
 
 <template>
     <OverlayBackground 
-        :isVisible="Overlay_background" 
-        @clickOverlay="closeOverlay" />
-    <div class="classbox-container" v-if="Overlay_background"> 
+    :isVisible="OverlayBackground" 
+    @clickOverlay="closeOverlay" />
+    <div class="classbox-container" v-if="visible"> 
         <div class="search-container">
+            
             <input v-model.trim="search" type="text" placeholder="Search ..." class="search-bar"/>
             <img src="../assets/search.svg" alt="Icon" class="search-icon">
         </div>
         <div v-if="icon" class="icon">
             <img src="../assets/add_set.svg" alt="Icon" class="add-set-icon">
-            <img src="../assets/add_member.svg" alt="Icon" class="add-member-icon">
+            <img src="../assets/add_member.svg" alt="Icon" class="add-member-icon" @click="showClassTable">
             <img src="../assets/leave-group.svg" alt="Icon" class="leave-group-icon" @click="closeOverlay">
         </div>
         <h2 @click="icon = !icon">{{ classItem.name }}</h2>
@@ -54,6 +75,7 @@ function closeOverlay() {
                 :set="set" />
         </div>
     </div>
+    <ClassTable v-if="classTable" @close="closeClassTable"></ClassTable>
 </template>
 
 
@@ -94,7 +116,8 @@ function closeOverlay() {
     .search-container{
         position: absolute; 
         text-align: center;
-        justify-content: center;        width: 30%;
+        justify-content: center;        
+        width: 30%;
         top: 25px;
         left: 60%;
     }
