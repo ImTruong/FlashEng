@@ -1,10 +1,10 @@
 <script setup>
   import Header from "@/components/Header.vue" // Import your header component
+  import ChangePassword from "@/components/ChangePassword.vue";
   import {ref, onMounted} from 'vue'
   import axios from "axios";
 
-  const changePw = ref(false);
-
+  const isChangePasswordVisible = ref(false);
   const user = ref({
     fullName: '',
     username: '',
@@ -12,9 +12,6 @@
     country: ''
   });
   const errorMessage = ref(null);
-
-
-
   const fetchUserInfo = async () => {
   try {
     const token = localStorage.getItem('token') // Lấy token từ localStorage
@@ -22,17 +19,46 @@
       errorMessage.value = 'You must be logged in to view user information'
       return
     }
-
     const response = await axios.get('/user', {
       headers: {
         Authorization: `Bearer ${token}`, // Đảm bảo gửi token trong header
       },
     })
-
     user.value = response.data.data;
   } catch (error) {
     errorMessage.value = error.response ? error.response.data : 'An error occurred'
     console.error('Error fetching user info:', error)
+  }
+};
+
+const updateProfile = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      errorMessage.value = "You must be logged in to update user information";
+      return;
+    }
+
+    // Gửi request PUT để cập nhật thông tin user
+    const response = await axios.put(
+      "/user/update",
+      {
+        fullName: user.value.fullName,
+        email: "",
+        country: user.value.country
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    user.value = response.data.data;
+    errorMessage.value = "User information updated successfully!";
+  } catch (error) {
+    errorMessage.value = error.response ? error.response.data : "An error occurred";
+    console.error("Error updating user info:", error);
   }
 
 };
@@ -41,6 +67,22 @@
 onMounted(() => {
   fetchUserInfo();
 });
+
+  // Phương thức hiển thị form ChangePassword
+const showChangePasswordForm = () => {
+  isChangePasswordVisible.value = true;
+};
+
+// Phương thức xử lý khi đóng form ChangePassword
+const handleCloseChangePassword = () => {
+  isChangePasswordVisible.value = false;
+};
+
+// Phương thức xử lý khi lưu mật khẩu mới
+const handleSavePassword = (data) => {
+  console.log('Mật khẩu mới:', data);
+  isChangePasswordVisible.value = false;
+};
 
 </script>
 
@@ -69,13 +111,19 @@ onMounted(() => {
               <input v-model="user.country" id="country" type="text" />
             </div>
             <div class="actions">
-              <button type="button" @click="changePw = true">Change password</button>
+              <button type="button" @click="showChangePasswordForm">Change password</button>
               <button type="submit">Edit profile</button>
             </div>
+
+
           </form>
-          
         </main>
       </div>
+      <ChangePassword
+      v-if="isChangePasswordVisible"
+      @close="handleCloseChangePassword"
+      @save="handleSavePassword"
+    ></ChangePassword>
     </div>
   </template>
   

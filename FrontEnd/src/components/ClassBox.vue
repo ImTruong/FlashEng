@@ -15,9 +15,9 @@
 
     const emit = defineEmits();
 
-    function closeOverlay(){
-        emit('close');
-    }
+function closeOverlay() {
+    emit('close');
+}
 
     const icon = ref(false)
     const search = ref("")
@@ -36,7 +36,7 @@
     <div class="classbox-container" v-if="Overlay_background"> 
         <div class="search-container">
             <input v-model.trim="search" type="text" placeholder="Search ..." class="search-bar"/>
-            <img src="../assets/search.svg" alt="Icon" class="search-icon" >
+            <img src="../assets/search.svg" alt="Icon" class="search-icon">
         </div>
         <div v-if="icon" class="icon">
             <img src="../assets/add_set.svg" alt="Icon" class="add-set-icon">
@@ -55,6 +55,7 @@
         </div>
     </div>
 </template>
+
 
 <style scoped>
 

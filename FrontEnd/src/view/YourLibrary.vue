@@ -1,4 +1,5 @@
 <script setup>
+    import axios from "axios";
     import classesData from "../data/classes.json"
     import Header from '@/components/Header.vue';
     import LibraryBody from "@/components/LibraryBody.vue";
@@ -46,4 +47,3 @@
     
     
 </style>
-
