@@ -1,30 +1,43 @@
 <script setup>
-    import { ref, computed } from 'vue';
-    import cardData from '../data/sets.json';
-    import Header from "../components/Header.vue";
+    import { ref, computed, onMounted, watch } from 'vue';
     import { useRoute } from 'vue-router';
+    import { useStore } from 'vuex';
+    import Header from "../components/Header.vue";
+
+    const store = useStore();
+    const sets = computed(() => store.getters.getSets);
 
 
     const route = useRoute();
     const selectedSet = ref(route.params.id);
 
-
     const currentCard = ref(0);
     const isFlipped = ref(false);
-    const currentSet = ref(cardData.find(set => set.id == selectedSet.value)); 
-    const totalCards = computed(() => currentSet.value ? currentSet.value.words.length : 0); 
 
-    // Trạng thái của thẻ hiện tại
-    const cardStatus = computed(() => `${currentCard.value + 1}/${totalCards.value}`); // Hiển thị trạng thái thẻ hiện tại
+    const currentSet = ref(null);
 
+
+    const totalCards = computed(() => currentSet.value ? currentSet.value.wordListResponses.length : 0);
+
+    const cardStatus = computed(() => `${currentCard.value + 1}/${totalCards.value}`);
 
     const nextCard = () => {
-        isFlipped.value = false
+        isFlipped.value = false;
         currentCard.value = (currentCard.value + 1) % totalCards.value; // Chuyển sang thẻ tiếp theo
     };
+
     const toggleFlip = () => {
         isFlipped.value = !isFlipped.value;
     };
+    watch([sets, selectedSet], () => {
+        if (sets.value && sets.value.length > 0) {
+            currentSet.value = sets.value.find(set => set.id == selectedSet.value) || null;
+        }
+    }, { immediate: true });
+
+    onMounted(() => {
+        store.dispatch('fetchLibrarySets');
+    });
 </script>
 
 <template>
@@ -38,13 +51,13 @@
         <div class="flashcard-content" @click="toggleFlip">
             <div class="flashcard">
                 <div v-if="!isFlipped" class="flashcard-front">
-                    <img :src="currentSet.words[currentCard].image" alt="Flashcard Image" />
-                    <p>{{ currentSet.words[currentCard].word }}</p>
+                    <img :src="currentSet.wordListResponses[currentCard].image" alt="Flashcard Image" />
+                    <p>{{ currentSet.wordListResponses[currentCard].word }}</p>
                   </div>
                   <div v-else class="flashcard-back">
-                    <p>{{ currentSet.words[currentCard].ipa }}</p>
-                    <p>{{ currentSet.words[currentCard].definition }}</p>
-                    <p>{{ currentSet.words[currentCard].example }}</p>
+                    <p>{{ currentSet.wordListResponses[currentCard].ipa }}</p>
+                    <p>{{ currentSet.wordListResponses[currentCard].definition }}</p>
+                    <p>{{ currentSet.wordListResponses[currentCard].example }}</p>
                   </div>
             </div>    
         </div>
