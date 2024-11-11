@@ -60,13 +60,12 @@
         }
       }
       const response = await axios.post('/word', formData, config);
-      console.log(response.data)
-      emit('save', response.data);
-      if (response.status === 200) {
-        closeForm();
-        alert('Word saved successfully!');
+      if (response.status === 200) { 
+        console.log(response.data)
+        emit('save', response.data.data);
+        console.log('Word saved successfully!');
       } else {
-        alert('Failed to save word');
+        console.log('Failed to save word');
       }
     } catch (error) {
         console.error('Error saving word:', error);
@@ -112,7 +111,7 @@
           <img src="../assets/add_img.svg" alt="Upload Icon" class="icon-upload" @click="$refs.fileInput.click()" />
         </div>
         <div class="modal-actions">
-          <button type="submit"  class="add-btn">Save</button>
+          <button type="submit"  class="add-btn" >Save</button>
           <button type="button" @click="closeForm" class="cancel-btn">Cancel</button>
         </div>
       </form>

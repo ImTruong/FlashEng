@@ -2,7 +2,8 @@
   import {ref, defineProps} from "vue"
   import {useRouter} from "vue-router"
   import SetTable from "../components/SetTable.vue"
-
+  import axios from "axios"
+  
   const hover  = ref(false)
   const router = useRouter()
   const {set} = defineProps(['set'])
@@ -26,9 +27,29 @@
     router.push(`/flashcard/${set.id}`)
   }
 
-  const deleteSet = () => {
-    console.log(`Deleting set ${set.id}`)
-  }
+  const deleteSet = async () => {
+    const token = localStorage.getItem('token'); // Lấy token từ localStorage
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`, // Thêm token vào header
+        },
+      };
+      const response = await axios.delete(`/set/${set.id}`, config);
+      if (response.status === 200) {
+        console.log(`Set with ID ${set.id} has been deleted.`);
+        router.push('/'); 
+      } else {
+        console.error('Failed to delete the set');
+      }
+    } catch (error) {
+      if (error.response) {
+        console.error('Error while deleting set:', error.response.data);
+      } else {
+        console.error('Network or Axios error:', error.message);
+      }
+    }
+  };
 
   const showSetTable = (editMode, existingSetData) => {
     setTable.value = true; 
@@ -40,6 +61,12 @@
   const closeSetTable = () => {
     setTable.value = false;
   };
+
+  const handleUpdate = (updatedRows) => {
+    existingSet.value.wordListResponses = updatedRows;
+    console.log('Dữ liệu đã được cập nhật:', existingSet.value);
+  };
+
 </script>
 
 <template>
@@ -50,9 +77,10 @@
         <p>{{ set.userDetailResponse.fullName}}</p>
       </div>
       <div class="set-option">
-        <div class="icon-container" @click.stop="studySet" >
-          <router-link to="/flashcard" class="study"></router-link>
-          <img src="../assets/study.svg" alt="Study">
+        <div class="icon-container">
+          <router-link :to="{ name: 'flashcard', params: { id: set.id } }">
+            <img src="../assets/study.svg" alt="Study" @click.stop="studySet" />
+          </router-link>
         </div>
         <div class="icon-container" @click.stop="gameSet" >
           <img src="../assets/game.svg" alt="Game">
@@ -70,6 +98,7 @@
         :isEditMode="isEditMode" 
         :existingSet="existingSet" 
         @close="closeSetTable" 
+        @update="handleUpdate"
       />
 </template>
   

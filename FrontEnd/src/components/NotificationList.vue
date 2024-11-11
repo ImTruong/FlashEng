@@ -9,7 +9,6 @@
       type: "reminder",
       is_read: false,
       created_at: "2024-11-08T10:00:00Z",
-      notification_meta_data: {}
     },
     {
       id: 2,
@@ -17,15 +16,13 @@
       type: "inviter",
       is_read: true,
       created_at: "2024-11-07T14:30:00Z",
-      notification_meta_data: {}
     },
     {
       id: 3,
-      message: "You became member of D22",
+      message: "You became member of D22",// admin duyệt vào nhóm 
       type: "join",
       is_read: false,
       created_at: "2024-11-06T09:00:00Z",
-      notification_meta_data: {}
     }
   ]);
 </script>
