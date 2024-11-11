@@ -36,7 +36,7 @@ public class SetController {
 
     @PostMapping
     public ResponseEntity<?> createSet(@Valid @RequestBody CreateSetRequest createSetRequest) {
-        ApiResponse<?> response = new ApiResponse<>(setService.createSet(createSetRequest), "Create Set Successfully", null);
+        ApiResponse<?> response = new ApiResponse<>(true, "Create Set Successfully", setService.createSet(createSetRequest));
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
