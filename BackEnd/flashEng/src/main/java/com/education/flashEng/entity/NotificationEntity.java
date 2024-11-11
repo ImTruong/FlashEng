@@ -33,6 +33,10 @@ public class NotificationEntity {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    // Thời gian nhắc lại của thông báo, được tùy chỉnh theo lựa chọn của người dùng
+    @Column(name = "reminder_at")
+    private LocalDateTime reminderTime;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity userEntity;

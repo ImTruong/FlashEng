@@ -32,6 +32,12 @@ public class ClassMemberController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @DeleteMapping("/leave")
+    public ResponseEntity<?> leaveClass(@RequestParam @NotNull(message = "classId is required") Long classId) {
+        ApiResponse<String> response = new ApiResponse<>(classMemberService.leaveClass(classId), "Left Class Successfully", null);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @PutMapping("/role")
     public ResponseEntity<?> changeRole(@Valid @RequestBody ClassRoleChangeRequest classRoleChangeRequest) {
         ApiResponse<String> response = new ApiResponse<>(classMemberService.changeRole(classRoleChangeRequest.getUserId(), classRoleChangeRequest.getClassId(), classRoleChangeRequest.getRole()), "Role Changed Successfully", null);

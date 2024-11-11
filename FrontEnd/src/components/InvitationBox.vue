@@ -29,7 +29,7 @@
                 <img src="../assets/class.svg" alt="class-icon">
                 <h1>{{ classItem.name }}</h1>
             </div>
-            <p>{{ classItem.sets }} set | {{ classItem.members }} members</p>
+            <p>{{ classItem.sets }} sets | {{ classItem.members }} members</p>
             <p class="inviter">Inviter: </p>
             <div class="button">
                 <div class="accept-button" @click="closeOverlay">

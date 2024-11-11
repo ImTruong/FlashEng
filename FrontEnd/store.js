@@ -23,7 +23,7 @@ const store = createStore({
           console.warn("Token không tồn tại");
           return;
         }
-        const response = await axios.get("/set/private", {
+        const response = await axios.get("/set", {
           headers: {
             Authorization: `Bearer ${token}`
           }

@@ -2,6 +2,7 @@ package com.education.flashEng.service.Impl;
 
 import com.education.flashEng.entity.*;
 import com.education.flashEng.exception.EntityNotFoundWithIdException;
+import com.education.flashEng.payload.response.AllClassesInvitationResponse;
 import com.education.flashEng.payload.response.ClassInformationResponse;
 import com.education.flashEng.payload.response.ClassInvitationResponse;
 import com.education.flashEng.repository.ClassInvitationRepository;
@@ -40,17 +41,17 @@ public class ClassInvitationServiceImpl implements ClassInvitationService {
 
     @Transactional
     @Override
-    public boolean inviteToClass(Long classId, Long inviteeId) {
-        UserEntity invitee = userService.getUserById(inviteeId);
+    public boolean inviteToClass(Long classId, String inviteeUsername) {
+        UserEntity invitee = userService.getUserByUsername(inviteeUsername);
         UserEntity inviter = userService.getUserFromSecurityContext();
         ClassEntity classEntity = classService.getClassById(classId);
         if (classEntity.getClassMemberEntityList().stream().noneMatch(classMemberEntity -> classMemberEntity.getUserEntity() == inviter))
             throw new AccessDeniedException("You are not authorized to invite to this class.");
         if (classEntity.getClassMemberEntityList().stream().anyMatch(classMemberEntity -> classMemberEntity.getUserEntity() == invitee))
             throw new AccessDeniedException("User is already a member of this class.");
-        if (classInvitationRepository.findByClassEntityIdAndInviteeEntityIdAndInviterEntityId(classId, inviteeId, inviter.getId()).isPresent())
+        if (classInvitationRepository.findByClassEntityIdAndInviteeEntityIdAndInviterEntityId(classId, invitee.getId(), inviter.getId()).isPresent())
             throw new AccessDeniedException("You have already invited this user to this class.");
-        if (classJoinRequestService.getClassJoinRequestByClassIdAndUserId(classId, inviteeId).isPresent())
+        if (classJoinRequestService.getClassJoinRequestByClassIdAndUserId(classId, invitee.getId()).isPresent())
             throw new AccessDeniedException("User has already requested to join this class.");
         ClassInvitationEntity classInvitationEntity = ClassInvitationEntity.builder()
                 .classEntity(classEntity)
@@ -122,9 +123,37 @@ public class ClassInvitationServiceImpl implements ClassInvitationService {
             throw new AccessDeniedException("You are not authorized to view this invitation.");
         return ClassInvitationResponse.builder()
                 .classInformationResponse(classService.getClassInformation(classInvitationEntity.getClassEntity().getId()))
-                .inviterName(classInvitationEntity.getInviterEntity().getFullName())
+                .inviterUsername(classInvitationEntity.getInviterEntity().getUsername())
                 .invitationId(classInvitationEntity.getId())
                 .build();
     }
 
+    @Override
+    public List<ClassInvitationResponse> getAllCurrentUserClassInvitations() {
+        UserEntity invitee = userService.getUserFromSecurityContext();
+        List<ClassInvitationEntity> classInvitationEntities = classInvitationRepository.findAllByInviteeEntityId(invitee.getId());
+        return classInvitationEntities.stream()
+                .map(classInvitationEntity -> ClassInvitationResponse.builder()
+                        .classInformationResponse(classService.getClassInformation(classInvitationEntity.getClassEntity().getId()))
+                        .inviterUsername(classInvitationEntity.getInviterEntity().getUsername())
+                        .invitationId(classInvitationEntity.getId())
+                        .build())
+                .toList();
+    }
+
+    @Override
+    public List<AllClassesInvitationResponse> getAllClassInvitations(Long classId) {
+        UserEntity user = userService.getUserFromSecurityContext();
+        ClassEntity classEntity = classService.getClassById(classId);
+        if (classEntity.getClassMemberEntityList().stream().noneMatch(classMemberEntity -> classMemberEntity.getUserEntity() == user && classMemberEntity.getRoleClassEntity().getName().equals("ADMIN")))
+            throw new AccessDeniedException("You are not authorized to view invitations of this class.");
+        return classEntity.getClassInvitationEntityList().stream()
+                .map(classInvitationEntity -> AllClassesInvitationResponse.builder()
+                        .inviterUsername(classInvitationEntity.getInviterEntity().getUsername())
+                        .invitationId(classInvitationEntity.getId())
+                        .inviteeUsername(classInvitationEntity.getInviteeEntity().getUsername())
+                        .message(classInvitationEntity.getInviterEntity().getUsername() + " has invited " + classInvitationEntity.getInviteeEntity().getUsername() + " to this class.")
+                        .build())
+                .toList();
+    }
 }
