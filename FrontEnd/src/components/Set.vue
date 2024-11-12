@@ -20,7 +20,7 @@
   }
 
   const gameSet = () => {
-    console.log(`Editing set ${set.id}`)
+    router.push(`/game/${set.id}`)
   }
 
   const studySet = () => {

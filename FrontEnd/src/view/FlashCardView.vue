@@ -2,6 +2,7 @@
     import { ref, computed, onMounted, watch } from 'vue';
     import { useRoute } from 'vue-router';
     import { useStore } from 'vuex';
+    import axios from 'axios';
     import Header from "../components/Header.vue";
 
     const store = useStore();
@@ -17,7 +18,7 @@
     const currentSet = ref(null);
 
 
-    const totalCards = computed(() => currentSet.value ? currentSet.value.wordListResponses.length : 0);
+    const totalCards = computed(() => currentSet.value ? currentSet.value.wordResponses.length : 0);
 
     const cardStatus = computed(() => `${currentCard.value + 1}/${totalCards.value}`);
 
@@ -28,7 +29,31 @@
 
     const toggleFlip = () => {
         isFlipped.value = !isFlipped.value;
+    }
+
+    const submitRating = async (rating) => {
+        try {
+            const currentWord = currentSet.value.wordResponses[currentCard.value];
+            const studySessionData = {
+                wordId: currentWord.id,
+                difficulty: rating
+            };
+            console.log(studySessionData);
+            const token = localStorage.getItem('token'); 
+            const config = {
+            headers: {
+                Authorization: `Bearer ${token}` // Thêm token vào header
+            }
+            }
+            // Make API request to log study session
+            await axios.post('/study', studySessionData, config); // Replace with your actual API endpoint
+            console.log('Study session created:', studySessionData);
+            nextCard();
+        } catch (error) {
+            console.error('Error submitting rating:', error);
+        }
     };
+
     watch([sets, selectedSet], () => {
         if (sets.value && sets.value.length > 0) {
             currentSet.value = sets.value.find(set => set.id == selectedSet.value) || null;
@@ -38,6 +63,7 @@
     onMounted(() => {
         store.dispatch('fetchLibrarySets');
     });
+
 </script>
 
 <template>
@@ -51,22 +77,22 @@
         <div class="flashcard-content" @click="toggleFlip">
             <div class="flashcard">
                 <div v-if="!isFlipped" class="flashcard-front">
-                    <img :src="currentSet.wordListResponses[currentCard].image" alt="Flashcard Image" />
-                    <p>{{ currentSet.wordListResponses[currentCard].word }}</p>
+                    <img :src="currentSet.wordResponses[currentCard].image" alt="Flashcard Image" />
+                    <p>{{ currentSet.wordResponses[currentCard].word }}</p>
                   </div>
                   <div v-else class="flashcard-back">
-                    <p>{{ currentSet.wordListResponses[currentCard].ipa }}</p>
-                    <p>{{ currentSet.wordListResponses[currentCard].definition }}</p>
-                    <p>{{ currentSet.wordListResponses[currentCard].example }}</p>
+                    <p>{{ currentSet.wordResponses[currentCard].ipa }}</p>
+                    <p>{{ currentSet.wordResponses[currentCard].definition }}</p>
+                    <p>{{ currentSet.wordResponses[currentCard].example }}</p>
                   </div>
             </div>    
         </div>
 
         <div class="flashcard-rating">
-            <button @click="nextCard" class="rating-btn">Very Difficult</button>
-            <button @click="nextCard" class="rating-btn">Difficult</button>
-            <button @click="nextCard" class="rating-btn">Easy</button>
-            <button @click="nextCard" class="rating-btn">Very Easy</button>
+            <button @click="submitRating('Very Difficult')" class="rating-btn">Very Difficult</button>
+            <button @click="submitRating('Difficult')" class="rating-btn">Difficult</button>
+            <button @click="submitRating('Easy')" class="rating-btn">Easy</button>
+            <button @click="submitRating('Very Easy')" class="rating-btn">Very Easy</button>
         </div>
     </div>
     <div v-else>Loading...</div> 

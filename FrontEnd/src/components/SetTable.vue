@@ -9,7 +9,7 @@
 
     const visible = ref(true); 
     const setName = ref(props.isEditMode ? props.existingSet.name : '');
-    const rows = ref(props.isEditMode ? props.existingSet.wordListResponses: [{ id: '', word: '', ipa: '',audio: '', definition: '', example: '', image: '' }]);
+    const rows = ref(props.isEditMode ? props.existingSet.wordResponses: [{ id: '', word: '', ipa: '',audio: '', definition: '', example: '', image: '' }]);
     const selectedWords = ref([]); 
     const showSelectColumn = ref(false);
     const showOptions = ref(false)
@@ -26,7 +26,6 @@
         const payload = {
             setId: props.isEditMode ? props.existingSet.id : null,
             name: setName.value,
-            description: "Created set", // description có thể là null
             privacyStatus: selectedOption.value,
             classId: classId.value | null // class_id có thể là null
         }
