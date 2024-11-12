@@ -5,16 +5,19 @@ import com.education.flashEng.service.ClassSetRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/set-request")
 public class ClassSetRequestController {
     @Autowired
     ClassSetRequestService classSetRequestService;
+
+    @GetMapping("/{setRequestId}")
+    public ResponseEntity<?> getSetRequest(@PathVariable Long setRequestId) {
+        ApiResponse<?> response = new ApiResponse<>(true, "Accept Set Request Successfully", classSetRequestService.getSetRequest(setRequestId));
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
     @PutMapping("/accept/{setRequestId}")
     public ResponseEntity<?> acceptSetRequest(@PathVariable Long setRequestId) {

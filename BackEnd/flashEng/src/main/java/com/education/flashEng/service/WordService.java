@@ -12,8 +12,10 @@ import java.io.IOException;
 import java.util.List;
 
 public interface WordService {
-    public WordResponse createWord(CreateWordRequest createWordRequest);
-    public List<WordResponse> getWordBySetId(Long setId);
-    public boolean updateWord(UpdateWordRequest updateWordRequest);
-    public boolean deleteWordById(Long wordId);
+    WordResponse createWord(CreateWordRequest createWordRequest);
+    List<WordResponse> getWordBySetId(Long setId);
+    boolean updateWord(UpdateWordRequest updateWordRequest);
+    boolean deleteWordById(Long wordId);
+
+    List<WordResponse> getCurrentUserWord();
 }
