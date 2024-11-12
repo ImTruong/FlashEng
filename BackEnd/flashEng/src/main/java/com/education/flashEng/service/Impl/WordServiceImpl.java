@@ -82,7 +82,7 @@ public class WordServiceImpl implements WordService {
         UserEntity user = userService.getUserFromSecurityContext();
         SetEntity setEntity = setRepository.findById(setId)
                 .orElseThrow(() -> new EntityNotFoundWithIdException("SetEntity", setId.toString()));
-        if(user.getClassMemberEntityList().stream().noneMatch(classMemberEntity -> classMemberEntity.getClassEntity().getSetsEntityList().contains(setEntity))){
+        if((user.getClassMemberEntityList().stream().noneMatch(classMemberEntity -> classMemberEntity.getClassEntity().getSetsEntityList().contains(setEntity))&&setEntity.getPrivacyStatus().equals("Class"))||(setEntity.getPrivacyStatus().equals("Private")&&!Objects.equals(setEntity.getUserEntity().getId(), user.getId()))){
             throw new IllegalArgumentException("You do not permission to get word in this set");
         }
         List<WordEntity> wordEntities = wordRepository.findAllBySetEntityId(setId);
