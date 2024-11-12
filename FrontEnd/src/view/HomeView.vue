@@ -12,11 +12,9 @@
 
     onMounted(() => {
         store.dispatch('fetchLibrarySets').then(() => {
-            // Lấy lại giá trị sets sau khi fetch xong
             displayedSets.value = sets.value.slice(0, 3); // Cập nhật danh sách hiển thị
         });
     });   
-    // Hàm hiển thị toàn bộ dữ liệu khi nhấn "More..."
     const showAllSetsRecent = () => {
         displayedSets.value = sets;
     };
@@ -77,7 +75,7 @@
         margin-top: 30px;
         cursor: pointer;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        font-size: 1.5rem;
+        font-size: 2.2rem;
         font-weight: bold;
         color: #333;
         text-align: center;

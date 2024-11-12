@@ -8,7 +8,6 @@
     const store = useStore();
     const sets = computed(() => store.getters.getSets);
 
-
     const route = useRoute();
     const selectedSet = ref(route.params.id);
 

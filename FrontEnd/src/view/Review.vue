@@ -1,30 +1,43 @@
 <script setup>
-    import { ref, computed, onMounted, watch } from 'vue';
+    import { ref, computed, onMounted } from 'vue';
     import { useRoute } from 'vue-router';
-    import { useStore } from 'vuex';
     import axios from 'axios';
     import Header from "../components/Header.vue";
 
-    const store = useStore();
-    const sets = computed(() => store.getters.getSets);
-
-
     const route = useRoute();
-    const selectedSet = ref(route.params.id);
-
     const currentCard = ref(0);
     const isFlipped = ref(false);
+    const totalCards = ref([]);
 
-    const currentSet = ref(null);
 
+    const fetchReviewCard = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}` // Thêm token vào header
+                }
+            };
 
-    const totalCards = computed(() => currentSet.value ? currentSet.value.wordResponses.length : 0);
+            // Giả sử API có endpoint là "/review-card"
+            const response = await axios.get('/word/userCurrent', config);
+            console.log('Review Card:', response.data.data);
+            totalCards.value = response.data.data;
+        } catch (error) {
+            if (error.response) {
+                console.error('API Error:', error.response.status, error.response.data);
+            } else {
+                console.error('Network or Axios error:', error.message);
+            }
+            throw error; // Ném lỗi để xử lý ở nơi khác nếu cần
+        }
+    };
 
-    const cardStatus = computed(() => `${currentCard.value + 1}/${totalCards.value}`);
+    const cardStatus = computed(() => `${currentCard.value + 1}/${totalCards.value.length}`);
 
     const nextCard = () => {
         isFlipped.value = false;
-        currentCard.value = (currentCard.value + 1) % totalCards.value; // Chuyển sang thẻ tiếp theo
+        currentCard.value = (currentCard.value + 1) % totalCards.value.length; // Chuyển sang thẻ tiếp theo
     };
 
     const toggleFlip = () => {
@@ -33,7 +46,7 @@
 
     const submitRating = async (rating) => {
         try {
-            const currentWord = currentSet.value.wordResponses[currentCard.value];
+            const currentWord = totalCards[currentCard].id;
             const studySessionData = {
                 wordId: currentWord.id,
                 difficulty: rating
@@ -41,9 +54,9 @@
             console.log(studySessionData);
             const token = localStorage.getItem('token'); 
             const config = {
-            headers: {
-                Authorization: `Bearer ${token}` // Thêm token vào header
-            }
+                headers: {
+                    Authorization: `Bearer ${token}` // Thêm token vào header
+                }
             }
             // Make API request to log study session
             await axios.post('/study', studySessionData, config); // Replace with your actual API endpoint
@@ -53,14 +66,9 @@
             console.error('Error submitting rating:', error);
         }
     };
-    watch([sets, selectedSet], () => {
-        if (sets.value && sets.value.length > 0) {
-            currentSet.value = sets.value.find(set => set.id == selectedSet.value) || null;
-        }
-    }, { immediate: true });
 
     onMounted(() => {
-        store.dispatch('fetchLibrarySets');
+        fetchReviewCard();
     });
 </script>
 
@@ -68,21 +76,21 @@
     <Header></Header>
     <div class="flashcard-container" v-if="currentSet"> 
         <div class="flashcard-header">
-            <h2>{{ currentSet.name }}</h2>
+            <h2>Review Flashcards</h2>
             <span>{{ cardStatus }}</span>
         </div>
 
         <div class="flashcard-content" @click="toggleFlip">
             <div class="flashcard">
-                <div v-if="!isFlipped" class="flashcard-front">
-                    <img :src="currentSet.wordResponses[currentCard].image" alt="Flashcard Image" />
-                    <p>{{ currentSet.wordResponses[currentCard].word }}</p>
-                  </div>
-                  <div v-else class="flashcard-back">
-                    <p>{{ currentSet.wordResponses[currentCard].ipa }}</p>
-                    <p>{{ currentSet.wordResponses[currentCard].definition }}</p>
-                    <p>{{ currentSet.wordResponses[currentCard].example }}</p>
-                  </div>
+                <<div v-if="!isFlipped" class="flashcard-front">
+                    <img :src="totalCards[currentCard].image" alt="Flashcard Image" />
+                    <p>{{ totalCards[currentCard].word }}</p>
+                </div>
+                <div v-else class="flashcard-back">
+                    <p>{{ totalCards[currentCard].ipa }}</p>
+                    <p>{{ totalCards[currentCard].definition }}</p>
+                    <p>{{ totalCards[currentCard].example }}</p>
+                </div>
             </div>    
         </div>
 
