@@ -145,7 +145,6 @@ public class SetServiceImpl implements SetService {
         for(SetEntity setEntity : setEntities){
             SetResponse setResponse = new SetResponse();
             modelMapper.map(setEntity, setResponse);
-            // Thêm numberOfWords
             setResponse.setUserDetailResponse(
                     setEntity.getUserEntity().getFullName(),
                     setEntity.getUserEntity().getUsername(),
@@ -153,6 +152,7 @@ public class SetServiceImpl implements SetService {
                     setEntity.getUserEntity().getCountry());
             List<WordResponse> wordListResponses = wordService.getWordBySetId(setEntity.getId());
             setResponse.setWordResponses(wordListResponses);
+            setResponse.setNumberOfWords((long) wordListResponses.size());
             setResponses.add(setResponse);
         }
         return setResponses;

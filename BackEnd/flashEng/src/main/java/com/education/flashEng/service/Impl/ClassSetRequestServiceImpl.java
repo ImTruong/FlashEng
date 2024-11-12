@@ -4,15 +4,20 @@ import com.education.flashEng.entity.*;
 import com.education.flashEng.enums.AccessModifierType;
 import com.education.flashEng.exception.EntityNotFoundWithIdException;
 import com.education.flashEng.exception.ResourceAlreadyExistsException;
+import com.education.flashEng.payload.response.SetResponse;
+import com.education.flashEng.payload.response.WordResponse;
 import com.education.flashEng.repository.ClassMemberRepository;
 import com.education.flashEng.repository.ClassSetRequestRepository;
 import com.education.flashEng.repository.SetRepository;
 import com.education.flashEng.service.ClassSetRequestService;
 import jakarta.transaction.Transactional;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -25,7 +30,13 @@ public class ClassSetRequestServiceImpl implements ClassSetRequestService {
     @Autowired
     private SetRepository setRepository;
     @Autowired
+    private ClassMemberRepository classMemberRepository;
+    @Autowired
     private NotificationServiceImpl notificationService;
+    @Autowired
+    private NotificationServiceImpl notificationServiceImpl;
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Transactional
     @Override
@@ -103,5 +114,37 @@ public class ClassSetRequestServiceImpl implements ClassSetRequestService {
             notificationService.createRejectRequestNotification(setEntity, classEntity);
             return true;
         }
+    }
+
+    @Override
+    public SetResponse getSetRequest(Long setRequestId) {
+        ClassSetRequestEntity classSetRequestEntity = classSetRequestRepository.findById(setRequestId)
+                .orElseThrow(() -> new EntityNotFoundWithIdException("Class Set Request", setRequestId.toString()));
+        UserEntity user = userService.getUserFromSecurityContext();
+        ClassEntity classEntity = classSetRequestEntity.getClassEntity();
+        for(ClassMemberEntity memberEntity : classEntity.getClassMemberEntityList()){
+            if(memberEntity.getRoleClassEntity().getName().equals("ADMIN")){
+                if(memberEntity.getUserEntity().equals(user)){
+                    SetResponse setResponse = new SetResponse();
+                    SetEntity setEntity = classSetRequestEntity.getSetEntity();
+                    modelMapper.map(setEntity, setResponse);
+                    List<WordResponse> wordResponses = new ArrayList<>();
+                    for(WordEntity wordEntity : setEntity.getWordsEntityList()){
+                        WordResponse wordResponse = new WordResponse();
+                        modelMapper.map(wordEntity, wordResponse);
+                        wordResponses.add(wordResponse);
+                    }
+                    setResponse.setWordResponses(wordResponses);
+                    setResponse.setNumberOfWords((long) wordResponses.size());
+                    UserEntity userEntity = classSetRequestEntity.getUserEntity();
+                    setResponse.setUserDetailResponse(userEntity.getFullName(),
+                            userEntity.getUsername(),
+                            userEntity.getEmail(),
+                            userEntity.getCountry());
+                    return setResponse;
+                }
+            }
+        }
+        throw new AccessDeniedException("You do not permission to retrieve information of this request.");
     }
 }
