@@ -8,7 +8,6 @@
     const store = useStore();
     const sets = computed(() => store.getters.getSets);
 
-
     const route = useRoute();
     const selectedSet = ref(route.params.id);
 
@@ -53,7 +52,6 @@
             console.error('Error submitting rating:', error);
         }
     };
-
     watch([sets, selectedSet], () => {
         if (sets.value && sets.value.length > 0) {
             currentSet.value = sets.value.find(set => set.id == selectedSet.value) || null;
@@ -63,7 +61,6 @@
     onMounted(() => {
         store.dispatch('fetchLibrarySets');
     });
-
 </script>
 
 <template>

@@ -1,11 +1,10 @@
 <script setup>
-    import { ref} from 'vue';
+    import { ref, watch} from 'vue';
     import { RouterLink } from 'vue-router';
     import SetTable from "../components/SetTable.vue"
     import OverlayBackground from "../components/OverlayBackground.vue";
     import classesData from "../data/classes.json" 
     // import JoinBox from "../components/JoinBox.vue"
-    import setsData from "../data/sets.json"
     import SeachClasses from './SeachClasses.vue';
     import ClassTable from './ClassTable.vue';
     import InviteMember from './AddMember.vue';
@@ -63,7 +62,11 @@
         setTable.value = true; // Hiển thị SetTable
     };
 
-
+    watch(menuOpen, (newValue) => {
+    if (!newValue) {
+      showNotifications.value = false; // Close notifications when nav menu is closed
+    }
+  });
 </script>
 
 <template>
