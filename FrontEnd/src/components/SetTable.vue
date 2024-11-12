@@ -114,8 +114,8 @@
     };
 
     const toggleOptions = () => {
-    showOptions.value = !showOptions.value;
-};
+        showOptions.value = !showOptions.value;
+    };
 
     const selectOption = (option) => {
         selectedOption.value = option;
@@ -231,7 +231,7 @@
             <img src="../assets/add-word.svg" alt="" class="icon">
         </button>
         <button @click="handleSaveData" class="icon-button">
-            <img src="../assets/add-word.svg" alt="" class="icon">
+            <img src="../assets/save.svg" alt="" class="icon">
         </button>
       </div>
     </div>

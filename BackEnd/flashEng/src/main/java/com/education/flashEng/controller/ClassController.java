@@ -1,11 +1,9 @@
 package com.education.flashEng.controller;
 
-import com.education.flashEng.entity.ClassInvitationEntity;
 import com.education.flashEng.payload.request.ClassNameChangeRequest;
 import com.education.flashEng.payload.request.CreateClassRequest;
-import com.education.flashEng.payload.request.LoginRequest;
 import com.education.flashEng.payload.response.ApiResponse;
-import com.education.flashEng.service.ClassInvitationService;
+import com.education.flashEng.payload.response.ClassMemberListReponse;
 import com.education.flashEng.service.ClassService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,15 +19,28 @@ public class ClassController {
     @Autowired
     private ClassService classService;
 
-    @GetMapping("/{classId}")
+    @GetMapping("/public/{classId}")
     public ResponseEntity<?> getClassInformation(@PathVariable Long classId) {
         ApiResponse<?> response = new ApiResponse<>(true, "Class Information Fetched Successfully", classService.getClassInformation(classId));
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping
+    public ResponseEntity<?> findClassByName(@RequestParam String name) {
+        ApiResponse<?> response = new ApiResponse<>(true, "Classes Fetched Successfully", classService.findClassByName(name));
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
+    @GetMapping("/user")
+    public ResponseEntity<?> getAllCurrentUserClasses() {
+        ApiResponse<?> response = new ApiResponse<>(true, "Classes Fetched Successfully", classService.getAllCurrentUserClasses());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<?> createClass(@Valid @RequestBody CreateClassRequest createClassRequest) {
-        ApiResponse<String> response = new ApiResponse<>(classService.createClass(createClassRequest),"Class Created Successfully",null);
+        ApiResponse<ClassMemberListReponse> response = new ApiResponse<>(true,"Class Created Successfully", classService.createClass(createClassRequest));
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 

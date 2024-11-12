@@ -2,16 +2,20 @@ package com.education.flashEng.service.Impl;
 
 import com.education.flashEng.entity.*;
 import com.education.flashEng.exception.EntityNotFoundWithIdException;
+import com.education.flashEng.payload.response.NotificationResponse;
 import com.education.flashEng.repository.NotificationMetaDataRepository;
 import com.education.flashEng.repository.NotificationRepository;
 import com.education.flashEng.service.ClassInvitationService;
 import com.education.flashEng.service.NotificationService;
+import com.education.flashEng.service.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -22,6 +26,9 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Autowired
     private NotificationMetaDataRepository notificationMetaDataRepository;
+
+    @Autowired
+    private UserService userService;
 
     @Transactional
     @Override
@@ -191,6 +198,53 @@ public class NotificationServiceImpl implements NotificationService {
                 .build();
         notificationRepository.save(notificationEntity);
         return true;
+    }
+
+    @Override
+    public boolean createStudySessionNotification(StudySessionEntity studySessionEntity, LocalDateTime reminderTime) {
+        NotificationMetaDataEntity notificationMetaDataEntity = NotificationMetaDataEntity.builder()
+                .key("WordId")
+                .value(studySessionEntity.getWordEntity().getId().toString())
+                .build();
+        notificationMetaDataRepository.save(notificationMetaDataEntity);
+        NotificationEntity notificationEntity = NotificationEntity.builder()
+                .userEntity(studySessionEntity.getUserEntity())
+                .message("Now is the moment to pick up '" + studySessionEntity.getWordEntity().getWord() + "' word")
+                .notificationMetaDataEntity(notificationMetaDataEntity)
+                .isRead(false)
+                .type("REMINDER_STUDY_SESSION")
+                .reminderTime(reminderTime)
+                .build();
+        notificationRepository.save(notificationEntity);
+        return true;
+    }
+
+    @Override
+    public List<NotificationResponse> getAllCurrentUserNotifications() {
+        UserEntity user = userService.getUserFromSecurityContext();
+        List<NotificationEntity> notificationEntityList = user.getNotificationsEntityList();
+
+        return notificationEntityList.stream()
+                .filter(notificationEntity -> notificationEntity.getReminderTime() == null || !notificationEntity.getReminderTime().isBefore(LocalDateTime.now()))
+                .map(notificationEntity -> {
+                    notificationEntity.setIsRead(true);
+
+                    NotificationResponse.NotificationResponseBuilder responseBuilder = NotificationResponse.builder()
+                            .message(notificationEntity.getMessage())
+                            .type(notificationEntity.getType())
+                            .isRead(true);
+
+                    if (notificationEntity.getNotificationMetaDataEntity() != null) {
+                        Map<String, String> additionalInfo = Map.of(
+                                notificationEntity.getNotificationMetaDataEntity().getKey(),
+                                notificationEntity.getNotificationMetaDataEntity().getValue()
+                        );
+                        responseBuilder.additionalInfo(additionalInfo);
+                    }
+
+                    return responseBuilder.build();
+                })
+                .toList();
     }
 
 }

@@ -4,6 +4,7 @@ import com.education.flashEng.entity.ClassEntity;
 import com.education.flashEng.entity.ClassMemberEntity;
 import com.education.flashEng.entity.UserEntity;
 import com.education.flashEng.exception.EntityNotFoundWithIdException;
+import com.education.flashEng.exception.LastAdminException;
 import com.education.flashEng.payload.response.ClassMemberListReponse;
 import com.education.flashEng.repository.ClassMemberRepository;
 import com.education.flashEng.service.ClassMemberService;
@@ -30,6 +31,7 @@ public class ClassMemberServiceImpl implements ClassMemberService {
     @Autowired
     private ClassService classService;
 
+    @Override
     public ClassMemberEntity saveClassMember(ClassMemberEntity classMemberEntity) {
         return classMemberRepository.save(classMemberEntity);
     }
@@ -65,8 +67,8 @@ public class ClassMemberServiceImpl implements ClassMemberService {
             throw new AccessDeniedException("You are not authorized to change roles in this class.");
         ClassMemberEntity memberEntity = classMemberRepository.findByClassEntityIdAndUserEntityId(classId, userId)
                 .orElseThrow(() -> new EntityNotFoundWithIdException("Class Member", userId.toString()));
-        if (memberEntity.getRoleClassEntity().getName().equals("ADMIN"))
-            throw new AccessDeniedException("You can't change the role of an admin.");
+        if (userId == user.getId())
+            throw new AccessDeniedException("You can`t change your own role.");
         memberEntity.setRoleClassEntity(roleClassService.getRoleClassByName(role.toUpperCase()));
         classMemberRepository.save(memberEntity);
         return true;
@@ -90,5 +92,22 @@ public class ClassMemberServiceImpl implements ClassMemberService {
                         .toList())
                 .build();
         return classMemberListReponse;
+    }
+
+    @Override
+    public boolean leaveClass(Long classId) {
+        UserEntity user = userService.getUserFromSecurityContext();
+        ClassMemberEntity classMemberEntity = classMemberRepository.findByClassEntityIdAndUserEntityId(classId, user.getId())
+                .orElseThrow(() -> new AccessDeniedException("You are not a member of this class."));
+        ClassEntity classEntity = classMemberEntity.getClassEntity();
+        if(classEntity.getClassMemberEntityList().stream()
+                .filter(member -> member.getRoleClassEntity().getName().equals("ADMIN"))
+                .count() > 1  || classMemberEntity.getClassEntity().getClassMemberEntityList().size() == 1)
+        classMemberRepository.delete(classMemberEntity);
+        if(classEntity.getClassMemberEntityList().isEmpty())
+            classService.deleteClassByEntity(classEntity);
+        else
+            throw new LastAdminException("You are the last admin in this class. You can`t leave this class.");
+        return true;
     }
 }

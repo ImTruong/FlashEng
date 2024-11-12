@@ -1,5 +1,6 @@
 package com.education.flashEng.payload.response;
 
+
 import lombok.*;
 
 @Getter
@@ -7,12 +8,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ClassInvitationResponse {
-
-    private ClassInformationResponse classInformationResponse;
-
+public class AllClassesInvitationResponse {
     private String inviterUsername;
-
+    private String inviteeUsername;
+    private String message;
     private Long invitationId;
-
 }

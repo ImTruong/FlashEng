@@ -1,4 +1,5 @@
 <script setup>
+// chưa chạy được
     import { defineProps, defineEmits } from 'vue';
     import Card from './Set.vue';
     import setsData from '@/data/sets.json'
@@ -16,9 +17,49 @@
 
     const join = ref("Join")
 
-    const join_button = () =>{
-        if(join.value == "Join") join.value = "Cancel"
-        else join.value = "Join"
+    const requestId = ref(21);  
+
+    const join_button = async () => {
+  // Nếu trạng thái hiện tại là "Join", gửi yêu cầu API để tham gia lớp học
+        if (join.value === "Join") {
+            try {
+                const token = localStorage.getItem(token);
+                const response = await axios.post(`/class/request/join/accept?requestId=${requestId.value}`, // URL API của bạn
+                {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Thêm token vào header để xác thực
+                }
+                }
+            );
+            if (response.status === 200) {
+                // Nếu yêu cầu thành công, thay đổi trạng thái
+                join.value = "Cancel";
+            }
+            } catch (error) {
+            console.error('Error while joining the class:', error);
+            // Xử lý lỗi nếu cần
+            }
+        } else {
+            // Nếu trạng thái là "Cancel", bạn có thể gửi yêu cầu hủy tham gia (nếu có API hủy)
+            join.value = "Join";
+            try {
+                const token = localStorage.getItem(token);
+                const response = await axios.post(`/class/request/join/reject?requestId=${requestId.value}`, // URL API của bạn
+                {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Thêm token vào header để xác thực
+                }
+                }
+            );
+            if (response.status === 200) {
+                // Nếu yêu cầu thành công, thay đổi trạng thái
+                join.value = "Cancel";
+            }
+            } catch (error) {
+            console.error('Error while joining the class:', error);
+            // Xử lý lỗi nếu cần
+            }
+        }
     }
 
 </script>

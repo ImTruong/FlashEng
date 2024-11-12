@@ -6,7 +6,8 @@ import com.education.flashEng.exception.EntityNotFoundWithIdException;
 import com.education.flashEng.payload.request.CreateSetRequest;
 import com.education.flashEng.payload.request.UpdateSetRequest;
 import com.education.flashEng.payload.response.SetResponse;
-import com.education.flashEng.payload.response.WordListResponse;
+import com.education.flashEng.payload.response.WordResponse;
+import com.education.flashEng.payload.response.WordResponse;
 import com.education.flashEng.repository.ClassMemberRepository;
 import com.education.flashEng.repository.ClassRepository;
 import com.education.flashEng.repository.ClassSetRequestRepository;
@@ -19,8 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class SetServiceImpl implements SetService {
@@ -78,20 +77,26 @@ public class SetServiceImpl implements SetService {
     }
 
     @Override
-    public List<SetResponse> getPublicSet() {
-        List<SetEntity> setEntities = setRepository.findAllByPrivacyStatus(AccessModifierType.getKeyfromValue("Public"));
+    public List<SetResponse> getPublicAndPrivateSet() {
+        List<SetEntity> publicSetEntities = setRepository.findAllByPrivacyStatus(AccessModifierType.getKeyfromValue("Public"));
+        UserEntity user = userService.getUserFromSecurityContext();
+        List<SetEntity> privateSetEntities = setRepository.findAllByPrivacyStatusAndUserEntityId(
+                AccessModifierType.getKeyfromValue("Private"), user.getId());
+        List<SetEntity> combinedSetEntities = new ArrayList<>();
+        combinedSetEntities.addAll(publicSetEntities);
+        combinedSetEntities.addAll(privateSetEntities);
         List<SetResponse> setResponses = new ArrayList<>();
-        for(SetEntity setEntity : setEntities){
+        for(SetEntity setEntity : combinedSetEntities){
             SetResponse s = new SetResponse();
             modelMapper.map(setEntity, s);
-            // Thêm numberOfWords
             s.setUserDetailResponse(setEntity.getUserEntity().getFullName(),
                     setEntity.getUserEntity().getUsername(),
                     setEntity.getUserEntity().getEmail(),
                     setEntity.getUserEntity().getCountry());
 
-            List<WordListResponse> wordListResponses = wordService.getWordBySetId(setEntity.getId());
-            s.setWordListResponses(wordListResponses);
+            List<WordResponse> wordListResponses = wordService.getWordBySetId(setEntity.getId());
+            s.setWordResponses(wordListResponses);
+            s.setNumberOfWords((long) wordListResponses.size());
             setResponses.add(s);
         }
         return setResponses;
@@ -112,8 +117,8 @@ public class SetServiceImpl implements SetService {
                     setEntity.getUserEntity().getUsername(),
                     setEntity.getUserEntity().getEmail(),
                     setEntity.getUserEntity().getCountry());
-            List<WordListResponse> wordListResponses = wordService.getWordBySetId(setEntity.getId());
-            s.setWordListResponses(wordListResponses);
+            List<WordResponse> wordListResponses = wordService.getWordBySetId(setEntity.getId());
+            s.setWordResponses(wordListResponses);
             setResponses.add(s);
         }
         return setResponses;
@@ -139,8 +144,8 @@ public class SetServiceImpl implements SetService {
                     setEntity.getUserEntity().getUsername(),
                     setEntity.getUserEntity().getEmail(),
                     setEntity.getUserEntity().getCountry());
-            List<WordListResponse> wordListResponses = wordService.getWordBySetId(setEntity.getId());
-            setResponse.setWordListResponses(wordListResponses);
+            List<WordResponse> wordListResponses = wordService.getWordBySetId(setEntity.getId());
+            setResponse.setWordResponses(wordListResponses);
             setResponses.add(setResponse);
         }
         return setResponses;
@@ -196,4 +201,6 @@ public class SetServiceImpl implements SetService {
         setRepository.delete(setEntity);
         return true;
     }
+
+
 }
