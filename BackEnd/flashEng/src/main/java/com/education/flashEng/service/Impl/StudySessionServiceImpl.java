@@ -69,11 +69,12 @@ public class StudySessionServiceImpl implements StudySessionService {
     @Override
     public LocalDateTime getReminderTimeBasedOnLevel(String difficulty, LocalDateTime time) {
         LocalDateTime now = time;
+        difficulty = difficulty.toLowerCase();
         return switch (difficulty) {
-            case "Very difficult" -> now.plusHours(3);
-            case "Difficult" -> now.plusDays(1);
-            case "Easy" -> now.plusDays(3);
-            case "Very easy" -> now.plusHours(5);
+            case "very difficult" -> now.plusHours(3);
+            case "difficult" -> now.plusDays(1);
+            case "easy" -> now.plusDays(3);
+            case "very easy" -> now.plusHours(5);
             default -> throw new IllegalArgumentException("Invalid Difficulty");
         };
     }
