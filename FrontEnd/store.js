@@ -32,7 +32,6 @@ const store = createStore({
             Authorization: `Bearer ${token}`
           }
         });
-        console.log(response.data.data)
         commit('setSets', response.data.data);
       } catch (error) {
         console.error("Error fetching library sets:", error);

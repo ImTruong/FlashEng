@@ -24,6 +24,9 @@
         router.push("/classes");
     };
 
+    const goToStudy = () => {
+        router.push('/review');
+    }
 </script>
 
 <template>

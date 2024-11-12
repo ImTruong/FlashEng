@@ -101,15 +101,12 @@
 
     const toggleSelectWord = (row) => {
         const index = selectedWords.value.indexOf(row.id); // Kiểm tra xem ID có trong selectedWords không
-    const toggleSelectWord = (row) => {
-        const index = selectedWords.value.indexOf(row.id); // Kiểm tra xem ID có trong selectedWords không
         if (index === -1) {
             selectedWords.value.push(row.id); // Thêm ID vào nếu chưa có
         } else {
             selectedWords.value.splice(index, 1); // Loại bỏ ID nếu đã có // Loại bỏ ID nếu đã có
         }
     };
-}
 
     const toggleSelectColumn = () => {
         showSelectColumn.value = !showSelectColumn.value;
