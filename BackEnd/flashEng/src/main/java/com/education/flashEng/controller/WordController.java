@@ -24,11 +24,17 @@ public class WordController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-//    @GetMapping("/{setId}")
-//    public ResponseEntity<?> getWordBySetId(@PathVariable Long setId){
-//        ApiResponse<?> response = new ApiResponse<>(true, "Get Word Successfully", wordService.getWordBySetId(setId));
-//        return new ResponseEntity<>(response, HttpStatus.OK);
-//    }
+    @GetMapping("/{setId}")
+    public ResponseEntity<?> getWordBySetId(@PathVariable Long setId){
+        ApiResponse<?> response = new ApiResponse<>(true, "Get Word Successfully", wordService.getWordBySetId(setId));
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/userCurrent")
+    public ResponseEntity<?> getCurrentUserWord(){
+        ApiResponse<?> response = new ApiResponse<>(true, "Get Current Reminder Words Successfully", wordService.getCurrentUserWord());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
     @PutMapping
     public ResponseEntity<?> updateWord(@Valid @ModelAttribute UpdateWordRequest updateWordRequest){

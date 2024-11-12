@@ -14,4 +14,6 @@ public interface SetService {
     List<SetResponse> getSetByClassID(Long classID);
     boolean updateSet(UpdateSetRequest updateSetRequest);
     boolean deleteSetById(Long setID);
+
+    List<SetResponse> getRecentSet();
 }
