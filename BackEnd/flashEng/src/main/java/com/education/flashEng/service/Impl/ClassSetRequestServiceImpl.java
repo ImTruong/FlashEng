@@ -25,11 +25,7 @@ public class ClassSetRequestServiceImpl implements ClassSetRequestService {
     @Autowired
     private SetRepository setRepository;
     @Autowired
-    private ClassMemberRepository classMemberRepository;
-    @Autowired
     private NotificationServiceImpl notificationService;
-    @Autowired
-    private NotificationServiceImpl notificationServiceImpl;
 
     @Transactional
     @Override

@@ -1,24 +1,26 @@
 package com.education.flashEng.service.Impl;
 
 import com.education.flashEng.entity.SetEntity;
+import com.education.flashEng.entity.StudySessionEntity;
 import com.education.flashEng.entity.UserEntity;
 import com.education.flashEng.entity.WordEntity;
 import com.education.flashEng.exception.EntityNotFoundWithIdException;
 import com.education.flashEng.payload.request.CreateWordRequest;
 import com.education.flashEng.payload.request.UpdateWordRequest;
 import com.education.flashEng.payload.response.WordResponse;
-import com.education.flashEng.payload.response.WordResponse;
 import com.education.flashEng.repository.SetRepository;
 import com.education.flashEng.repository.WordRepository;
+import com.education.flashEng.service.StudySessionService;
+import com.education.flashEng.service.UserService;
 import com.education.flashEng.service.WordService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -33,12 +35,14 @@ public class WordServiceImpl implements WordService {
     @Autowired
     private CloudinaryService cloudinaryService;
     @Autowired
-    private UserServiceImpl userServiceImpl;
+    private UserService userService;
+    @Autowired
+    private StudySessionService studySessionService;
 
     @Transactional
     @Override
     public WordResponse createWord(CreateWordRequest createWordRequest){
-        UserEntity user = userServiceImpl.getUserFromSecurityContext();
+        UserEntity user = userService.getUserFromSecurityContext();
 
         if(createWordRequest.getImage().isEmpty()){
             throw new IllegalArgumentException("Invalid File");
@@ -75,7 +79,7 @@ public class WordServiceImpl implements WordService {
 
     @Override
     public List<WordResponse> getWordBySetId(Long setId) {
-        UserEntity user = userServiceImpl.getUserFromSecurityContext();
+        UserEntity user = userService.getUserFromSecurityContext();
         SetEntity setEntity = setRepository.findById(setId)
                 .orElseThrow(() -> new EntityNotFoundWithIdException("SetEntity", setId.toString()));
         if(!Objects.equals(setEntity.getUserEntity().getId(), user.getId())){
@@ -94,7 +98,7 @@ public class WordServiceImpl implements WordService {
     @Transactional
     @Override
     public boolean updateWord(UpdateWordRequest updateWordRequest) {
-        UserEntity user = userServiceImpl.getUserFromSecurityContext();
+        UserEntity user = userService.getUserFromSecurityContext();
         WordEntity wordEntity = wordRepository.findById(updateWordRequest.getId())
                 .orElseThrow(() -> new EntityNotFoundWithIdException("WordEntity", updateWordRequest.getId().toString()));
 
@@ -116,7 +120,7 @@ public class WordServiceImpl implements WordService {
     public boolean deleteWordById(Long wordId) {
         WordEntity wordEntity = wordRepository.findById(wordId)
                 .orElseThrow(() -> new EntityNotFoundWithIdException("WordEntity", wordId.toString()));
-        if(!Objects.equals(wordEntity.getSetEntity().getUserEntity().getId(), userServiceImpl.getUserFromSecurityContext().getId())){
+        if(!Objects.equals(wordEntity.getSetEntity().getUserEntity().getId(), userService.getUserFromSecurityContext().getId())){
             throw new AccessDeniedException("You do not permission to delete word in this set");
         }
         try{
@@ -127,5 +131,29 @@ public class WordServiceImpl implements WordService {
             throw new IllegalArgumentException("Failed to delete file from Cloudinary");
         }
         return true;
+    }
+
+    @Override
+    public List<WordResponse> getCurrentUserWord() {
+        UserEntity user = userService.getUserFromSecurityContext();
+        List<StudySessionEntity> studySessionEntities = user.getStudySessionEntityList();
+
+        studySessionEntities.sort(Comparator.comparing(StudySessionEntity::getCreatedAt).reversed());
+
+        Set<Long> wordIds = new HashSet<>();
+        List<WordResponse> wordResponses = new ArrayList<>();
+
+        for (StudySessionEntity studySessionEntity : studySessionEntities) {
+            Long wordId = studySessionEntity.getWordEntity().getId();
+            if (!wordIds.contains(wordId)) {
+                wordIds.add(wordId);
+                if(studySessionService.getReminderTimeBasedOnLevel(studySessionEntity.getDifficulty(), studySessionEntity.getCreatedAt()).isAfter(LocalDateTime.now()))
+                    continue;
+                WordResponse wordResponse = new WordResponse();
+                modelMapper.map(studySessionEntity.getWordEntity(), wordResponse);
+                wordResponses.add(wordResponse);
+            }
+        }
+        return wordResponses;
     }
 }
