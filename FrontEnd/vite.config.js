@@ -36,6 +36,23 @@ export default defineConfig({
         changeOrigin: true,
         secure: false
       },
+      // ,
+      // '/eng':{
+      //   target: 'https://od-api-sandbox.oxforddictionaries.com/api/v2',
+      //   changeOrigin: true,
+      //   secure: false,
+      //   rewrite: (path) => path.replace(/^\/eng/, '')
+      // }
+      '/notification': {
+        target: 'http://localhost:8080', 
+        changeOrigin: true,
+        secure: false
+      },
+      '/study': {
+        target: 'http://localhost:8080', 
+        changeOrigin: true,
+        secure: false
+      },
     }
   }
 })

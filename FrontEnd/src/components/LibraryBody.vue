@@ -25,8 +25,6 @@
         Overlay_background.value = true;
     }
 
-
-
 </script>
 
 <template>
