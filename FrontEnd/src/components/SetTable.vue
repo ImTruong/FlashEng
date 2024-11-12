@@ -27,7 +27,7 @@
             setId: props.isEditMode ? props.existingSet.id : null,
             name: setName.value,
             privacyStatus: selectedOption.value,
-            classId: classId.value | null // class_id có thể là null
+            classId: classId.value || null // class_id có thể là null
         }
         try {
             const config = {
@@ -109,6 +109,7 @@
             selectedWords.value.splice(index, 1); // Loại bỏ ID nếu đã có // Loại bỏ ID nếu đã có
         }
     };
+}
 
     const toggleSelectColumn = () => {
         showSelectColumn.value = !showSelectColumn.value;

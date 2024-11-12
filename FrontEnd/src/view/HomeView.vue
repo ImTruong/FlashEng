@@ -31,6 +31,9 @@
 <template>
     <Header />
     <div class="home">
+        <div class="review-box" @click="goToStudy">
+            <p>It's time to review...</p>
+        </div>
         <!-- Section Recent -->
         <h1 class="section-header">
             <span class="section-title">Recent</span>
@@ -63,7 +66,28 @@
         margin-left: 20px;
         margin-right: 30px;
     }
+    .review-box {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #dff1f9; /* Màu nền */
+        border-radius: 8px;
+        padding: 30px;
+        margin-bottom: 20px;
+        margin-top: 30px;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #333;
+        text-align: center;
+        transition: background-color 0.3s;
+        height: 40%;
+    }
 
+    .review-box:hover {
+        background-color: #cce7f0; /* Màu nền khi hover */
+    }
     .section-title {
         font-weight: bold;
         margin-bottom: 20px;
