@@ -45,12 +45,12 @@ public class SetServiceImpl implements SetService {
 
     @Transactional
     @Override
-    public boolean createSet(CreateSetRequest createSetRequest) {
+    public SetResponse createSet(CreateSetRequest createSetRequest) {
         UserEntity user = userService.getUserFromSecurityContext();
 
         SetEntity setEntity = modelMapper.map(createSetRequest, SetEntity.class);
         setEntity.setUserEntity(user);
-
+        SetEntity savedSetEntity = new SetEntity();
         //Kiểm tra privacy của set
         if(setEntity.getPrivacyStatus().equals(AccessModifierType.getKeyfromValue("Class"))){
             ClassEntity classEntity = classRepository.findById(createSetRequest.getClassId())
@@ -60,20 +60,26 @@ public class SetServiceImpl implements SetService {
 
             if(classMemberEntity.getRoleClassEntity().getName().equals("ADMIN")){
                 setEntity.setClassEntity(classEntity);
-                setRepository.save(setEntity);
+                savedSetEntity = setRepository.save(setEntity);
             }
             else{
                 setEntity.setPrivacyStatus(String.valueOf(AccessModifierType.getKeyfromValue("Private")));
-                setRepository.save(setEntity);
+                savedSetEntity = setRepository.save(setEntity);
                 ClassSetRequestEntity classSetRequestEntity = classSetRequestService.createSetRequest(setEntity, user, classEntity);
                 notificationService.createClassSetRequestNotification(classSetRequestEntity);
             }
         }
         else{
-            setRepository.save(setEntity);
+            savedSetEntity = setRepository.save(setEntity);
         }
-
-        return true;
+        SetResponse setResponse = modelMapper.map(savedSetEntity, SetResponse.class);
+        setResponse.setUserDetailResponse(
+                user.getFullName(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getCountry()
+        );
+        return setResponse;
     }
 
     @Override
