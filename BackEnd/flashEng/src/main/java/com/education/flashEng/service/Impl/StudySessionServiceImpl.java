@@ -10,6 +10,7 @@ import com.education.flashEng.payload.response.StatisticResponse;
 import com.education.flashEng.repository.StudySessionRepository;
 import com.education.flashEng.repository.WordRepository;
 import com.education.flashEng.service.StudySessionService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class StudySessionServiceImpl implements StudySessionService {
     @Autowired
     private  NotificationServiceImpl notificationServiceImpl;
 
+    @Transactional
     @Override
     public boolean createStudySession(StudySessionRequest studySessionRequest) {
         UserEntity currentUser = userServiceImpl.getUserFromSecurityContext();

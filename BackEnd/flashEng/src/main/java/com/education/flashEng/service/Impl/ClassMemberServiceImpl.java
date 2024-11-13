@@ -94,6 +94,7 @@ public class ClassMemberServiceImpl implements ClassMemberService {
         return classMemberListReponse;
     }
 
+    @Transactional
     @Override
     public boolean leaveClass(Long classId) {
         UserEntity user = userService.getUserFromSecurityContext();
@@ -104,10 +105,10 @@ public class ClassMemberServiceImpl implements ClassMemberService {
                 .filter(member -> member.getRoleClassEntity().getName().equals("ADMIN"))
                 .count() > 1  || classMemberEntity.getClassEntity().getClassMemberEntityList().size() == 1)
         classMemberRepository.delete(classMemberEntity);
-        if(classEntity.getClassMemberEntityList().isEmpty())
-            classService.deleteClassByEntity(classEntity);
         else
             throw new LastAdminException("You are the last admin in this class. You can`t leave this class.");
+        if(classEntity.getClassMemberEntityList().isEmpty())
+            classService.deleteClassByEntity(classEntity);
         return true;
     }
 }

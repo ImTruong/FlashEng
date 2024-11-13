@@ -142,6 +142,7 @@ public class ClassJoinRequestServiceImpl implements ClassJoinRequestService {
 
     }
 
+    @Transactional
     @Override
     public boolean revokeClassJoinRequest(Long requestId) {
         ClassJoinRequestEntity classJoinRequestEntity = classJoinRequestRepository.findById(requestId)

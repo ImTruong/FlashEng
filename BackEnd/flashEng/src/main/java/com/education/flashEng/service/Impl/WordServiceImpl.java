@@ -116,6 +116,7 @@ public class WordServiceImpl implements WordService {
         return true;
     }
 
+    @Transactional
     @Override
     public boolean deleteWordById(Long wordId) {
         WordEntity wordEntity = wordRepository.findById(wordId)
