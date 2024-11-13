@@ -84,6 +84,7 @@ public class ClassSetRequestServiceImpl implements ClassSetRequestService {
         }
     }
 
+    @Transactional
     @Override
     public boolean rejectSetRequest(Long SetRequestId) {
         UserEntity userEntity = userService.getUserFromSecurityContext();
