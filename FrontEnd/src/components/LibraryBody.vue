@@ -19,7 +19,8 @@
         selectedClassItem.value = classItem;
         Overlay_background.value = true;
         localStorage.setItem('classId', selectedClassItem.value.classId);
-        console.log(localStorage.getItem('classId'));
+        localStorage.setItem('className', selectedClassItem.value.className);
+
     }
 
     const selectedMember = (classMember) => {

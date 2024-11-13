@@ -11,9 +11,8 @@
     const sets = computed(() => store.getters.getSets);
     const filteredSets = ref([]);
     const visible = ref(true);
-    const editMode = ref(false);
+    const isEditMode = ref(false);
     const existingClass = ref({});
-    // const member
 
     const { classItem, Overlay_background } = defineProps(['classItem', 'Overlay_background']);
     const emit = defineEmits();
@@ -32,18 +31,23 @@
     }
 
     // Hàm hiển thị bảng ClassTable
-    const showClassTable = (isEditMode, existingClass) => {
+    const showClassTable = (classItem) => {
+        console.log(isEditMode);
         classTable.value = true;
         visible.value = false;
         icon.value = false;
-        isEditMode.value = editMode; 
-        existingClass.value = existingClassData;
+        existingClass.value = classItem;
     };
 
     // Hàm đóng bảng ClassTable
     const closeClassTable = () => {
         classTable.value = false;
         visible.value = true;
+    };
+
+    const handleUpdate = (updatedRows) => {
+        // existingSet.value.wordListResponses = updatedRows;
+        // console.log('Dữ liệu đã được cập nhật:', existingSet.value);
     };
 
     // Theo dõi thay đổi trong ô tìm kiếm và cập nhật danh sách `filteredSets`
@@ -82,10 +86,13 @@
     </div>
     <classTable 
         v-if="classTable" 
-        :isEditMode="isEditMode" 
+        :isEditMode=true  
         :existingClass="existingClass" 
         @close="closeClassTable" 
+        @update="handleUpdate"
       />
+
+      
 </template>
 
 
