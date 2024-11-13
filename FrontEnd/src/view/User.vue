@@ -5,46 +5,23 @@
   import axios from "axios";
 
   const isChangePasswordVisible = ref(false);
-  const user = ref({
-    fullName: '',
-    username: '',
-    email: '',
-    country: ''
-  });
+  const user = JSON.parse(localStorage.getItem('user'));
   const errorMessage = ref(null);
-  const fetchUserInfo = async () => {
-  try {
-    const token = localStorage.getItem('token') // Lấy token từ localStorage
-    if (!token) {
-      errorMessage.value = 'You must be logged in to view user information'
-      return
-    }
-    const response = await axios.get('/user', {
-      headers: {
-        Authorization: `Bearer ${token}`, // Đảm bảo gửi token trong header
-      },
-    })
-    user.value = response.data.data;
-  } catch (error) {
-    errorMessage.value = error.response ? error.response.data : 'An error occurred'
-    console.error('Error fetching user info:', error)
-  }
-};
 
-const updateProfile = async () => {
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      errorMessage.value = "You must be logged in to update user information";
-      return;
-    }
+  const updateProfile = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        errorMessage.value = "You must be logged in to update user information";
+        return;
+      }
 
     // Gửi request PUT để cập nhật thông tin user
     const response = await axios.put("/user",
       {
-        fullName: user.value.fullName,
+        fullName: user.fullName,
         email: "",
-        country: user.value.country
+        country: user.country
       },
       {
         headers: {
@@ -61,10 +38,6 @@ const updateProfile = async () => {
 
 };
 
-// Gọi `fetchUserInfo` khi component được mount
-onMounted(() => {
-  fetchUserInfo();
-});
 
   // Phương thức hiển thị form ChangePassword
 const showChangePasswordForm = () => {

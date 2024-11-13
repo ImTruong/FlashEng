@@ -74,9 +74,9 @@
             <div class="class-info">
                 <div class="class-header">
                     <img src="../assets/class.svg" alt="class-icon">
-                    <h1>{{ classItem.name }}</h1>
+                    <h1>{{ classItem.className }}</h1>
                 </div>
-                <p class="class-details">{{ classItem.sets }} set | {{ classItem.members }} members</p>
+                <p class="class-details">{{ classItem.numberOfSets }} {{ classItem.numberOfMembers === 1 ? 'set' : 'sets' }} | {{ classItem.numberOfMembers }} {{ classItem.numberOfMembers === 1 ? 'member' : 'members' }}</p>
                 <div class="join-button" @click="join_button">
                     <p>{{ join }}</p>
                 </div>

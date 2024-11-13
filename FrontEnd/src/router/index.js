@@ -7,6 +7,8 @@ import User from "@/view/User.vue";
 import Statistics from "@/view/Statistics.vue";
 import FlashCard from "../view/FlashCardView.vue"
 import GameView from "../view/GameView.vue"
+import Review from  "../view/Review.vue"
+
 
 
 
@@ -52,6 +54,11 @@ const router = createRouter({
             path: "/game/:id",
             name: "game",
             component: GameView
+        },
+        {
+            path: "/review",
+            name: "review",
+            component: Review
         }
         
     ]

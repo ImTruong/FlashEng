@@ -27,7 +27,7 @@
             setId: props.isEditMode ? props.existingSet.id : null,
             name: setName.value,
             privacyStatus: selectedOption.value,
-            classId: classId.value | null // class_id có thể là null
+            classId: classId.value || null // class_id có thể là null
         }
         try {
             const config = {
@@ -104,7 +104,7 @@
         if (index === -1) {
             selectedWords.value.push(row.id); // Thêm ID vào nếu chưa có
         } else {
-            selectedWords.value.splice(index, 1); // Loại bỏ ID nếu đã có
+            selectedWords.value.splice(index, 1); // Loại bỏ ID nếu đã có // Loại bỏ ID nếu đã có
         }
     };
 

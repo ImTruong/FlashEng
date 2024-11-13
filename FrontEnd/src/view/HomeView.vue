@@ -4,19 +4,19 @@
     import Card from "@/components/Set.vue";
     import { useRouter } from "vue-router"; 
     import { useStore } from "vuex";
+    import axios from "axios";
     
     const router = useRouter();
     const store = useStore();
     const sets = computed(() => store.getters.getSets);
     const displayedSets = ref([]);
+    const errorMessage = ref(null);
 
     onMounted(() => {
         store.dispatch('fetchLibrarySets').then(() => {
-            // Lấy lại giá trị sets sau khi fetch xong
             displayedSets.value = sets.value.slice(0, 3); // Cập nhật danh sách hiển thị
         });
     });   
-    // Hàm hiển thị toàn bộ dữ liệu khi nhấn "More..."
     const showAllSetsRecent = () => {
         displayedSets.value = sets;
     };
@@ -26,11 +26,41 @@
         router.push("/classes");
     };
 
+    const fetchUserInfo = async () => {
+        try {
+            const token = localStorage.getItem('token') // Lấy token từ localStorage
+            if (!token) {
+            errorMessage.value = 'You must be logged in to view user information'
+            return
+            }
+            const response = await axios.get('/user', {
+            headers: {
+                Authorization: `Bearer ${token}`, // Đảm bảo gửi token trong header
+            },
+            })
+            localStorage.setItem('user', JSON.stringify(response.data.data));
+            console.log(localStorage.getItem('user'));
+        } catch (error) {
+            errorMessage.value = error.response ? error.response.data : 'An error occurred'
+            console.error('Error fetching user info:', error)
+        }                                 
+    };
+
+    onMounted(() => {
+        fetchUserInfo();
+    });
+
+    const goToStudy = () => {
+        router.push('/review');
+    }
 </script>
 
 <template>
     <Header />
     <div class="home">
+        <div class="review-box" @click="goToStudy">
+            <p>It's time to review...</p>
+        </div>
         <!-- Section Recent -->
         <h1 class="section-header">
             <span class="section-title">Recent</span>
@@ -63,7 +93,28 @@
         margin-left: 20px;
         margin-right: 30px;
     }
+    .review-box {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #dff1f9; /* Màu nền */
+        border-radius: 8px;
+        padding: 30px;
+        margin-bottom: 20px;
+        margin-top: 30px;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        font-size: 2.2rem;
+        font-weight: bold;
+        color: #333;
+        text-align: center;
+        transition: background-color 0.3s;
+        height: 40%;
+    }
 
+    .review-box:hover {
+        background-color: #cce7f0; /* Màu nền khi hover */
+    }
     .section-title {
         font-weight: bold;
         margin-bottom: 20px;

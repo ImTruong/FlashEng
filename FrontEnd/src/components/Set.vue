@@ -73,7 +73,7 @@
     <div class="card" @mouseover="hover = true" @mouseleave="hover = false" >
       <div class="card-text" @click="navigateToSet">
         <h2>{{ set.name }}</h2>
-        <p class="number-terms">{{ set.numberOfWords }} terms</p>
+        <p class="number-terms">{{ set.numberOfWords }} {{ set.numberOfWords <= 1 ? 'set' : 'sets' }} </p>
         <p>{{ set.userDetailResponse.fullName}}</p>
       </div>
       <div class="set-option">
