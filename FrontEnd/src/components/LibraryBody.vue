@@ -3,7 +3,7 @@
     import ClassBox from '@/components/ClassBox.vue'
     import InvitationBox from './InvitationBox.vue';
     import Card from "../components/Set.vue"
-    import {ref} from "vue"
+    import {ref, onMounted} from "vue"
     import { defineProps} from 'vue';
     import ClassTable from './ClassTable.vue';
 
@@ -25,6 +25,7 @@
 
     const showClassTable = (classItem) => {
         classTableMode.value = true;
+        localStorage.setItem('libraryMode', activeTab.value);
         selectClass(classItem);
     }
 
@@ -37,13 +38,30 @@
         emit('close');
     }
 
+    const switchTab = () =>{
+        if(activeTab.value == "Flashcard sets"){
+            activeTab.value = "Classes";
+        }
+        else{
+            activeTab.value = "Flashcard sets"
+        }
+        localStorage.setItem('libraryTab', activeTab.value);
+    }
+
+    onMounted(() => {
+        const savedTab = localStorage.getItem('libraryTab');
+        if (savedTab) {
+            activeTab.value = savedTab;
+        }
+    });
+
 </script>
 
 <template>
     <main>
         <div class="tabs">
-          <button :class="{ active: activeTab === 'Flashcard sets' }" @click="activeTab ='Flashcard sets'">Flashcard sets</button>
-          <button :class="{ active: activeTab === 'Classes' }" @click="activeTab = 'Classes'">Classes</button>
+          <button :class="{ active: activeTab === 'Flashcard sets' }" @click="switchTab">Flashcard sets</button>
+          <button :class="{ active: activeTab === 'Classes' }" @click="switchTab">Classes</button>
         </div>
         <div class="line"></div>
         <div class="sets-list"  v-if="activeTab === 'Flashcard sets'">
