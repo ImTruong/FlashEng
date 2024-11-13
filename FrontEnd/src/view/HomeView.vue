@@ -8,19 +8,17 @@
     
     const router = useRouter();
     const store = useStore();
-    const set = computed(() => store.getters.getSets);
+    const sets = computed(() => store.getters.getSets);
     const displayedSets = ref([]);
     const errorMessage = ref(null);
 
     onMounted(() => {
         store.dispatch('fetchLibrarySets').then(() => {
-            // Lấy lại giá trị sets sau khi fetch xong
-            displayedSets.value = set.value.slice(0, 3); // Cập nhật danh sách hiển thị
+            displayedSets.value = sets.value.slice(0, 3); // Cập nhật danh sách hiển thị
         });
     });   
-    // Hàm hiển thị toàn bộ dữ liệu khi nhấn "More..."
     const showAllSetsRecent = () => {
-        displayedSets.value = set;
+        displayedSets.value = sets;
     };
 
     // Điều hướng đến trang "/classes" khi nhấn "More..."
@@ -52,15 +50,21 @@
         fetchUserInfo();
     });
 
+    const goToStudy = () => {
+        router.push('/review');
+    }
 </script>
 
 <template>
     <Header />
     <div class="home">
+        <div class="review-box" @click="goToStudy">
+            <p>It's time to review...</p>
+        </div>
         <!-- Section Recent -->
         <h1 class="section-header">
             <span class="section-title">Recent</span>
-            <span v-if="set.length > 3" class="more-link" @click="showAllSetsRecent">More...</span>
+            <span v-if="sets.length > 3" class="more-link" @click="showAllSetsRecent">More...</span>
         </h1>
         <div class="set-container">
             <Card 
@@ -71,7 +75,7 @@
 
         <h1 class="section-header">
             <span class="section-title">Your Library</span>
-            <span v-if="set.length > 3" class="more-link" @click="showAllSets">More...</span>
+            <span v-if="sets.length > 3" class="more-link" @click="showAllSets">More...</span>
         </h1>
         <div class="set-container">
             <Card 
@@ -89,7 +93,28 @@
         margin-left: 20px;
         margin-right: 30px;
     }
+    .review-box {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #dff1f9; /* Màu nền */
+        border-radius: 8px;
+        padding: 30px;
+        margin-bottom: 20px;
+        margin-top: 30px;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        font-size: 2.2rem;
+        font-weight: bold;
+        color: #333;
+        text-align: center;
+        transition: background-color 0.3s;
+        height: 40%;
+    }
 
+    .review-box:hover {
+        background-color: #cce7f0; /* Màu nền khi hover */
+    }
     .section-title {
         font-weight: bold;
         margin-bottom: 20px;

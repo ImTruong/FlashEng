@@ -9,31 +9,15 @@
 
     const visible = ref(true); 
     const setName = ref(props.isEditMode ? props.existingSet.name : '');
-    const rows = ref(props.isEditMode ? props.existingSet.words: [{ word: '', ipa: '', definition: '', example: '', image: '' }]);
+    const rows = ref(props.isEditMode ? props.existingSet.wordResponses: [{ id: '', word: '', ipa: '',audio: '', definition: '', example: '', image: '' }]);
     const selectedWords = ref([]); 
     const showSelectColumn = ref(false);
     const showOptions = ref(false)
-    const selectedOption = ref('')
+    const selectedOption = ref(props.isEditMode ? props.existingSet.privacyStatus : '');
     const dropdownRef = ref(null)
     const showAddCardModal = ref(false);
-    const classId = ref('')
+    const classId = ref(props.isEditMode && props.existingSet.privacyStatus === 'CLASS' ? props.existingSet.classId : '');
 
-    // const fetchWords = async (setId) => {
-    //     const token = localStorage.getItem('token');
-    //     const config = {
-    //         headers: {
-    //             Authorization: `Bearer ${token}`
-    //         }
-    //     };
-
-    //     try {
-    //         const response = await axios.get(`/set/${setId}/words`, config); // Gọi API GET để lấy từ
-    //         console.log('Words fetched:', response.data);
-    //         rows.value = response.data.data; // Cập nhật danh sách từ
-    //     } catch (error) {
-    //         console.error('Error fetching words:', error);
-    //     }
-    // };
     const updateSetName = (newSetName) => {
         setName.value = newSetName;
     };
@@ -42,9 +26,8 @@
         const payload = {
             setId: props.isEditMode ? props.existingSet.id : null,
             name: setName.value,
-            description: "Created set", // description có thể là null
             privacyStatus: selectedOption.value,
-            classId: classId.value | null // class_id có thể là null
+            classId: classId.value || null // class_id có thể là null
         }
         try {
             const config = {
@@ -76,27 +59,52 @@
             rows.value.push(newWord);
         }
     };
-
-    const removeRow = () => {
-        if (selectedWords.value.length > 0) {
-            rows.value = rows.value.filter(row => !selectedWords.value.includes(row.word));
-            selectedWords.value = []; 
-        } else if (rows.value.length > 1) {
-            rows.value.pop();
+    
+    const removeRow = async () => {
+    if (selectedWords.value.length > 0) {
+        console.log('Selected Words:', selectedWords.value);
+        for (const wordId of selectedWords.value) {
+            try {
+                const token = localStorage.getItem('token');
+                const config = {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                };
+                const word = rows.value.find(row => row.id === wordId);
+                if (!word) {
+                    console.error('Không tìm thấy từ với ID:', wordId);
+                    continue; // Skip nếu không tìm thấy từ
+                }
+                console.log('Request URL:', `/word/${wordId}`);
+                const response = await axios.delete(`/word/${wordId}`, config);
+                console.log('Request URL:', `/word/${wordId}`);
+                console.log('Word deleted:', response.message);
+                rows.value = rows.value.filter(row => row.id !== wordId); // Xóa từ khỏi bảng
+            } catch (error) {
+                if (error.response) {
+                    console.error('API Error:', error.response.status, error.response.data);
+                } else {
+                    console.error('Network or Axios error:', error.message);
+                }
+            }
         }
-    };
+        selectedWords.value = []; // Reset selectedWords sau khi xóa
+    }
+    emit('update', rows.value)
+};
 
     const closeForm = () => {
         emit('close');
         visible.value = false;
     };
 
-    const toggleSelectWord = (word) => {
-        const index = selectedWords.value.indexOf(word);
+    const toggleSelectWord = (row) => {
+        const index = selectedWords.value.indexOf(row.id); // Kiểm tra xem ID có trong selectedWords không
         if (index === -1) {
-            selectedWords.value.push(word);
+            selectedWords.value.push(row.id); // Thêm ID vào nếu chưa có
         } else {
-            selectedWords.value.splice(index, 1);
+            selectedWords.value.splice(index, 1); // Loại bỏ ID nếu đã có // Loại bỏ ID nếu đã có
         }
     };
 
@@ -139,11 +147,10 @@
         if (newExistingSet && newExistingSet.words) {
             setName.value = newExistingSet.name; // Cập nhật tên set
             rows.value = newExistingSet.words; // Cập nhật các hàng
+            selectedOption.value = newExistingSet.privacyStatus || '';
+            classId.value = newExistingSet.privacyStatus === 'CLASS' ? newExistingSet.classId : '';
         }
     }, { deep: true });
-
-    console.log('Existing Set:', props.existingSet);
-    console.log('Rows:', rows.value);
 
 </script>
 
@@ -201,7 +208,7 @@
             <tbody>
               <tr v-for="(row, index) in rows" :key="index">
                 <td v-if="showSelectColumn">
-                    <input type="checkbox" @change="toggleSelectWord(row.word)" :checked="selectedWords.includes(row.word)" />
+                    <input type="checkbox" @change="toggleSelectWord(row)" :checked="selectedWords.includes(row.id)" />
                 </td>
                 <td><input v-model="row.word" placeholder="Word" /></td>
                 <td><input v-model="row.ipa" placeholder="IPA" /></td>

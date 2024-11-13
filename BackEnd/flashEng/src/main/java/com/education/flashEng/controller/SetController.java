@@ -22,11 +22,17 @@ public class SetController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-//    @GetMapping("/private")
-//    public ResponseEntity<?> getPrivateSets() {
-//        ApiResponse<?> response = new ApiResponse<>(true, "Get All Private Sets Of Current User Successfully", setService.getPrivateSet());
-//        return new ResponseEntity<>(response, HttpStatus.OK);
-//    }
+    @GetMapping("/private")
+    public ResponseEntity<?> getPrivateSets() {
+        ApiResponse<?> response = new ApiResponse<>(true, "Get All Private Sets Of Current User Successfully", setService.getPrivateSet());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/recent")
+    public ResponseEntity<?> getRecentSets() {
+        ApiResponse<?> response = new ApiResponse<>(true, "Get All Recent Sets Successfully", setService.getRecentSet());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
     @GetMapping("/class/{classId}")
     public ResponseEntity<?> getSetsOfClass(@PathVariable Long classId) {
@@ -36,7 +42,7 @@ public class SetController {
 
     @PostMapping
     public ResponseEntity<?> createSet(@Valid @RequestBody CreateSetRequest createSetRequest) {
-        ApiResponse<?> response = new ApiResponse<>(setService.createSet(createSetRequest), "Create Set Successfully", null);
+        ApiResponse<?> response = new ApiResponse<>(true, "Create Set Successfully", setService.createSet(createSetRequest));
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 

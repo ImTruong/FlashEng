@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -225,7 +226,9 @@ public class NotificationServiceImpl implements NotificationService {
         List<NotificationEntity> notificationEntityList = user.getNotificationsEntityList();
 
         return notificationEntityList.stream()
-                .filter(notificationEntity -> notificationEntity.getReminderTime() == null || !notificationEntity.getReminderTime().isBefore(LocalDateTime.now()))
+                .filter(notificationEntity -> notificationEntity.getReminderTime() == null || notificationEntity.getReminderTime().isBefore(LocalDateTime.now()))
+                .sorted(Comparator.comparing(NotificationEntity::getReminderTime, Comparator.nullsLast(Comparator.reverseOrder()))
+                        .thenComparing(Comparator.comparing(NotificationEntity::getCreatedAt).reversed()))
                 .map(notificationEntity -> {
                     notificationEntity.setIsRead(true);
 

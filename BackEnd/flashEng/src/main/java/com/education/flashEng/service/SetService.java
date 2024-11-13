@@ -8,10 +8,12 @@ import com.education.flashEng.payload.response.SetResponse;
 import java.util.List;
 
 public interface SetService {
-    boolean createSet(CreateSetRequest createSetRequest);
+    SetResponse createSet(CreateSetRequest createSetRequest);
     List<SetResponse> getPublicAndPrivateSet();
     List<SetResponse> getPrivateSet();
     List<SetResponse> getSetByClassID(Long classID);
     boolean updateSet(UpdateSetRequest updateSetRequest);
     boolean deleteSetById(Long setID);
+
+    List<SetResponse> getRecentSet();
 }

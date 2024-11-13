@@ -1,33 +1,31 @@
 <script setup>
-  import { ref } from 'vue';
+  import { ref, onMounted } from 'vue';
+  import axios from 'axios';
   import NotificationItem from './NotificationItem.vue';
   
-  const notifications = ref([
-    {
-      id: 1,
-      message: "Now is the moment to pick up new words.",
-      type: "reminder",
-      is_read: false,
-      created_at: "2024-11-08T10:00:00Z",
-      notification_meta_data: {}
-    },
-    {
-      id: 2,
-      message: "ptitstudent1 invited you to D22",
-      type: "inviter",
-      is_read: true,
-      created_at: "2024-11-07T14:30:00Z",
-      notification_meta_data: {}
-    },
-    {
-      id: 3,
-      message: "You became member of D22",
-      type: "join",
-      is_read: false,
-      created_at: "2024-11-06T09:00:00Z",
-      notification_meta_data: {}
+  const notifications = ref([]);
+
+  // Fetch notifications from the API
+  const fetchNotifications = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.warn("Token không tồn tại");
+        return;
+      }
+      const response = await axios.get("/notification/user", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }); // Replace with your actual API endpoint
+      notifications.value = response.data.data; // Assuming response data is an array of notifications
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
     }
-  ]);
+  };
+  onMounted(() => {
+    fetchNotifications();
+  });
 </script>
 <template>
     <div class="notification-list">

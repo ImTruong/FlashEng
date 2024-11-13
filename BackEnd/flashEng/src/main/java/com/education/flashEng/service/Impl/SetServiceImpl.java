@@ -18,8 +18,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class SetServiceImpl implements SetService {
@@ -42,15 +41,17 @@ public class SetServiceImpl implements SetService {
     private ClassSetRequestRepository classSetRequestRepository;
     @Autowired
     private WordService wordService;
+    @Autowired
+    private StudySessionService studySessionService;
 
     @Transactional
     @Override
-    public boolean createSet(CreateSetRequest createSetRequest) {
+    public SetResponse createSet(CreateSetRequest createSetRequest) {
         UserEntity user = userService.getUserFromSecurityContext();
 
         SetEntity setEntity = modelMapper.map(createSetRequest, SetEntity.class);
         setEntity.setUserEntity(user);
-
+        SetEntity savedSetEntity = new SetEntity();
         //Kiểm tra privacy của set
         if(setEntity.getPrivacyStatus().equals(AccessModifierType.getKeyfromValue("Class"))){
             ClassEntity classEntity = classRepository.findById(createSetRequest.getClassId())
@@ -60,20 +61,26 @@ public class SetServiceImpl implements SetService {
 
             if(classMemberEntity.getRoleClassEntity().getName().equals("ADMIN")){
                 setEntity.setClassEntity(classEntity);
-                setRepository.save(setEntity);
+                savedSetEntity = setRepository.save(setEntity);
             }
             else{
                 setEntity.setPrivacyStatus(String.valueOf(AccessModifierType.getKeyfromValue("Private")));
-                setRepository.save(setEntity);
+                savedSetEntity = setRepository.save(setEntity);
                 ClassSetRequestEntity classSetRequestEntity = classSetRequestService.createSetRequest(setEntity, user, classEntity);
                 notificationService.createClassSetRequestNotification(classSetRequestEntity);
             }
         }
         else{
-            setRepository.save(setEntity);
+            savedSetEntity = setRepository.save(setEntity);
         }
-
-        return true;
+        SetResponse setResponse = modelMapper.map(savedSetEntity, SetResponse.class);
+        setResponse.setUserDetailResponse(
+                user.getFullName(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getCountry()
+        );
+        return setResponse;
     }
 
     @Override
@@ -138,7 +145,6 @@ public class SetServiceImpl implements SetService {
         for(SetEntity setEntity : setEntities){
             SetResponse setResponse = new SetResponse();
             modelMapper.map(setEntity, setResponse);
-            // Thêm numberOfWords
             setResponse.setUserDetailResponse(
                     setEntity.getUserEntity().getFullName(),
                     setEntity.getUserEntity().getUsername(),
@@ -146,6 +152,7 @@ public class SetServiceImpl implements SetService {
                     setEntity.getUserEntity().getCountry());
             List<WordResponse> wordListResponses = wordService.getWordBySetId(setEntity.getId());
             setResponse.setWordResponses(wordListResponses);
+            setResponse.setNumberOfWords((long) wordListResponses.size());
             setResponses.add(setResponse);
         }
         return setResponses;
@@ -200,6 +207,29 @@ public class SetServiceImpl implements SetService {
         }
         setRepository.delete(setEntity);
         return true;
+    }
+
+    @Override
+    public List<SetResponse> getRecentSet() {
+        UserEntity user = userService.getUserFromSecurityContext();
+        List<StudySessionEntity> studySessionEntities = user.getStudySessionEntityList();
+        studySessionEntities.sort(Comparator.comparing(StudySessionEntity::getCreatedAt).reversed());
+        Set<SetEntity> processedSets = new LinkedHashSet<>();
+        studySessionEntities.stream().map(StudySessionEntity::getWordEntity).forEach(wordEntity -> processedSets.add(wordEntity.getSetEntity()));
+        List<SetResponse> setResponses = new ArrayList<>();
+        for(SetEntity setEntity : processedSets){
+            SetResponse s = new SetResponse();
+            modelMapper.map(setEntity, s);
+            s.setUserDetailResponse(
+                    setEntity.getUserEntity().getFullName(),
+                    setEntity.getUserEntity().getUsername(),
+                    setEntity.getUserEntity().getEmail(),
+                    setEntity.getUserEntity().getCountry());
+            List<WordResponse> wordListResponses = wordService.getWordBySetId(setEntity.getId());
+            s.setWordResponses(wordListResponses);
+            setResponses.add(s);
+        }
+        return setResponses;
     }
 
 

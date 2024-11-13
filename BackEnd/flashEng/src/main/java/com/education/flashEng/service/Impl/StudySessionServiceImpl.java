@@ -10,7 +10,6 @@ import com.education.flashEng.payload.response.StatisticResponse;
 import com.education.flashEng.repository.StudySessionRepository;
 import com.education.flashEng.repository.WordRepository;
 import com.education.flashEng.service.StudySessionService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -23,8 +22,6 @@ import java.util.Objects;
 public class StudySessionServiceImpl implements StudySessionService {
     @Autowired
     private  UserServiceImpl userServiceImpl;
-    @Autowired
-    private  ModelMapper modelMapper;
     @Autowired
     private  WordRepository wordRepository;
     @Autowired
@@ -47,7 +44,7 @@ public class StudySessionServiceImpl implements StudySessionService {
                     studySessionEntity.setWordEntity(wordEntity);
                     studySessionEntity.setDifficulty(studySessionRequest.getDifficulty());
                     StudySessionEntity studySession = studySessionRepository.save(studySessionEntity);
-                    notificationServiceImpl.createStudySessionNotification(studySession, setReminderTimeBasedOnLevel(studySession.getDifficulty()));
+                    notificationServiceImpl.createStudySessionNotification(studySession, getReminderTimeBasedOnLevel(studySession.getDifficulty(),LocalDateTime.now()));
                     return true;
                 }
             }
@@ -58,7 +55,7 @@ public class StudySessionServiceImpl implements StudySessionService {
             studySessionEntity.setWordEntity(wordEntity);
             studySessionEntity.setDifficulty(studySessionRequest.getDifficulty());
             StudySessionEntity studySession = studySessionRepository.save(studySessionEntity);
-            notificationServiceImpl.createStudySessionNotification(studySession, setReminderTimeBasedOnLevel(studySession.getDifficulty()));
+            notificationServiceImpl.createStudySessionNotification(studySession, getReminderTimeBasedOnLevel(studySession.getDifficulty(),LocalDateTime.now()));
         }
         return true;
     }
@@ -69,13 +66,15 @@ public class StudySessionServiceImpl implements StudySessionService {
         return studySessionRepository.findDailyWordCountByUserId(userId);
     }
 
-    public LocalDateTime setReminderTimeBasedOnLevel(String difficulty) {
-        LocalDateTime now = LocalDateTime.now();
+    @Override
+    public LocalDateTime getReminderTimeBasedOnLevel(String difficulty, LocalDateTime time) {
+        LocalDateTime now = time;
+        difficulty = difficulty.toLowerCase();
         return switch (difficulty) {
-            case "Very difficult" -> now.plusHours(3);
-            case "Difficult" -> now.plusDays(1);
-            case "Easy" -> now.plusDays(3);
-            case "Very easy" -> now.plusHours(5);
+            case "very difficult" -> now.plusHours(3);
+            case "difficult" -> now.plusDays(1);
+            case "easy" -> now.plusDays(3);
+            case "very easy" -> now.plusHours(5);
             default -> throw new IllegalArgumentException("Invalid Difficulty");
         };
     }
