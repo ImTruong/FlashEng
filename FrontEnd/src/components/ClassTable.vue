@@ -1,5 +1,5 @@
 <script setup>
-    import { ref, watch, defineEmits, defineProps} from 'vue';
+    import { ref, watch, defineEmits, defineProps, onMounted} from 'vue';
     import OverlayBackground from '../components/OverlayBackground.vue'
     // import { debounce } from 'lodash'; // Nếu bạn sử dụng lodash
     import AddMember from './AddMember.vue';
@@ -10,8 +10,8 @@
     const props = defineProps(['isEditMode', 'existingClass']);
 
     const visible = ref(true); 
-    const className = ref(props.isEditMode ? props.existingSet.name : '');
-    const rows = ref(props.isEditMode ? props.existingSet.user : [{ username: '', role: 'Member'}]);
+    const className = ref(props.isEditMode ? props.existingClass.className : '');
+    const rows = ref([{ username: '', role: 'Member'}]);
     const selectedUsers = ref([]); // Danh sách các từ được chọn
     const showSelectColumn = ref(false);
     const selectedOption = ref('')
@@ -21,25 +21,8 @@
     // const membersData = ref([])
     const showAddMember = ref(false);
     const roleFilter = ref("Role");
-
-    
-    // Hàm lưu vào database
-    // const saveToDatabase = async () => {
-    //     console.log('Saving to database...');
-    //     console.log('Class Name:', className.value);
-    //     console.log('Rows:', rows.value);
-    //     console.log('Selected User:', selectedUsers.value); // In ra các từ được chọn
-    //     // Logic để lưu vào database
-    // };
-
-    // // Hàm lưu vào database với debounce
-    // const saveToDatabaseDebounced = debounce(saveToDatabase, 300); // Gọi hàm mỗi 300ms sau khi dừng lại
-
-    // // Theo dõi thay đổi của className và rows
-    // watch(className, saveToDatabaseDebounced);
-    // watch(rows, (newRows) => {
-    //     saveToDatabaseDebounced(); // Gọi hàm lưu dữ liệu
-    // }, { deep: true });
+    const classId = ref(null);
+    const errorMessage = ref(null);
 
     const updateClassName = (newClassName) => {
         className.value = newClassName;
@@ -144,9 +127,36 @@
         }
     };
 
-    const getMember = async () =>{
+    const getMember = async () => {
+        try {
+            const token = localStorage.getItem('token') // Lấy token từ localStorage
+            if (!token) {
+            errorMessage.value = 'You must be logged in to view user information'
+            return
+            }
+            const response = await axios.get(`class/member/list?classId=${classId.value}`, {
+            headers: {
+                Authorization: `Bearer ${token}`, // Đảm bảo gửi token trong header
+            },
+            })
+            rows.value = response.data.data.memberList;
+            console.log(rows.value);
+        } catch (error) {
+            errorMessage.value = error.response ? error.response.data : 'An error occurred'
+            console.error('Error fetching user info:', error)
+        }                                 
+    };
 
-    }
+
+
+    onMounted(() => {
+        if(props.isEditMode){
+            console.log(localStorage.getItem('classId'));
+            classId.value = localStorage.getItem('classId');
+            className.value = localStorage.getItem('className');
+            getMember();
+        }
+    });
 
 </script>
 
@@ -186,17 +196,17 @@
                     <th class="username-column">ptitstudent1</th>
                     <th class="role">Admin</th>
               </tr> -->
-                <tr v-for="(row, index) in rows" :key="index">
+                <tr v-for="row in rows" :key="row.userId">
                     <td v-if="showSelectColumn">
                         <input type="checkbox" @change="toggleSelectMember(row.username)" :checked="selectedUsers.includes(row.username)" />
                     </td>
-                    <td class="username-column"><input v-model="row.username" placeholder="Username" /></td>
+                    <td class="username-column"><input v-model="row.userName" placeholder="Username" /></td>
                     <td class="role">
                         <!-- Thay input bằng select -->
                         <select class="role-option" v-model="row.role">
                             <!-- <option value="" disabled>Role</option> -->
-                            <option value="Admin">Admin</option>
-                            <option value="Member" selected>Member</option>
+                            <option value="ADMIN">ADMIN</option>
+                            <option value="MEMBER" selected>MEMBER</option>
                         </select>
                     </td>              
                 </tr>

@@ -11,6 +11,8 @@
     const sets = computed(() => store.getters.getSets);
     const filteredSets = ref([]);
     const visible = ref(true);
+    const isEditMode = ref(false);
+    const existingClass = ref({});
 
     const { classItem, Overlay_background } = defineProps(['classItem', 'Overlay_background']);
     const emit = defineEmits();
@@ -29,16 +31,23 @@
     }
 
     // Hàm hiển thị bảng ClassTable
-    const showClassTable = () => {
+    const showClassTable = (classItem) => {
+        console.log(isEditMode);
         classTable.value = true;
         visible.value = false;
         icon.value = false;
+        existingClass.value = classItem;
     };
 
     // Hàm đóng bảng ClassTable
     const closeClassTable = () => {
         classTable.value = false;
         visible.value = true;
+    };
+
+    const handleUpdate = (updatedRows) => {
+        // existingSet.value.wordListResponses = updatedRows;
+        // console.log('Dữ liệu đã được cập nhật:', existingSet.value);
     };
 
     // Theo dõi thay đổi trong ô tìm kiếm và cập nhật danh sách `filteredSets`
@@ -64,7 +73,7 @@
             <img src="../assets/add_member.svg" alt="Icon" class="add-member-icon" @click="showClassTable">
             <img src="../assets/leave-group.svg" alt="Icon" class="leave-group-icon" @click="closeOverlay">
         </div>
-        <h2 @click="icon = !icon">{{ classItem.name }}</h2>
+        <h2 @click="icon = !icon">{{ classItem.className }}</h2>
         <img src="../assets/close.svg" alt="Icon" class="close-icon" @click="closeOverlay">
         <div class="line"></div>
         
@@ -75,7 +84,15 @@
                 :set="set" />
         </div>
     </div>
-    <ClassTable v-if="classTable" @close="closeClassTable"></ClassTable>
+    <classTable 
+        v-if="classTable" 
+        :isEditMode=true  
+        :existingClass="existingClass" 
+        @close="closeClassTable" 
+        @update="handleUpdate"
+      />
+
+      
 </template>
 
 

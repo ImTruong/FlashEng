@@ -4,11 +4,13 @@
     import Card from "@/components/Set.vue";
     import { useRouter } from "vue-router"; 
     import { useStore } from "vuex";
+    import axios from "axios";
     
     const router = useRouter();
     const store = useStore();
     const sets = computed(() => store.getters.getSets);
     const displayedSets = ref([]);
+    const errorMessage = ref(null);
 
     onMounted(() => {
         store.dispatch('fetchLibrarySets').then(() => {
@@ -23,6 +25,30 @@
     const showAllSets = () => {
         router.push("/classes");
     };
+
+    const fetchUserInfo = async () => {
+        try {
+            const token = localStorage.getItem('token') // Lấy token từ localStorage
+            if (!token) {
+            errorMessage.value = 'You must be logged in to view user information'
+            return
+            }
+            const response = await axios.get('/user', {
+            headers: {
+                Authorization: `Bearer ${token}`, // Đảm bảo gửi token trong header
+            },
+            })
+            localStorage.setItem('user', JSON.stringify(response.data.data));
+            console.log(localStorage.getItem('user'));
+        } catch (error) {
+            errorMessage.value = error.response ? error.response.data : 'An error occurred'
+            console.error('Error fetching user info:', error)
+        }                                 
+    };
+
+    onMounted(() => {
+        fetchUserInfo();
+    });
 
     const goToStudy = () => {
         router.push('/review');

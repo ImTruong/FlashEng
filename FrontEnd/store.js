@@ -45,7 +45,7 @@ const store = createStore({
           console.warn("Token không tồn tại");
           return;
         }
-        const response = await axios.get("/class", { 
+        const response = await axios.get("/class/user", { 
           headers: {
             Authorization: `Bearer ${token}`
           }
