@@ -5,10 +5,11 @@
     import OverlayBackground from "../components/OverlayBackground.vue";
     import classesData from "../data/classes.json" 
     // import JoinBox from "../components/JoinBox.vue"
-    import SeachClasses from './SeachClasses.vue';
+    import SeachBar from './SeachBar.vue';
     import ClassTable from './ClassTable.vue';
     import InviteMember from './AddMember.vue';
     import NotificationList from './NotificationList.vue'
+    import setsData from '../data/sets'
     
     const isEditMode = ref(false);
     const existingSet = ref(null);
@@ -66,6 +67,11 @@
     if (!newValue) {
       showNotifications.value = false; // Close notifications when nav menu is closed
     }
+
+    function closeOverlay(){
+        emit('close');
+    }
+
   });
 </script>
 
@@ -123,10 +129,8 @@
             </div>
 
             <div v-if="showSearch" class="search-class">
-                <SeachClasses
+                <SeachBar
                     :searchQuery="searchItem"
-                    :sets="setItems"
-                    :classes="classItems"
                     :Overlay_background="Overlay_background"
                     @close="Overlay_background = false"
                 />

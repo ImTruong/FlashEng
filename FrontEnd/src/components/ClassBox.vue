@@ -13,8 +13,9 @@
     const visible = ref(true);
     const isEditMode = ref(false);
     const existingClass = ref({});
+    const className = localStorage.getItem('className');
 
-    const { classItem, Overlay_background } = defineProps(['classItem', 'Overlay_background']);
+    const { Overlay_background } = defineProps(['Overlay_background']);
     const emit = defineEmits();
 
     const icon = ref(false);
@@ -23,6 +24,7 @@
     onMounted(() => {
         store.dispatch('fetchLibrarySets');
         filteredSets.value = sets.value;
+        console.log(className);
     });
 
     // Hàm đóng overlay
@@ -60,8 +62,8 @@
 
 <template>
     <OverlayBackground 
-    :isVisible="OverlayBackground" 
-    @clickOverlay="closeOverlay" />
+        :isVisible="OverlayBackground" 
+        @clickOverlay="closeOverlay" />
     <div class="classbox-container" v-if="visible"> 
         <div class="search-container">
             
@@ -73,7 +75,7 @@
             <img src="../assets/add_member.svg" alt="Icon" class="add-member-icon" @click="showClassTable">
             <img src="../assets/leave-group.svg" alt="Icon" class="leave-group-icon" @click="closeOverlay">
         </div>
-        <h2 @click="icon = !icon">{{ classItem.className }}</h2>
+        <h2 @click="icon = !icon">{{ className }}</h2>
         <img src="../assets/close.svg" alt="Icon" class="close-icon" @click="closeOverlay">
         <div class="line"></div>
         
@@ -84,15 +86,12 @@
                 :set="set" />
         </div>
     </div>
-    <classTable 
+    <ClassTable 
         v-if="classTable" 
         :isEditMode=true  
-        :existingClass="existingClass" 
         @close="closeClassTable" 
         @update="handleUpdate"
-      />
-
-      
+    />   
 </template>
 
 
