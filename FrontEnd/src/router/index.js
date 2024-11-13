@@ -16,8 +16,8 @@ const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes:[
         {
-            path: "/classes",
-            name: "classes",
+            path: "/library",
+            name: "library",
             component: YourLibrary
         },
         {

@@ -90,7 +90,7 @@
                     </li>
                     <li>
                         <img src="@/assets/icons/folder.png" alt="folder"  class="menu-icon"/>
-                        <router-link to="/classes" class="menu-link">Your Library
+                        <router-link to="/library" class="menu-link">Your Library
                             
                         </router-link>
                     </li>
