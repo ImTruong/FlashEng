@@ -11,6 +11,9 @@
     const sets = computed(() => store.getters.getSets);
     const filteredSets = ref([]);
     const visible = ref(true);
+    const editMode = ref(false);
+    const existingClass = ref({});
+    // const member
 
     const { classItem, Overlay_background } = defineProps(['classItem', 'Overlay_background']);
     const emit = defineEmits();
@@ -29,10 +32,12 @@
     }
 
     // Hàm hiển thị bảng ClassTable
-    const showClassTable = () => {
+    const showClassTable = (isEditMode, existingClass) => {
         classTable.value = true;
         visible.value = false;
         icon.value = false;
+        isEditMode.value = editMode; 
+        existingClass.value = existingClassData;
     };
 
     // Hàm đóng bảng ClassTable
@@ -64,7 +69,7 @@
             <img src="../assets/add_member.svg" alt="Icon" class="add-member-icon" @click="showClassTable">
             <img src="../assets/leave-group.svg" alt="Icon" class="leave-group-icon" @click="closeOverlay">
         </div>
-        <h2 @click="icon = !icon">{{ classItem.name }}</h2>
+        <h2 @click="icon = !icon">{{ classItem.className }}</h2>
         <img src="../assets/close.svg" alt="Icon" class="close-icon" @click="closeOverlay">
         <div class="line"></div>
         
@@ -75,7 +80,12 @@
                 :set="set" />
         </div>
     </div>
-    <ClassTable v-if="classTable" @close="closeClassTable"></ClassTable>
+    <classTable 
+        v-if="classTable" 
+        :isEditMode="isEditMode" 
+        :existingClass="existingClass" 
+        @close="closeClassTable" 
+      />
 </template>
 
 

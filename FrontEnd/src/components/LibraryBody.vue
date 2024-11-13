@@ -18,6 +18,8 @@
     const selectClass = (classItem) => {
         selectedClassItem.value = classItem;
         Overlay_background.value = true;
+        localStorage.setItem('classId', selectedClassItem.value.classId);
+        console.log(localStorage.getItem('classId'));
     }
 
     const selectedMember = (classMember) => {
@@ -47,10 +49,10 @@
             <div v-for="classItem in classes" :key="classItem.id" class="class-card" @click="selectClass(classItem)">
                 <img src="../assets/class.svg" alt="Icon" class="class-icon">
                 <div class="class-info">
-                    <h3>{{ classItem.name }}</h3>
+                    <h3>{{ classItem.className }}</h3>
                     <div class="class-detail" @click.stop="">
-                        <p @click="selectClass(classItem)">{{ classItem.sets }} set |</p>
-                        <p @click=""> {{ classItem.members }} members</p>
+                        <p @click="selectClass(classItem)">{{ classItem.numberOfSets }} {{ classItem.numberOfMembers <= 1 ? 'set' : 'sets' }} |</p>
+                        <p @click=""> {{ classItem.numberOfMembers }} {{ classItem.numberOfMembers <= 1 ? 'member' : 'members' }}</p>
                     </div>
                 </div>
             </div>

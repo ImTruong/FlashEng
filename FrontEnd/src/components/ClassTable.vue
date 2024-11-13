@@ -1,5 +1,5 @@
 <script setup>
-    import { ref, watch, defineEmits, defineProps} from 'vue';
+    import { ref, watch, defineEmits, defineProps, onMounted} from 'vue';
     import OverlayBackground from '../components/OverlayBackground.vue'
     // import { debounce } from 'lodash'; // Nếu bạn sử dụng lodash
     import AddMember from './AddMember.vue';
@@ -21,6 +21,7 @@
     // const membersData = ref([])
     const showAddMember = ref(false);
     const roleFilter = ref("Role");
+    const classId = ref(null);
 
     
     // Hàm lưu vào database
@@ -144,9 +145,34 @@
         }
     };
 
-    const getMember = async () =>{
+    const getMember = async () => {
+        try {
+            const token = localStorage.getItem('token') // Lấy token từ localStorage
+            if (!token) {
+            errorMessage.value = 'You must be logged in to view user information'
+            return
+            }
+            const response = await axios.get('`class/member/list?classId=${classId}`', {
+            headers: {
+                Authorization: `Bearer ${token}`, // Đảm bảo gửi token trong header
+            },
+            }) 
+            rows.data = response.data.memberList;
+            console.log(rows.data);
+        } catch (error) {
+            errorMessage.value = error.response ? error.response.data : 'An error occurred'
+            console.error('Error fetching user info:', error)
+        }                                 
+    };
 
-    }
+
+
+    onMounted(() => {
+        if(props.isEditMode){
+            classId = localStorage.getItem(id);
+            getMember();
+        }
+    });
 
 </script>
 
