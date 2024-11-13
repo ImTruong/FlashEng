@@ -20,5 +20,9 @@ public interface ClassInvitationService {
      List<ClassInvitationResponse> getAllCurrentUserClassInvitations();
 
      List<AllClassesInvitationResponse> getAllClassInvitations(Long classId);
+
+     String checkExistance(Long classId, String inviteeUsername);
+
+     boolean revokeInvitation(Long invitationId);
 }
 

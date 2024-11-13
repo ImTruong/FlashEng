@@ -34,6 +34,16 @@ public class ClassInvitationController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("/existence")
+    public ResponseEntity<?> checkExistance(@RequestParam @NotNull(message = "classId is required") Long classId,
+                                           @RequestParam @NotBlank(message = "inviteeUsername cannot be blank") String inviteeUsername) {
+        String invitationId = classInvitationService.checkExistance(classId, inviteeUsername);
+        ApiResponse<?> response = new ApiResponse<>(true,"Invitation existed",invitationId);
+        if (invitationId == null)
+            response.setMessage("Invitation does not exist");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<?> inviteToClass(@RequestParam @NotNull(message = "classId is required") Long classId,
                                            @RequestParam @NotBlank(message = "inviteeUsername cannot be blank") String inviteeUsername) {
@@ -50,6 +60,12 @@ public class ClassInvitationController {
     @DeleteMapping("/reject")
     public ResponseEntity<?> rejectInvitation(@RequestParam @NotNull(message = "invitationId is required") Long invitationId) {
         ApiResponse<String> response = new ApiResponse<>(classInvitationService.rejectInvitation(invitationId),"Invitation Rejected Successfully",null);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/revoke")
+    public ResponseEntity<?> revokeInvitation(@RequestParam @NotNull(message = "invitationId is required") Long invitationId) {
+        ApiResponse<String> response = new ApiResponse<>(classInvitationService.revokeInvitation(invitationId),"Invitation Revoked Successfully",null);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

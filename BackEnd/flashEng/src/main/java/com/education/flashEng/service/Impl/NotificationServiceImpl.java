@@ -235,7 +235,11 @@ public class NotificationServiceImpl implements NotificationService {
                     NotificationResponse.NotificationResponseBuilder responseBuilder = NotificationResponse.builder()
                             .message(notificationEntity.getMessage())
                             .type(notificationEntity.getType())
+                            .id(notificationEntity.getId())
+                            .createdAt(notificationEntity.getCreatedAt())
                             .isRead(true);
+                    if (notificationEntity.getReminderTime()!=null)
+                        responseBuilder.createdAt(notificationEntity.getReminderTime());
 
                     if (notificationEntity.getNotificationMetaDataEntity() != null) {
                         Map<String, String> additionalInfo = Map.of(
