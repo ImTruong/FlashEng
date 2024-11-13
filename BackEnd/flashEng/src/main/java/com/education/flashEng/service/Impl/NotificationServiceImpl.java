@@ -91,6 +91,7 @@ public class NotificationServiceImpl implements NotificationService {
         return true;
     }
 
+    @Transactional
     @Override
     public boolean createAcceptedClassJoinRequestNotification(ClassJoinRequestEntity classJoinRequestEntity) {
         NotificationEntity notificationEntity = NotificationEntity.builder()
@@ -103,6 +104,7 @@ public class NotificationServiceImpl implements NotificationService {
         return true;
     }
 
+    @Transactional
     @Override
     public boolean createRejectedClassJoinRequestNotification(ClassJoinRequestEntity classJoinRequestEntity) {
         NotificationEntity notificationEntity = NotificationEntity.builder()
@@ -115,6 +117,7 @@ public class NotificationServiceImpl implements NotificationService {
         return true;
     }
 
+    @Transactional
     @Override
     public boolean createAcceptedClassInvitationNotification(ClassInvitationEntity classInvitationEntity) {
         NotificationEntity notificationEntity = NotificationEntity.builder()
@@ -127,6 +130,7 @@ public class NotificationServiceImpl implements NotificationService {
         return true;
     }
 
+    @Transactional
     @Override
     public boolean createRejectedClassInvitationNotification(ClassInvitationEntity classInvitationEntity) {
         NotificationEntity notificationEntity = NotificationEntity.builder()
@@ -183,6 +187,7 @@ public class NotificationServiceImpl implements NotificationService {
         return true;
     }
 
+    @Transactional
     @Override
     public boolean createRejectRequestNotification(SetEntity setEntity, ClassEntity classEntity) {
         NotificationMetaDataEntity notificationMetaDataEntity = NotificationMetaDataEntity.builder()
@@ -201,6 +206,7 @@ public class NotificationServiceImpl implements NotificationService {
         return true;
     }
 
+    @Transactional
     @Override
     public boolean createStudySessionNotification(StudySessionEntity studySessionEntity, LocalDateTime reminderTime) {
         NotificationMetaDataEntity notificationMetaDataEntity = NotificationMetaDataEntity.builder()

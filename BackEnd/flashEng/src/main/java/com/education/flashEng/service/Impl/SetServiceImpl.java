@@ -155,6 +155,7 @@ public class SetServiceImpl implements SetService {
         return setResponses;
     }
 
+    @Transactional
     @Override
     public boolean updateSet(UpdateSetRequest updateSetRequest) {
         UserEntity user = userService.getUserFromSecurityContext();
@@ -194,6 +195,7 @@ public class SetServiceImpl implements SetService {
         return true;
     }
 
+    @Transactional
     @Override
     public boolean deleteSetById(Long setID) {
         UserEntity user = userService.getUserFromSecurityContext();
