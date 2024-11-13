@@ -5,6 +5,7 @@
     import ClassTable from './ClassTable.vue';
     import { ref, watch } from 'vue';
     import { useStore } from 'vuex';
+    import axios from 'axios';
 
     const store = useStore();
     const classTable = ref(false);
@@ -14,6 +15,7 @@
     const isEditMode = ref(false);
     const existingClass = ref({});
     const className = localStorage.getItem('className');
+    const classId = localStorage.getItem('classId');
 
     const { Overlay_background } = defineProps(['Overlay_background']);
     const emit = defineEmits();
@@ -58,6 +60,24 @@
             set.name.toLowerCase().includes(search.value.toLowerCase())
         );
     });
+
+    // chưa test
+    const leaveClass = async() => {
+        try{
+            const token = localStorage.getItem('token');
+            console.log(classId)
+            const response = await axios.delete(`/class/member/leave?${classId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Attach the token in the request headers
+                },
+            });
+            console.log(response);
+            alert(response.data);
+            closeOverlay();
+        }catch(error){
+            console.log(error);
+        }
+    }
 </script>
 
 <template>
@@ -73,7 +93,7 @@
         <div v-if="icon" class="icon">
             <img src="../assets/add_set.svg" alt="Icon" class="add-set-icon">
             <img src="../assets/add_member.svg" alt="Icon" class="add-member-icon" @click="showClassTable">
-            <img src="../assets/leave-group.svg" alt="Icon" class="leave-group-icon" @click="closeOverlay">
+            <img src="../assets/leave-group.svg" alt="Icon" class="leave-group-icon" @click="leaveClass">
         </div>
         <h2 @click="icon = !icon">{{ className }}</h2>
         <img src="../assets/close.svg" alt="Icon" class="close-icon" @click="closeOverlay">

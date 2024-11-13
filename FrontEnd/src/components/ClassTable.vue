@@ -46,7 +46,12 @@
             } else {
                 const response = await axios.post('/class', payload, { headers: config.headers }); 
                 console.log(response.data)
+                classId.value = response.data.data.classId;
+                localStorage.setItem('classId', classId.value);
+                localStorage.setItem('className', className.value);
+                console.log(classId.value);
                 emit('save', response.data.data); 
+                rows.value = response.data.data.memberList;
             }
         } catch (error) {
             if (error.response) {
@@ -80,10 +85,10 @@
         visible.value = false;
     };
 
-    const toggleSelectMember = (username) => {
-        const index = selectedUsers.value.indexOf(username);
+    const toggleSelectMember = (userId) => {
+        const index = selectedUsers.value.indexOf(userId);
         if (index === -1) {
-            selectedUsers.value.push(username);
+            selectedUsers.value.push(userId);
         } else {
             selectedUsers.value.splice(index, 1);
         }
@@ -98,6 +103,7 @@
     };
 
 
+    // chua test
     watch(search, () =>{
         if(showSearch){
             membersData.value = rows.filter(member => member.username.toLowerCase().includes(search.value.toLowerCase()))
@@ -146,6 +152,26 @@
         }                                 
     };
 
+    const updateRole = async (user) => {
+        const token = localStorage.getItem('token'); // Lấy token từ localStorage
+        const payload = {
+            userId: user.userId,
+            classId: classId.value,
+            role: user.role,
+        };
+
+        try {
+            const response = await axios.put('/class/member/role', payload, {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Gửi token trong header
+                },
+            });
+            console.log('Role updated:', response.data);
+        } catch (error) {
+            console.error('Error updating role:', error);
+        }
+    };
+
 
 
     onMounted(() => {
@@ -191,13 +217,12 @@
             <tbody>
                 <tr v-for="row in rows" :key="row.userId">
                     <td v-if="showSelectColumn">
-                        <input type="checkbox" @change="toggleSelectMember(row.username)" :checked="selectedUsers.includes(row.username)" />
+                        <input type="checkbox" @change="toggleSelectMember(row.userId)" :checked="selectedUsers.includes(row.userId)" />
                     </td>
                     <td class="username-column"><p>{{row.userName}}</p></td>
                     <td class="role">
                         <!-- Thay input bằng select -->
-                        <select class="role-option" v-model="row.role">
-                            <!-- <option value="" disabled>Role</option> -->
+                        <select class="role-option" v-model="row.role" @change="updateRole(row)">
                             <option value="ADMIN">ADMIN</option>
                             <option value="MEMBER" selected>MEMBER</option>
                         </select>
@@ -409,7 +434,3 @@
         margin-left: 15px; 
     }
 </style>
-<!-- 
-Khi tạo class thẻ thì sẽ tự động lưu trong database, các thao tác với set thẻ sẽ thao tác trực tiếp với dữ liệu trong database
-Thiếu phần tìm kiếm
- -->
