@@ -156,4 +156,31 @@ public class ClassInvitationServiceImpl implements ClassInvitationService {
                         .build())
                 .toList();
     }
+
+    @Override
+    public String checkExistance(Long classId, String inviteeUsername) {
+        UserEntity invitee = userService.getUserByUsername(inviteeUsername);
+        UserEntity inviter = userService.getUserFromSecurityContext();
+        ClassEntity classEntity = classService.getClassById(classId);
+        if (classEntity.getClassMemberEntityList().stream().noneMatch(classMemberEntity -> classMemberEntity.getUserEntity() == inviter))
+            throw new AccessDeniedException("You are not authorized to invite to this class.");
+        Optional<ClassInvitationEntity> classInvitationEntity = classInvitationRepository.findByClassEntityIdAndInviteeEntityIdAndInviterEntityId(classId, invitee.getId(), inviter.getId());
+        if (classInvitationEntity.isPresent())
+            return "InvitationId: "+classInvitationEntity.get().getId();
+        return null;
+    }
+
+    @Override
+    public boolean revokeInvitation(Long invitationId) {
+        ClassInvitationEntity classInvitationEntity = classInvitationRepository.findById(invitationId)
+                .orElseThrow(() -> new EntityNotFoundWithIdException("Invitation", invitationId.toString()));
+        UserEntity inviter = userService.getUserFromSecurityContext();
+        if (inviter != classInvitationEntity.getInviterEntity())
+            throw new AccessDeniedException("You are not authorized to revoke this invitation.");
+        classInvitationRepository.delete(classInvitationEntity);
+        notificationService.deleteAllRelatedNotificationsByNotificationMetaData("classInvitationId", invitationId.toString());
+        return true;
+    }
+
+
 }

@@ -7,7 +7,6 @@ import com.education.flashEng.payload.request.CreateSetRequest;
 import com.education.flashEng.payload.request.UpdateSetRequest;
 import com.education.flashEng.payload.response.SetResponse;
 import com.education.flashEng.payload.response.WordResponse;
-import com.education.flashEng.payload.response.WordResponse;
 import com.education.flashEng.repository.ClassMemberRepository;
 import com.education.flashEng.repository.ClassRepository;
 import com.education.flashEng.repository.ClassSetRequestRepository;
@@ -41,8 +40,6 @@ public class SetServiceImpl implements SetService {
     private ClassSetRequestRepository classSetRequestRepository;
     @Autowired
     private WordService wordService;
-    @Autowired
-    private StudySessionService studySessionService;
 
     @Transactional
     @Override
@@ -225,6 +222,8 @@ public class SetServiceImpl implements SetService {
                     setEntity.getUserEntity().getUsername(),
                     setEntity.getUserEntity().getEmail(),
                     setEntity.getUserEntity().getCountry());
+            s.setNumberOfWords((long) setEntity.getWordsEntityList().size());
+            s.setDescription(setEntity.getDescription());
             List<WordResponse> wordListResponses = wordService.getWordBySetId(setEntity.getId());
             s.setWordResponses(wordListResponses);
             setResponses.add(s);

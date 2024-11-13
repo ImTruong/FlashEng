@@ -16,4 +16,8 @@ public interface ClassJoinRequestService {
      Optional<ClassJoinRequestEntity> getClassJoinRequestByClassIdAndUserId(Long classId, Long userId);
 
      ClassJoinRequestResponse getClassJoinRequest(Long requestId);
+
+     String checkExistance(Long classId);
+
+     boolean revokeClassJoinRequest(Long requestId);
 }

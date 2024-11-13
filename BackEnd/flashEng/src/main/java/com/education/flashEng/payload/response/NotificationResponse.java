@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Getter
@@ -13,6 +14,8 @@ import java.util.Map;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class NotificationResponse {
+    private Long id;
+    private LocalDateTime createdAt;
     private String message;
     private String type;
     private Boolean isRead;
