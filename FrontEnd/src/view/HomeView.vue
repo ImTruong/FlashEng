@@ -11,14 +11,17 @@
     const sets = computed(() => store.getters.getSets);
     const displayedSets = ref([]);
     const errorMessage = ref(null);
+    const recentSets = ref([]);
+
 
     onMounted(() => {
         store.dispatch('fetchLibrarySets').then(() => {
-            displayedSets.value = sets.value.slice(0, 3); // Cập nhật danh sách hiển thị
+            displayedSets.value = sets.value.slice(0, 3); // Update displayed sets
         });
-    });   
+        fetchRecentSet();
+    });
     const showAllSetsRecent = () => {
-        displayedSets.value = sets;
+        displayedSets.value = recentSets.value;
     };
 
     // Điều hướng đến trang "/classes" khi nhấn "More..."
@@ -46,10 +49,25 @@
         }                                 
     };
 
+    const fetchRecentSet = async () => {
+        try {
+            const token = localStorage.getItem('token')
+            const response = await axios.get('/set/recent', {
+            headers: {
+                Authorization: `Bearer ${token}`, // Đảm bảo gửi token trong header
+            },
+            })
+            recentSets.value = response.data.data
+            console.log(recentSets)
+        }
+        catch (error) {
+            console.error("Error fetching library sets:", error);
+        }
+    }
     onMounted(() => {
         fetchUserInfo();
+        fetchRecentSet();
     });
-
     const goToStudy = () => {
         router.push('/review');
     }
@@ -64,11 +82,11 @@
         <!-- Section Recent -->
         <h1 class="section-header">
             <span class="section-title">Recent</span>
-            <span v-if="sets.length > 3" class="more-link" @click="showAllSetsRecent">More...</span>
+            <span v-if="recentSets.length > 3" class="more-link" @click="showAllSetsRecent">More...</span>
         </h1>
         <div class="set-container">
             <Card 
-                v-for="set in displayedSets" 
+                v-for="set in recentSets" 
                 :key="set.id" 
                 :set="set" />
         </div>

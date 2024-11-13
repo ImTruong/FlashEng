@@ -10,7 +10,6 @@
   const setTable = ref(false); 
   const existingSet = ref({})
   const isEditMode = ref(false)
-
   const navigateToSet = () => {
     router.push(`/set/${set.id}`);
   }
@@ -38,7 +37,9 @@
       const response = await axios.delete(`/set/${set.id}`, config);
       if (response.status === 200) {
         console.log(`Set with ID ${set.id} has been deleted.`);
-        router.push('/'); 
+        const index = set.value.findIndex(item => item.id === set.id);
+        // router.push('/'); 
+        router.replace(router.currentRoute.fullPath)
       } else {
         console.error('Failed to delete the set');
       }
