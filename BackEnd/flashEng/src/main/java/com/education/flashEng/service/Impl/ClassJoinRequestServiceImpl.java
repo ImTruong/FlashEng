@@ -132,4 +132,26 @@ public class ClassJoinRequestServiceImpl implements ClassJoinRequestService {
         }
         throw new AccessDeniedException("You are not authorized to reject this request.");
     }
+
+    @Override
+    public String checkExistance(Long classId) {
+        UserEntity user = userService.getUserFromSecurityContext();
+        Optional<ClassJoinRequestEntity> classJoinRequestEntity = classJoinRequestRepository.findByClassEntityIdAndUserEntityId(classId, user.getId());
+        Long id = classJoinRequestEntity.map(ClassJoinRequestEntity::getId).orElse(null);
+        return id == null ? null : "ClassJoinRequestId: "+id.toString();
+
+    }
+
+    @Override
+    public boolean revokeClassJoinRequest(Long requestId) {
+        ClassJoinRequestEntity classJoinRequestEntity = classJoinRequestRepository.findById(requestId)
+                .orElseThrow(() -> new EntityNotFoundWithIdException("Class Join Request", requestId.toString()));
+        UserEntity user = userService.getUserFromSecurityContext();
+        if (classJoinRequestEntity.getUserEntity() == user) {
+            classJoinRequestRepository.delete(classJoinRequestEntity);
+            notificationService.deleteAllRelatedNotificationsByNotificationMetaData("classJoinRequestId", requestId.toString());
+            return true;
+        }
+        throw new AccessDeniedException("You are not authorized to revoke this request.");
+    }
 }

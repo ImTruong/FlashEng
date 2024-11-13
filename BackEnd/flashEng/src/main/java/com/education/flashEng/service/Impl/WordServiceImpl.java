@@ -82,7 +82,7 @@ public class WordServiceImpl implements WordService {
         UserEntity user = userService.getUserFromSecurityContext();
         SetEntity setEntity = setRepository.findById(setId)
                 .orElseThrow(() -> new EntityNotFoundWithIdException("SetEntity", setId.toString()));
-        if((user.getClassMemberEntityList().stream().noneMatch(classMemberEntity -> classMemberEntity.getClassEntity().getSetsEntityList().contains(setEntity))&&setEntity.getPrivacyStatus().equals("Class"))||(setEntity.getPrivacyStatus().equals("Private")&&!Objects.equals(setEntity.getUserEntity().getId(), user.getId()))){
+        if((user.getClassMemberEntityList().stream().noneMatch(classMemberEntity -> classMemberEntity.getClassEntity().getSetsEntityList().contains(setEntity))&&setEntity.getPrivacyStatus().equals("Class"))||(setEntity.getPrivacyStatus().equals("PRIVATE")&&!Objects.equals(setEntity.getUserEntity().getId(), user.getId()))){
             throw new IllegalArgumentException("You do not permission to get word in this set");
         }
         List<WordEntity> wordEntities = wordRepository.findAllBySetEntityId(setId);
@@ -149,6 +149,7 @@ public class WordServiceImpl implements WordService {
                 wordIds.add(wordId);
                 if(studySessionService.getReminderTimeBasedOnLevel(studySessionEntity.getDifficulty(), studySessionEntity.getCreatedAt()).isAfter(LocalDateTime.now()))
                     continue;
+                
                 WordResponse wordResponse = new WordResponse();
                 modelMapper.map(studySessionEntity.getWordEntity(), wordResponse);
                 wordResponses.add(wordResponse);

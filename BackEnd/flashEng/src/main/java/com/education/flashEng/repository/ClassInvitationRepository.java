@@ -14,4 +14,5 @@ public interface ClassInvitationRepository extends JpaRepository<ClassInvitation
     Optional<List<ClassInvitationEntity>> findByInviteeEntityIdAndClassEntityId(Long inviteeId, Long classId);
 
     List<ClassInvitationEntity> findAllByInviteeEntityId(Long inviteeId);
+
 }

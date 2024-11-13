@@ -23,6 +23,15 @@ public class ClassJoinRequestController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("/existence")
+    public ResponseEntity<?> checkExistance(@RequestParam @NotNull(message = "classId is required") Long classId){
+        String requestId = classJoinRequestService.checkExistance(classId);
+        ApiResponse<?> response = new ApiResponse<>(true, "Request existed", requestId);
+        if (requestId == null)
+            response.setMessage("Request does not exist");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @PostMapping()
     public ResponseEntity<?> createClassJoinRequest(@Valid @RequestBody ClassJoinRequestRequest classJoinRequestRequest) {
         try {
@@ -44,6 +53,12 @@ public class ClassJoinRequestController {
     @DeleteMapping("/reject")
     public ResponseEntity<?> rejectClassJoinRequest(@RequestParam @NotNull(message = "joinRequestId is required") Long requestId) {
         ApiResponse<String> response = new ApiResponse<>(classJoinRequestService.rejectClassJoinRequest(requestId), "Request Rejected Successfully", null);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/revoke")
+    public ResponseEntity<?> revokeClassJoinRequest(@RequestParam @NotNull(message = "requestId is required") Long classJoinRequestId) {
+        ApiResponse<String> response = new ApiResponse<>(classJoinRequestService.revokeClassJoinRequest(classJoinRequestId), "Request Revoked Successfully", null);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
