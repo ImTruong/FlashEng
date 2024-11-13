@@ -4,6 +4,7 @@ import com.education.flashEng.payload.response.AllClassesInvitationResponse;
 import com.education.flashEng.payload.response.ClassInvitationResponse;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ClassInvitationService {
 
@@ -21,7 +22,7 @@ public interface ClassInvitationService {
 
      List<AllClassesInvitationResponse> getAllClassInvitations(Long classId);
 
-     String checkExistance(Long classId, String inviteeUsername);
+     Map<String,Long> checkExistance(Long classId, String inviteeUsername);
 
      boolean revokeInvitation(Long invitationId);
 }

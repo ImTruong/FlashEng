@@ -260,4 +260,24 @@ public class NotificationServiceImpl implements NotificationService {
                 .toList();
     }
 
+    @Transactional
+    @Override
+    public boolean deleteUserNotificationOfAClassWhenUserRoleChanged(ClassEntity classEntity, UserEntity userEntity) {
+        List<ClassJoinRequestEntity> classJoinRequestEntityList = classEntity.getClassJoinRequestEntityList();
+        for (ClassJoinRequestEntity classJoinRequestEntity : classJoinRequestEntityList) {
+            Optional<NotificationMetaDataEntity> classJoinRequestMetaData = notificationMetaDataRepository.findByKeyAndValue("classJoinRequestId", classJoinRequestEntity.getId().toString());
+            classJoinRequestMetaData.ifPresent(notificationMetaDataEntity -> {
+                notificationRepository.deleteAll(classJoinRequestMetaData.get().getNotificationEntityList().stream().filter(notificationEntity -> notificationEntity.getUserEntity().equals(userEntity)).toList());
+            });
+        }
+        List<ClassSetRequestEntity> classSetRequestEntity = classEntity.getClassSetRequestEntityList();
+        for (ClassSetRequestEntity classSetRequests : classSetRequestEntity){
+            Optional<NotificationMetaDataEntity> classSetRequestMetaData = notificationMetaDataRepository.findByKeyAndValue("classSetRequestId", classSetRequests.getId().toString());
+            classSetRequestMetaData.ifPresent(notificationMetaDataEntity -> {
+                notificationRepository.deleteAll(classSetRequestMetaData.get().getNotificationEntityList().stream().filter(notificationEntity -> notificationEntity.getUserEntity().equals(userEntity)).toList());
+            });
+        }
+        return true;
+    }
+
 }
