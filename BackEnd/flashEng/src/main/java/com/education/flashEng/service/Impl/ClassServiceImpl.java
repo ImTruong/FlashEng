@@ -9,10 +9,7 @@ import com.education.flashEng.payload.request.CreateClassRequest;
 import com.education.flashEng.payload.response.ClassInformationResponse;
 import com.education.flashEng.payload.response.ClassMemberListReponse;
 import com.education.flashEng.repository.ClassRepository;
-import com.education.flashEng.service.ClassMemberService;
-import com.education.flashEng.service.ClassService;
-import com.education.flashEng.service.RoleClassService;
-import com.education.flashEng.service.UserService;
+import com.education.flashEng.service.*;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +17,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ClassServiceImpl implements ClassService {
@@ -40,6 +36,9 @@ public class ClassServiceImpl implements ClassService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Transactional
     @Override
@@ -121,9 +120,24 @@ public class ClassServiceImpl implements ClassService {
                 .toList();
     }
 
+    @Transactional
     @Override
     public boolean deleteClassByEntity(ClassEntity classEntity) {
         classRepository.delete(classEntity);
+        //delete all related notifications
+        classEntity.getClassInvitationEntityList().forEach(classInvitationEntity -> {
+            notificationService.deleteAllRelatedNotificationsByNotificationMetaData("classInvitationId", classInvitationEntity.getId().toString());
+        });
+        classEntity.getClassJoinRequestEntityList().forEach(classJoinRequestEntity -> {
+            notificationService.deleteAllRelatedNotificationsByNotificationMetaData("classJoinRequestId", classJoinRequestEntity.getId().toString());
+        });
+        classEntity.getClassSetRequestEntityList().forEach(classSetRequestEntity -> {
+            notificationService.deleteAllRelatedNotificationsByNotificationMetaData("classSetRequestId", classSetRequestEntity.getId().toString());
+        });
+        //set all sets privacy status to private
+        classEntity.getSetsEntityList().forEach(setEntity -> {
+            setEntity.setPrivacyStatus("Private");
+        });
         return true;
     }
 
