@@ -53,6 +53,7 @@
                 emit('save', response.data.data); 
                 rows.value = response.data.data.memberList;
             }
+            
         } catch (error) {
             if (error.response) {
                 console.error('API Error:', error.response.status, error.response.data);
@@ -83,6 +84,7 @@
     const closeForm = () => {
         emit('close');
         visible.value = false;
+        window.location.reload();
     };
 
     const toggleSelectMember = (userId) => {
