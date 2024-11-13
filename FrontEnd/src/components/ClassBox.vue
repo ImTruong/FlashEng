@@ -61,18 +61,18 @@
         );
     });
 
-    // chưa test
+    // đã test chưa cập nhâpj lại lớp 
     const leaveClass = async() => {
         try{
             const token = localStorage.getItem('token');
             console.log(classId)
-            const response = await axios.delete(`/class/member/leave?${classId}`, {
+            const response = await axios.delete(`/class/member/leave?classId=${classId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`, // Attach the token in the request headers
                 },
             });
             console.log(response);
-            alert(response.data);
+            alert(response.data.message);
             closeOverlay();
         }catch(error){
             console.log(error);
