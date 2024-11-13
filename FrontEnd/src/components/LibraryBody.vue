@@ -5,27 +5,36 @@
     import Card from "../components/Set.vue"
     import {ref} from "vue"
     import { defineProps} from 'vue';
+    import ClassTable from './ClassTable.vue';
+
+
+    const classBoxMode = ref(false);
+    const classTableMode = ref(false);
 
     const {sets, classes} = defineProps(['sets','classes']);
 
     const activeTab = ref("Flashcard sets");
-    
-    const Overlay_background = ref(false);
-
     const selectedClassItem = ref("");
-    const selectedClassMember = ref("");
 
     const selectClass = (classItem) => {
         selectedClassItem.value = classItem;
-        Overlay_background.value = true;
+        console.log(selectedClassItem.value);
         localStorage.setItem('classId', selectedClassItem.value.classId);
         localStorage.setItem('className', selectedClassItem.value.className);
-
     }
 
-    const selectedMember = (classMember) => {
-        selectedClassMember.value = classMember;
-        Overlay_background.value = true;
+    const showClassTable = (classItem) => {
+        classTableMode.value = true;
+        selectClass(classItem);
+    }
+
+    const showClassBox = (classItem) => {
+        classBoxMode.value = true;
+        selectClass(classItem);
+    }
+
+    function closeOverlay() {
+        emit('close');
     }
 
 </script>
@@ -45,29 +54,34 @@
             </div>
         </div>
         <div class="class-list"  v-if="activeTab === 'Classes'">
-            <div v-for="classItem in classes" :key="classItem.id" class="class-card" @click="selectClass(classItem)">
+            <div v-for="classItem in classes" :key="classItem.id" class="class-card" @click="showClassBox(classItem)">
                 <img src="../assets/class.svg" alt="Icon" class="class-icon">
                 <div class="class-info">
                     <h3>{{ classItem.className }}</h3>
                     <div class="class-detail" @click.stop="">
-                        <p @click="selectClass(classItem)">{{ classItem.numberOfSets }} {{ classItem.numberOfMembers <= 1 ? 'set' : 'sets' }} |</p>
-                        <p @click=""> {{ classItem.numberOfMembers }} {{ classItem.numberOfMembers <= 1 ? 'member' : 'members' }}</p>
+                        <p @click="showClassBox(classItem)">{{ classItem.numberOfSets }} {{ classItem.numberOfMembers <= 1 ? 'set' : 'sets' }} |</p>
+                        <p @click="showClassTable(classItem)"> {{ classItem.numberOfMembers }} {{ classItem.numberOfMembers <= 1 ? 'member' : 'members' }}</p>
                     </div>
                 </div>
             </div>
+            
         </div>
-        <div v-if="Overlay_background">
-            <ClassBox 
-            :classItem ="selectedClassItem" 
-            :Overlay_background ="Overlay_background" 
-            @close ="Overlay_background = false"
-            />
-            <!-- <InvitationBox
-            :classItem ="selectedClassItem" 
-            :Overlay_background ="Overlay_background" 
-            @close ="Overlay_background = false"
-            ></InvitationBox> -->
-        </div>
+        <ClassBox 
+        v-if="classBoxMode" 
+        :Overlay_background ="classBoxMode" 
+        @close ="classBoxMode = false"
+        />
+        <ClassTable 
+            v-if="classTableMode" 
+            :isEditMode=true  
+            @close="classTableMode = false" 
+            @update=""
+        />
+        <!-- <InvitationBox
+        :classItem ="selectedClassItem" 
+        :Overlay_background ="Overlay_background" 
+        @close ="Overlay_background = false"
+        ></InvitationBox> -->
     </main>
 </template>
   

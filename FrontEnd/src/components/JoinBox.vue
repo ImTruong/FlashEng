@@ -51,10 +51,10 @@
                 }
                 }
             );
-            if (response.status === 200) {
-                // Nếu yêu cầu thành công, thay đổi trạng thái
-                join.value = "Cancel";
-            }
+            // if (response.status === 200) {
+            //     // Nếu yêu cầu thành công, thay đổi trạng thái
+            //     join.value = "Cancel";
+            // }
             } catch (error) {
             console.error('Error while joining the class:', error);
             // Xử lý lỗi nếu cần

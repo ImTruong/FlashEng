@@ -5,6 +5,7 @@
     import ClassTable from './ClassTable.vue';
     import { ref, watch } from 'vue';
     import { useStore } from 'vuex';
+    import axios from 'axios';
 
     const store = useStore();
     const classTable = ref(false);
@@ -13,8 +14,10 @@
     const visible = ref(true);
     const isEditMode = ref(false);
     const existingClass = ref({});
+    const className = localStorage.getItem('className');
+    const classId = localStorage.getItem('classId');
 
-    const { classItem, Overlay_background } = defineProps(['classItem', 'Overlay_background']);
+    const { Overlay_background } = defineProps(['Overlay_background']);
     const emit = defineEmits();
 
     const icon = ref(false);
@@ -23,6 +26,7 @@
     onMounted(() => {
         store.dispatch('fetchLibrarySets');
         filteredSets.value = sets.value;
+        console.log(className);
     });
 
     // Hàm đóng overlay
@@ -56,12 +60,30 @@
             set.name.toLowerCase().includes(search.value.toLowerCase())
         );
     });
+
+    // đã test chưa cập nhâpj lại lớp 
+    const leaveClass = async() => {
+        try{
+            const token = localStorage.getItem('token');
+            console.log(classId)
+            const response = await axios.delete(`/class/member/leave?classId=${classId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Attach the token in the request headers
+                },
+            });
+            console.log(response);
+            alert(response.data.message);
+            closeOverlay();
+        }catch(error){
+            console.log(error);
+        }
+    }
 </script>
 
 <template>
     <OverlayBackground 
-    :isVisible="OverlayBackground" 
-    @clickOverlay="closeOverlay" />
+        :isVisible="OverlayBackground" 
+        @clickOverlay="closeOverlay" />
     <div class="classbox-container" v-if="visible"> 
         <div class="search-container">
             
@@ -71,9 +93,9 @@
         <div v-if="icon" class="icon">
             <img src="../assets/add_set.svg" alt="Icon" class="add-set-icon">
             <img src="../assets/add_member.svg" alt="Icon" class="add-member-icon" @click="showClassTable">
-            <img src="../assets/leave-group.svg" alt="Icon" class="leave-group-icon" @click="closeOverlay">
+            <img src="../assets/leave-group.svg" alt="Icon" class="leave-group-icon" @click="leaveClass">
         </div>
-        <h2 @click="icon = !icon">{{ classItem.className }}</h2>
+        <h2 @click="icon = !icon">{{ className }}</h2>
         <img src="../assets/close.svg" alt="Icon" class="close-icon" @click="closeOverlay">
         <div class="line"></div>
         
@@ -84,15 +106,12 @@
                 :set="set" />
         </div>
     </div>
-    <classTable 
+    <ClassTable 
         v-if="classTable" 
         :isEditMode=true  
-        :existingClass="existingClass" 
         @close="closeClassTable" 
         @update="handleUpdate"
-      />
-
-      
+    />   
 </template>
 
 

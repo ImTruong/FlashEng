@@ -78,40 +78,40 @@
     emit('update:setName', event.target.value);
   };
 
-// const appId = '	a3d14f03';  // Thay YOUR_APP_ID bằng App ID của bạn
-// const appKey = '5f3a6e464e23e246dcabfa9ed6bcee8c';  // Thay YOUR_APP_KEY bằng App Key của bạn
+const appId = '	a3d14f03';  // Thay YOUR_APP_ID bằng App ID của bạn
+const appKey = '5f3a6e464e23e246dcabfa9ed6bcee8c';  // Thay YOUR_APP_KEY bằng App Key của bạn
 
 // Hàm gọi API để lấy IPA và định nghĩa từ
-// async function fetchWordData(word) {
-//   try {
-//     const wordToQuery = word.toLowerCase();
-//     const response = await axios.get(`/eng/entries//en-gb?q=${wordToQuery}`, {
-//       headers: {
-//         'Accept': 'application/json',
-//         'app_id': appId,
-//         'app_key': appKey
-//       }
-//     });
+async function fetchWordData(word) {
+  try {
+    const wordToQuery = word.toLowerCase();
+    const response = await axios.get(`/eng/entries//en-gb?q=${wordToQuery}`, {
+      headers: {
+        'Accept': 'application/json',
+        'app_id': appId,
+        'app_key': appKey
+      }
+    });
 
-//     if (response.ok) {
-//       const data = await response.json();
-//       const entry = data.results[0].lexicalEntries[0].entries[0];
-//       const definition = entry.senses[0].definitions[0];
-//       const ipa = entry.pronunciations[0].phoneticSpelling;
+    if (response.ok) {
+      const data = await response.json();
+      const entry = data.results[0].lexicalEntries[0].entries[0];
+      const definition = entry.senses[0].definitions[0];
+      const ipa = entry.pronunciations[0].phoneticSpelling;
 
-//       newWord.value.definition = definition;
-//       newWord.value.ipa = ipa;
-//       newWord.value.example = entry.senses[0].examples?.[0]?.text || '';
-//       console.log('Definition:', definition);
-//       console.log('IPA:', ipa);
-//       console.log('Example:', newWord.value.example);
-//     } else {
-//       console.error('Error:', response.status, response.statusText);
-//     }
-//   } catch (error) {
-//     console.error('Request failed:', error);
-//   }
-// }
+      newWord.value.definition = definition;
+      newWord.value.ipa = ipa;
+      newWord.value.example = entry.senses[0].examples?.[0]?.text || '';
+      console.log('Definition:', definition);
+      console.log('IPA:', ipa);
+      console.log('Example:', newWord.value.example);
+    } else {
+      console.error('Error:', response.status, response.statusText);
+    }
+  } catch (error) {
+    console.error('Request failed:', error);
+  }
+}
 
 // Gọi hàm và log kết quả
 watch(
