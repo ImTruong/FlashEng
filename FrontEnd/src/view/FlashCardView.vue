@@ -1,13 +1,13 @@
 <script setup>
     import { ref, computed, onMounted, watch } from 'vue';
-    import { useRoute } from 'vue-router';
+    import { useRoute, useRouter } from 'vue-router';
     import { useStore } from 'vuex';
     import axios from 'axios';
     import Header from "../components/Header.vue";
 
     const store = useStore();
     const sets = computed(() => store.getters.getSets);
-
+    const router = useRouter();
     const route = useRoute();
     const selectedSet = ref(route.params.id);
 
@@ -22,8 +22,18 @@
     const cardStatus = computed(() => `${currentCard.value + 1}/${totalCards.value}`);
 
     const nextCard = () => {
-        isFlipped.value = false;
-        currentCard.value = (currentCard.value + 1) % totalCards.value; // Chuyển sang thẻ tiếp theo
+        if (currentCard.value < totalCards.value - 1) {
+            // Chuyển sang thẻ tiếp theo nếu chưa đến cuối
+            isFlipped.value = false;
+            currentCard.value += 1;
+        } else {
+            // Nếu đã hết thẻ, hiển thị thông báo
+            alert("Completed!");
+            setTimeout(() => {
+                router.push('/'); // Điều hướng về trang home
+            }, 3000); // Đợi 3 giây trước khi điều hướng
+        
+        }
     };
 
     const toggleFlip = () => {

@@ -321,7 +321,7 @@
     }
     .notification-dropdown {
         position: absolute;  /* Đặt bảng thông báo ở vị trí tuyệt đối */
-        top: 240px;  /* Điều chỉnh giá trị này để bảng thông báo nằm gần icon, tránh đè lên thanh menu */
+        top: 100px;  /* Điều chỉnh giá trị này để bảng thông báo nằm gần icon, tránh đè lên thanh menu */
         left: 230px;  /* Đặt bảng thông báo vào phía bên phải của thanh nav */
         width: 300px;  /* Chiều rộng bảng thông báo */
         background-color: white;
@@ -330,6 +330,8 @@
         padding: 16px;
         z-index: 9999; /* Đảm bảo bảng thông báo có độ ưu tiên hiển thị trên các phần tử khác */
         display: none; 
+        max-height: 400px; /* Chiều cao tối đa khi có nhiều thông báo */
+        overflow-y: auto; 
     }
     
     .notification-dropdown.show {
