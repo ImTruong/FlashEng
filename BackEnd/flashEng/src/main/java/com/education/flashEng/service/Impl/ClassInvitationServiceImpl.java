@@ -183,5 +183,11 @@ public class ClassInvitationServiceImpl implements ClassInvitationService {
         return true;
     }
 
+    @Override
+    public boolean deleteInvitationByEntity(ClassInvitationEntity classInvitationEntity) {
+        classInvitationRepository.delete(classInvitationEntity);
+        return true;
+    }
+
 
 }

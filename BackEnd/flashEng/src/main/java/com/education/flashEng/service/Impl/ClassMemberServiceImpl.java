@@ -107,7 +107,8 @@ public class ClassMemberServiceImpl implements ClassMemberService {
                 .filter(member -> member.getRoleClassEntity().getName().equals("ADMIN"))
                 .count() > 1  || classMemberEntity.getClassEntity().getClassMemberEntityList().size() == 1){
             classMemberRepository.delete(classMemberEntity);
-            user.getSetsEntityList().stream().filter(setsEntity -> setsEntity.getClassEntity().getId().equals(classId))
+            classEntity.getClassMemberEntityList().remove(classMemberEntity);
+            user.getSetsEntityList().stream().filter(setEntity -> setEntity.getClassEntity()!=null).filter(setsEntity -> setsEntity.getClassEntity().getId().equals(classId))
                     .forEach(setsEntity -> setsEntity.setPrivacyStatus("Private"));
         }
         else
