@@ -56,7 +56,7 @@ public class SetServiceImpl implements SetService {
         if(setEntity.getPrivacyStatus().equals(AccessModifierType.getKeyfromValue("Class"))){
             ClassEntity classEntity = classRepository.findById(createSetRequest.getClassId())
                     .orElseThrow(() -> new EntityNotFoundWithIdException("ClassEntity", createSetRequest.getClassId().toString()));
-            ClassMemberEntity classMemberEntity = classMemberRepository.findById(user.getId())
+            ClassMemberEntity classMemberEntity = classMemberRepository.findByClassEntityIdAndUserEntityId(classEntity.getId(), user.getId())
                     .orElseThrow(() -> new EntityNotFoundWithIdException("ClassMemberEntity", user.getId().toString()));
 
             if(classMemberEntity.getRoleClassEntity().getName().equals("ADMIN")){
