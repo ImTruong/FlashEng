@@ -11,6 +11,7 @@ import com.education.flashEng.service.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -236,14 +237,13 @@ public class NotificationServiceImpl implements NotificationService {
                 .sorted(Comparator.comparing(NotificationEntity::getReminderTime, Comparator.nullsLast(Comparator.reverseOrder()))
                         .thenComparing(Comparator.comparing(NotificationEntity::getCreatedAt).reversed()))
                 .map(notificationEntity -> {
-                    notificationEntity.setIsRead(true);
 
                     NotificationResponse.NotificationResponseBuilder responseBuilder = NotificationResponse.builder()
                             .message(notificationEntity.getMessage())
                             .type(notificationEntity.getType())
                             .id(notificationEntity.getId())
                             .createdAt(notificationEntity.getCreatedAt())
-                            .isRead(true);
+                            .isRead(notificationEntity.getIsRead());
                     if (notificationEntity.getReminderTime()!=null)
                         responseBuilder.createdAt(notificationEntity.getReminderTime());
 
@@ -277,6 +277,19 @@ public class NotificationServiceImpl implements NotificationService {
                 notificationRepository.deleteAll(classSetRequestMetaData.get().getNotificationEntityList().stream().filter(notificationEntity -> notificationEntity.getUserEntity().equals(userEntity)).toList());
             });
         }
+        return true;
+    }
+
+    @Transactional
+    @Override
+    public boolean readNotification(Long notificationId) {
+        UserEntity user = userService.getUserFromSecurityContext();
+        NotificationEntity notificationEntity = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new EntityNotFoundWithIdException("Notification", notificationId.toString()));
+        if (!notificationEntity.getUserEntity().equals(user))
+            throw new AccessDeniedException("You are not authorized to read this notification.");
+        notificationEntity.setIsRead(true);
+        notificationRepository.save(notificationEntity);
         return true;
     }
 
