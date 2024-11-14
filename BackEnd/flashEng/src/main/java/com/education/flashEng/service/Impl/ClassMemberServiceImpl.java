@@ -54,8 +54,12 @@ public class ClassMemberServiceImpl implements ClassMemberService {
                 .orElseThrow(() -> new AccessDeniedException("You are not a member of this class."));
         if (!classCurrentMemberEntity.getRoleClassEntity().getName().equals("ADMIN"))
             throw new AccessDeniedException("You are not authorized to delete members from this class.");
-        classMemberRepository.delete(classMemberEntity);
-        notificationService.deleteUserNotificationOfAClassWhenUserRoleChanged(classMemberEntity.getClassEntity(),classMemberEntity.getUserEntity());
+        if (classMemberEntity.getUserEntity().getId().equals(user.getId()))
+            leaveClass(classId);
+        else{
+            notificationService.deleteUserNotificationOfAClassWhenUserRoleChanged(classMemberEntity.getClassEntity(),classMemberEntity.getUserEntity());
+            classMemberRepository.delete(classMemberEntity);
+        }
         return false;
     }
 
@@ -110,6 +114,7 @@ public class ClassMemberServiceImpl implements ClassMemberService {
             classEntity.getClassMemberEntityList().remove(classMemberEntity);
             user.getSetsEntityList().stream().filter(setEntity -> setEntity.getClassEntity()!=null).filter(setsEntity -> setsEntity.getClassEntity().getId().equals(classId))
                     .forEach(setsEntity -> setsEntity.setPrivacyStatus("Private"));
+            notificationService.deleteUserNotificationOfAClassWhenUserRoleChanged(classMemberEntity.getClassEntity(),classMemberEntity.getUserEntity());
         }
         else
             throw new LastAdminException("You are the last admin in this class. You can`t leave this class.");
