@@ -1,11 +1,16 @@
 <script setup>
 // chưa chạy được
-    import { defineProps, defineEmits } from 'vue';
+    import { defineProps, defineEmits, onMounted } from 'vue';
     import Card from './Set.vue';
     import setsData from '@/data/sets.json'
     import { ref } from 'vue';
     import OverlayBackground from './OverlayBackground.vue';
+    import axios from 'axios';
     
+    const joinRequestId = ref("");
+    const classId = localStorage.getItem('classId');
+    const joinRovokeMode = ref("Join");
+    const token = localStorage.getItem('token');
 
     const { classItem, Overlay_background } = defineProps(['classItem', 'Overlay_background']);
 
@@ -15,52 +20,80 @@
         emit('close');
     }
 
-    const join = ref("Join")
-
-    const requestId = ref(21);  
 
     const join_button = async () => {
-  // Nếu trạng thái hiện tại là "Join", gửi yêu cầu API để tham gia lớp học
-        if (join.value === "Join") {
+        if (joinRovokeMode.value == "Join") {
             try {
-                const token = localStorage.getItem(token);
-                const response = await axios.post(`/class/request/join/accept?requestId=${requestId.value}`, // URL API của bạn
+                const classId = localStorage.getItem('classId');
+                const user = JSON.parse(localStorage.getItem('user'));
+                const userId = user.id;
+                const response = await axios.post(`/class/request/join`,{
+                    classId: classId,
+                    userId: userId
+                }, // URL API của bạn
                 {
-                headers: {
-                    Authorization: `Bearer ${token}`, // Thêm token vào header để xác thực
-                }
+                    headers: {
+                        Authorization: `Bearer ${token}`, 
+                    }
                 }
             );
-            if (response.status === 200) {
-                // Nếu yêu cầu thành công, thay đổi trạng thái
-                join.value = "Cancel";
+            alert(response.data.message);
+            console.log(response);
+            if (response.status == 200) {
+                joinRovokeMode.value = "Revoke";
             }
+            getJoinRequest();
             } catch (error) {
             console.error('Error while joining the class:', error);
-            // Xử lý lỗi nếu cần
             }
         } else {
-            // Nếu trạng thái là "Cancel", bạn có thể gửi yêu cầu hủy tham gia (nếu có API hủy)
-            join.value = "Join";
             try {
-                const token = localStorage.getItem(token);
-                const response = await axios.post(`/class/request/join/reject?requestId=${requestId.value}`, // URL API của bạn
-                {
-                headers: {
-                    Authorization: `Bearer ${token}`, // Thêm token vào header để xác thực
+                console.log(joinRequestId.value);
+                const response = await axios.delete(`/class/request/join/revoke?classJoinRequestId=${joinRequestId.value}`,{
+                        headers: {
+                            Authorization: `Bearer ${token}`, 
+                        }
+                    }
+                );
+                if (response.status == 200) {
+                    joinRovokeMode.value = "Join";
                 }
-                }
-            );
-            // if (response.status === 200) {
-            //     // Nếu yêu cầu thành công, thay đổi trạng thái
-            //     join.value = "Cancel";
-            // }
+                alert(response.data.message)
             } catch (error) {
             console.error('Error while joining the class:', error);
             // Xử lý lỗi nếu cần
             }
         }
     }
+
+    const getJoinRequest = async () => { 
+        try {
+            const response = await axios.get(`/class/request/join/existence`, {
+                params: {
+                    classId: classId,
+                },
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            joinRequestId.value = response.data.data.classJoinRequestId;
+            console.log(joinRequestId.value);
+            if(response.status == 200 && response.data.data){
+                joinRovokeMode.value = "Revoke";
+            }
+        } catch (error) {
+            if (error.response) {
+                // Log thông báo lỗi từ server
+                console.error('Error response:', error.response.data);
+            } else {
+                console.error('Error while calling API:', error);
+            }
+        }
+    }
+    
+    onMounted(() =>{
+        getJoinRequest();
+    });
 
 </script>
 
@@ -78,7 +111,7 @@
                 </div>
                 <p class="class-details">{{ classItem.numberOfSets }} {{ classItem.numberOfMembers === 1 ? 'set' : 'sets' }} | {{ classItem.numberOfMembers }} {{ classItem.numberOfMembers === 1 ? 'member' : 'members' }}</p>
                 <div class="join-button" @click="join_button">
-                    <p>{{ join }}</p>
+                    <p>{{ joinRovokeMode }}</p>
                 </div>
             </div>
 

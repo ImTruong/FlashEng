@@ -16,12 +16,13 @@
     const showSelectColumn = ref(false);
     const selectedOption = ref('')
     const dropdownRef = ref(null)
-    const search = ref("")
-    const showSearch = ref(false);
+    // const search = ref("")
+    // const showSearch = ref(false);
     const showAddMember = ref(false);
     const roleFilter = ref("Role");
     const classId = ref(null);
     const errorMessage = ref(null);
+    // const memberList = ref([]);
 
     const updateClassName = (newClassName) => {
         className.value = newClassName;
@@ -53,10 +54,14 @@
                 emit('save', response.data.data); 
                 rows.value = response.data.data.memberList;
             }
+
             
         } catch (error) {
             if (error.response) {
                 console.error('API Error:', error.response.status, error.response.data);
+                alert("You are not authorized to change this class's name.")
+                className.value = localStorage.getItem('className');
+                console.log(className.value);
             } else {
                 console.error('Network or Axios error:', error.message);
             }
@@ -72,26 +77,53 @@
         }
     };
 
-    const removeRow = () => {
+    const removeRow = async () => {
         if (selectedUsers.value.length > 0) {
-            rows.value = rows.value.filter(row => !selectedUsers.value.includes(row.username));
-            selectedUsers.value = []; 
-        } else if (rows.value.length > 1) {
-            rows.value.pop();
+            console.log('Selected Users:', selectedUsers.value);
+            const token = localStorage.getItem('token');
+            const classId = localStorage.getItem('classId');
+            for (const userId of selectedUsers.value) {
+                try {
+                    const config = {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    };
+                    const user = rows.value.find(row => row.userId === userId);
+                    if (!user) {
+                        console.error('Không tìm thấy từ với ID:', userId);
+                        continue; // Skip nếu không tìm thấy từ
+                    }
+                    console.log('Request URL:', `/class/member/delete?userId=${userId}&classId=${classId}`);
+                    const response = await axios.delete(`/class/member/delete?userId=${userId}&classId=${classId}`, config);
+                    console.log('User deleted:', response.message);
+                    rows.value = rows.value.filter(row => row.userId !== userId); // Xóa từ khỏi bảng
+                } catch (error) {
+                    if (error.response) {
+                        console.error('API Error:', error.response.status, error.response.data);
+                        alert("You are not authorized to delete members from this class");
+                    } else {
+                        console.error('Network or Axios error:', error.message);
+                    }
+                }
+            }
+            selectedUsers.value = []; // Reset selectedusers sau khi xóa
         }
+        emit('update', rows.value)                                                                                          
     };
 
     const closeForm = () => {
         emit('close');
         visible.value = false;
-        window.location.reload();
     };
 
     const toggleSelectMember = (userId) => {
         const index = selectedUsers.value.indexOf(userId);
         if (index === -1) {
+            // Thêm ID vào nếu chưa có
             selectedUsers.value.push(userId);
         } else {
+            // Loại bỏ ID nếu đã có
             selectedUsers.value.splice(index, 1);
         }
     };
@@ -106,14 +138,16 @@
 
 
     // chua test
-    watch(search, () =>{
-        if(showSearch){
-            membersData.value = rows.filter(member => member.username.toLowerCase().includes(search.value.toLowerCase()))
-        }
-        else{
-            membersData.value = rows.value;
-        }
-    })
+    // watch(search, () =>{
+    //     console.log(showSearch && !search);
+    //     console.log(memberList);
+    //     if(showSearch && !search){
+    //         memberList.value = rows.value.filter(member => member.username.toLowerCase().includes(search.value.toLowerCase()))
+    //     }
+    //     else{
+    //         memberList.value = rows.value;
+    //     }
+    // })
 
     const openAddMember = () => {
         showAddMember.value = true;
@@ -169,8 +203,12 @@
                 },
             });
             console.log('Role updated:', response.data);
+            alert(response.data.message);
         } catch (error) {
+            if(user.role == "ADMIN") user.role = "MEMBER"
+            else user.role = "ADMIN";
             console.error('Error updating role:', error);
+            alert("You are not authorized to change roles from this class")
         }
     };
 
@@ -191,8 +229,8 @@
     <OverlayBackground :isVisible="visible" @clickOverlay="closeForm" />
     <div v-if="visible" class="class-window">
         <div class="class-header">
-            <img src="../assets/search_icon.svg" alt="Status" @click="showSearch=!showSearch">
-            <input v-model.trim = "search" v-if="showSearch" type="text" placeholder="Search for username" class="search-bar">
+            <!-- <img src="../assets/search_icon.svg" alt="Status" @click="showSearch=!showSearch"> -->
+            <!-- <input v-model.trim = "search" v-if="showSearch" type="text" placeholder="Search for username" class="search-bar"> -->
             <div class="class-name" v-if="!showSearch">
                 <label for="class-name">Class:</label>
                 <input id="class-name" v-model="className" placeholder="Enter class name" />
@@ -217,10 +255,11 @@
               </tr>
             </thead>
             <tbody>
-                <tr v-for="row in rows" :key="row.userId">
+                <tr v-for="(row, index) in rows" :key="index">
                     <td v-if="showSelectColumn">
                         <input type="checkbox" @change="toggleSelectMember(row.userId)" :checked="selectedUsers.includes(row.userId)" />
                     </td>
+                    <!-- <td> {{ row.userId }}</td> -->
                     <td class="username-column"><p>{{row.userName}}</p></td>
                     <td class="role">
                         <!-- Thay input bằng select -->
