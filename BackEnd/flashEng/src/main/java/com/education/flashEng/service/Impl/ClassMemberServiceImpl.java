@@ -54,6 +54,8 @@ public class ClassMemberServiceImpl implements ClassMemberService {
                 .orElseThrow(() -> new AccessDeniedException("You are not a member of this class."));
         if (!classCurrentMemberEntity.getRoleClassEntity().getName().equals("ADMIN"))
             throw new AccessDeniedException("You are not authorized to delete members from this class.");
+        if (classMemberEntity.getUserEntity().getId().equals(user.getId()))
+            throw new AccessDeniedException("You can't delete yourself from the class.");
         classMemberRepository.delete(classMemberEntity);
         notificationService.deleteUserNotificationOfAClassWhenUserRoleChanged(classMemberEntity.getClassEntity(),classMemberEntity.getUserEntity());
         return false;
