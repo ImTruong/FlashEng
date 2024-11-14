@@ -2,20 +2,18 @@
     import axios from 'axios';
     import { ref, watch, defineEmits, defineProps, computed} from 'vue';
     import OverlayBackground from '../components/OverlayBackground.vue'
-    import AddCardModal from '../components/AddCardModal.vue'
 
-    const emit = defineEmits(['close', 'save', 'update']);
-    const props = defineProps(['isEditMode', 'existingSet']);
+    const emit = defineEmits(['close']);
+    const props = defineProps(['existingSet']);
 
     const visible = ref(true); 
-    const setName = ref(props.isEditMode ? props.existingSet.name : '');
-    const rows = ref(props.isEditMode ? props.existingSet.wordResponses: [{ id: '', word: '', ipa: '',audio: '', definition: '', example: '', image: '' }]);
+    const setName = ref(existingSet.name);
+    const rows = ref(existingSet.wordResponses);
     const showSelectColumn = ref(false);
     const showOptions = ref(false)
-    const selectedOption = ref(props.isEditMode ? props.existingSet.privacyStatus : '');
+    const selectedOption = ref(props.existingSet.privacyStatus);
     const dropdownRef = ref(null)
-    const showAddCardModal = ref(false);
-    const classId = ref(props.isEditMode && props.existingSet.privacyStatus === 'CLASS' ? props.existingSet.classId : '');
+    const classId = ref(props.existingSet.privacyStatus === 'CLASS' ? props.existingSet.classId : '');
     const isSearchVisible = ref(false);
     const searchTerm = ref('');
     
@@ -34,17 +32,12 @@
             const config = {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                },
+                }
             };
 
             // Send the accept request to API
-            const response = await axios.post(
-                '/api/accept', // Địa chỉ API chấp nhận
-                { setId: props.existingSet.id }, // Gửi thông tin setId nếu cần
-                config
-            );
-
-            console.log('Accept response:', response.data);
+            const response = await axios.post(`/set-request/accept/${existingSet.id}`, config);
+            console.log('Accept response:', response.message);
             // Xử lý sau khi chấp nhận, ví dụ: đóng form hoặc hiển thị thông báo
             closeForm();
         } catch (error) {
@@ -59,18 +52,12 @@
             const config = {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                },
+                }
             };
-
             // Send the reject request to API
-            const response = await axios.post(
-                '/api/reject', // Địa chỉ API từ chối
-                { setId: props.existingSet.id }, // Gửi thông tin setId nếu cần
-                config
-            );
+            const response = await axios.post(`/set-request/reject/${existingSet.id}`, config);
 
-            console.log('Reject response:', response.data);
-            // Xử lý sau khi từ chối, ví dụ: đóng form hoặc hiển thị thông báo
+            console.log('Reject response:', response.message);
             closeForm();
         } catch (error) {
             console.error('Error while rejecting:', error.response || error.message);
@@ -95,15 +82,6 @@
         }
         return rows.value.filter(row => row.word.toLowerCase().includes(searchTerm.value.toLowerCase().trim()));
     });
-
-    watch(() => props.existingSet, (newExistingSet) => {
-        if (newExistingSet && newExistingSet.words) {
-            setName.value = newExistingSet.name; // Cập nhật tên set
-            rows.value = newExistingSet.words; // Cập nhật các hàng
-            selectedOption.value = newExistingSet.privacyStatus || '';
-            classId.value = newExistingSet.privacyStatus === 'CLASS' ? newExistingSet.classId : '';
-        }
-    }, { deep: true });
 
 </script>
 
