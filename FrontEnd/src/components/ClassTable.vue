@@ -84,7 +84,6 @@
     const closeForm = () => {
         emit('close');
         visible.value = false;
-        window.location.reload();
     };
 
     const toggleSelectMember = (userId) => {
