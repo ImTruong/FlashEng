@@ -29,9 +29,9 @@
                 },
             });
 
-            invitationId.value = response.data.data.substring(14);
+            // invitationId.value = response.data.data.substring(14);
             // Nếu chuyển thành Object.
-            // invitationId.value = response.data.data.invitaionId;
+            invitationId.value = response.data.data.classInvitationId;
             console.log(response.data);
             console.log(invitationId.value);
             if(response.status == 200 && response.data.data){
