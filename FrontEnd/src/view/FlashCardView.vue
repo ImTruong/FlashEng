@@ -31,7 +31,7 @@
             alert("Completed!");
             setTimeout(() => {
                 router.push('/'); // Điều hướng về trang home
-            }, 3000); // Đợi 3 giây trước khi điều hướng
+            }, 0); // Đợi 3 giây trước khi điều hướng
         
         }
     };

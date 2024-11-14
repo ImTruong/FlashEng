@@ -35,11 +35,11 @@
         },
       };
       const response = await axios.delete(`/set/${set.id}`, config);
-      if (response.status === 200) {
+      window.location.reload();
+      if (response.status === 201) {
         console.log(`Set with ID ${set.id} has been deleted.`);
         const index = set.value.findIndex(item => item.id === set.id);
         // router.push('/'); 
-        router.replace(router.currentRoute.fullPath)
       } else {
         console.error('Failed to delete the set');
       }

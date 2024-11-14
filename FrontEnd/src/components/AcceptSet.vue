@@ -10,7 +10,6 @@
     const visible = ref(true); 
     const setName = ref(props.isEditMode ? props.existingSet.name : '');
     const rows = ref(props.isEditMode ? props.existingSet.wordResponses: [{ id: '', word: '', ipa: '',audio: '', definition: '', example: '', image: '' }]);
-    const selectedWords = ref([]); 
     const showSelectColumn = ref(false);
     const showOptions = ref(false)
     const selectedOption = ref(props.isEditMode ? props.existingSet.privacyStatus : '');
@@ -20,81 +19,6 @@
     const isSearchVisible = ref(false);
     const searchTerm = ref('');
     
-    const updateSetName = (newSetName) => {
-        setName.value = newSetName;
-    };
-    const saveData  = async () => {
-        const token = localStorage.getItem('token');
-        const payload = {
-            setId: props.isEditMode ? props.existingSet.id : null,
-            name: setName.value,
-            privacyStatus: selectedOption.value,
-            classId: classId.value || null // class_id có thể là null
-        }
-        try {
-            const config = {
-            headers: {
-                Authorization: `Bearer ${token}` // Thêm token vào header
-            }
-            }
-            if (props.isEditMode) {
-                const response = await axios.put('/set', payload, { headers: config.headers });  // API cập nhật
-                emit('update', response.data.data); 
-            } else {
-                const response = await axios.post('/set', payload, { headers: config.headers }); 
-                console.log(response.data)
-                emit('save', response.data.data); 
-            }
-        } catch (error) {
-            if (error.response) {
-                console.error('API Error:', error.response.status, error.response.data);
-            } else {
-                console.error('Network or Axios error:', error.message);
-            }
-        }
-    };
-
-    const addNewWord = (newWord) => {
-        if (rows.value[0].word === '') {
-            rows.value[0] = newWord;
-        } else {
-            rows.value.push(newWord);
-        }
-    };
-    
-    const removeRow = async () => {
-    if (selectedWords.value.length > 0) {
-        console.log('Selected Words:', selectedWords.value);
-        for (const wordId of selectedWords.value) {
-            try {
-                const token = localStorage.getItem('token');
-                const config = {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                };
-                const word = rows.value.find(row => row.id === wordId);
-                if (!word) {
-                    console.error('Không tìm thấy từ với ID:', wordId);
-                    continue; // Skip nếu không tìm thấy từ
-                }
-                console.log('Request URL:', `/word/${wordId}`);
-                const response = await axios.delete(`/word/${wordId}`, config);
-                console.log('Request URL:', `/word/${wordId}`);
-                console.log('Word deleted:', response.message);
-                rows.value = rows.value.filter(row => row.id !== wordId); // Xóa từ khỏi bảng
-            } catch (error) {
-                if (error.response) {
-                    console.error('API Error:', error.response.status, error.response.data);
-                } else {
-                    console.error('Network or Axios error:', error.message);
-                }
-            }
-        }
-        selectedWords.value = []; // Reset selectedWords sau khi xóa
-    }
-    emit('update', rows.value)
-};
 
     const closeForm = () => {
         emit('close');
@@ -103,62 +27,72 @@
 
     };
 
-    const toggleSelectWord = (row) => {
-        const index = selectedWords.value.indexOf(row.id); // Kiểm tra xem ID có trong selectedWords không
-        if (index === -1) {
-            selectedWords.value.push(row.id); // Thêm ID vào nếu chưa có
-        } else {
-            selectedWords.value.splice(index, 1); // Loại bỏ ID nếu đã có // Loại bỏ ID nếu đã có
+
+    const acceptAction = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            };
+
+            // Send the accept request to API
+            const response = await axios.post(
+                '/api/accept', // Địa chỉ API chấp nhận
+                { setId: props.existingSet.id }, // Gửi thông tin setId nếu cần
+                config
+            );
+
+            console.log('Accept response:', response.data);
+            // Xử lý sau khi chấp nhận, ví dụ: đóng form hoặc hiển thị thông báo
+            closeForm();
+        } catch (error) {
+            console.error('Error while accepting:', error.response || error.message);
         }
     };
 
-    const toggleSelectColumn = () => {
-        showSelectColumn.value = !showSelectColumn.value;
-    };
+    // Reject action - call API when user rejects
+    const rejectAction = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            };
+
+            // Send the reject request to API
+            const response = await axios.post(
+                '/api/reject', // Địa chỉ API từ chối
+                { setId: props.existingSet.id }, // Gửi thông tin setId nếu cần
+                config
+            );
+
+            console.log('Reject response:', response.data);
+            // Xử lý sau khi từ chối, ví dụ: đóng form hoặc hiển thị thông báo
+            closeForm();
+        } catch (error) {
+            console.error('Error while rejecting:', error.response || error.message);
+        }
+    };  
 
     const toggleOptions = () => {
         showOptions.value = !showOptions.value;
     };
 
-    const selectOption = (option) => {
-        selectedOption.value = option;
+    const selectOption = () => {
+        selectedOption.value = existingSet.privacyStatus;
         showOptions.value = false; 
     };
-    const openAddCardModal = () => {
-        showAddCardModal.value = true;
-        visible.value = false;
-    };
 
-    const closeAddCardModal = () => {
-        showAddCardModal.value = false;
-        visible.value = true
-    };
-    const handleSaveData = () => {
-        if (setName.value.trim()) {
-            if (selectedOption.value.trim()) {
-                if (selectedOption.value === 'CLASS' && !classId.value.trim()) {
-                    console.warn('Vui lòng nhập ID lớp khi chọn Group.');
-                    return; 
-                }
-                
-                saveData();
-        } else {
-            console.warn('Vui lòng chọn Privacy Status.');
-            }
-        }
-    };
     const toggleSearch = () => {
         isSearchVisible.value = !isSearchVisible.value;
     };
-    // const filteredRows = computed(() => {
-    //     return rows.value.filter(row => row.word.toLowerCase().includes(searchTerm.value.toLowerCase()));
-    // });
     const filteredRows = computed(() => {
         if (!isSearchVisible.value || !searchTerm.value.trim()) {
-            // Nếu không có từ khóa tìm kiếm, hiển thị tất cả các từ
             return rows.value;
         }
-        // Nếu có từ khóa tìm kiếm, chỉ hiển thị các từ khớp
         return rows.value.filter(row => row.word.toLowerCase().includes(searchTerm.value.toLowerCase().trim()));
     });
 
@@ -178,7 +112,6 @@
     <div v-if="visible" class="set-window">
         <div class="set-header">
             <img src="../assets/lock.svg" alt="Status" @click.stop="toggleOptions" class="option-icon">
-            <!-- <img src="../assets/search_icon.svg" alt="Status"> -->
             <img src="../assets/search_icon.svg" alt="Search" @click.stop="toggleSearch" class="option-icon">
             <div v-show="isSearchVisible">
                 <input v-model="searchTerm" placeholder="Search for a word" class="common-input" />
@@ -190,18 +123,18 @@
             <button @click="closeForm" class="close-btn">✖</button>
         </div>
     <div v-show="showOptions" class="options-dropdown" ref="dropdownRef">
-        <button @click.stop="selectOption('PUBLIC')" class="option-button">
+        <button @click.stop="selectOption" class="option-button">
             <img src="../assets/globe.svg" alt="Public" class="option-icon" />
             <span class="option-text">Public</span>
             <span v-if="selectedOption === 'PUBLIC'" class="checkmark">✔</span>
         </button>
-        <button @click.stop="selectOption('PRIVATE')" class="option-button">
+        <button @click.stop="selectOption" class="option-button">
             <img src="../assets/lock.svg" alt="Private" class="option-icon" />
             <span class="option-text">Private</span>
             <span v-if="selectedOption === 'PRIVATE'" class="checkmark">✔</span>
         </button>
         <div class="option-container">
-            <button @click.stop="selectOption('CLASS')" class="option-button">
+            <button @click.stop="selectOption" class="option-button">
                 <img src="../assets/lock.svg" alt="Group" class="option-icon" />
                 <span class="option-text">Class</span>
                 <span v-if="selectedOption === 'CLASS'" class="checkmark">✔</span>
@@ -214,7 +147,6 @@
                 class="class-input"
             />
         </div>
-        
     </div>
 
     <div class="table-container">
@@ -231,9 +163,6 @@
             </thead>
             <tbody>
               <tr v-for="(row, index) in  filteredRows" :key="index">
-                <td v-if="showSelectColumn">
-                    <input type="checkbox" @change="toggleSelectWord(row)" :checked="selectedWords.includes(row.id)" />
-                </td>
                 <td><input v-model="row.word" placeholder="Word" /></td>
                 <td><input v-model="row.ipa" placeholder="IPA" /></td>
                 <td><input v-model="row.definition" placeholder="Definition" /></td>
@@ -244,21 +173,14 @@
           </table>
     </div>
     <div class="actions">
-        <button @click="toggleSelectColumn" class="icon-button">
+        <button @click="acceptAction" class="icon-button">
             <img src="../assets/select.svg" alt="" class="icon">
         </button>
-        <button @click="removeRow" class="icon-button">
-            <img src="../assets/delete-word.svg" alt="" class="icon">
-        </button>
-        <button @click="openAddCardModal" class="icon-button">
+        <button @click="rejectAction" class="icon-button">
             <img src="../assets/add-word.svg" alt="" class="icon">
-        </button>
-        <button @click="handleSaveData" class="icon-button">
-            <img src="../assets/save.svg" alt="" class="icon">
         </button>
       </div>
     </div>
-    <AddCardModal :setName="setName" :setId="props.existingSet.id" @update:setName="updateSetName" v-if="showAddCardModal" @close="closeAddCardModal" @save="addNewWord"></AddCardModal>
 </template>  
   
 <style scoped>

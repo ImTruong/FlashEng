@@ -26,7 +26,7 @@
 
     // Điều hướng đến trang "/classes" khi nhấn "More..."
     const showAllSets = () => {
-        router.push("/classes");
+        router.push("/library");
     };
 
     const fetchUserInfo = async () => {

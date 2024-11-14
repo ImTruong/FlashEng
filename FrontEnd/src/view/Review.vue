@@ -40,8 +40,8 @@
         if (currentCard.value + 1 >= totalCards.value.length) {
         isCompleted.value = true; // Đánh dấu là đã hoàn thành
         setTimeout(() => {
-            router.push('/'); // Chuyển hướng về trang home sau khi thông báo hoàn thành
-        }, 10000); // Chờ 2 giây để người dùng có thể nhìn thấy thông báo
+            router.push('/');
+        }, 0); 
         } else {
         isFlipped.value = false;
         currentCard.value += 1;
@@ -93,7 +93,7 @@
 
         <div class="flashcard-content" @click="toggleFlip">
             <div class="flashcard">
-                <<div v-if="!isFlipped" class="flashcard-front">
+                <div v-if="!isFlipped" class="flashcard-front">
                     <img :src="totalCards[currentCard].image" alt="Flashcard Image" />
                     <p>{{ totalCards[currentCard].word }}</p>
                 </div>

@@ -9,7 +9,8 @@
 
     const store = useStore();
     const classTable = ref(false);
-    const sets = computed(() => store.getters.getSets);
+    // const sets = computed(() => store.getters.getSets);
+    const sets = ref([])
     const filteredSets = ref([]);
     const visible = ref(true);
     const isEditMode = ref(false);
@@ -23,18 +24,10 @@
     const icon = ref(false);
     const search = ref("");
 
-    onMounted(() => {
-        store.dispatch('fetchLibrarySets');
-        filteredSets.value = sets.value;
-        console.log(className);
-    });
-
-    // Hàm đóng overlay
     function closeOverlay() {
         emit('close');
     }
 
-    // Hàm hiển thị bảng ClassTable
     const showClassTable = (classItem) => {
         console.log(isEditMode);
         classTable.value = true;
@@ -43,7 +36,6 @@
         existingClass.value = classItem;
     };
 
-    // Hàm đóng bảng ClassTable
     const closeClassTable = () => {
         classTable.value = false;
         visible.value = true;
@@ -79,6 +71,26 @@
             console.log(error);
         }
     }
+
+    const getSetByClassId = async() => {
+        try{
+            const token = localStorage.getItem('token');
+            console.log(classId)
+            const response = await axios.get(`/set/class/${classId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Attach the token in the request headers
+                },
+            });
+            console.log(response.data.data);
+            sets.value = response.data.data
+            console.log(sets.value)
+        }catch(error){
+            console.log(error);
+        }
+    };
+    onMounted(() => {
+        getSetByClassId();
+    });
 </script>
 
 <template>

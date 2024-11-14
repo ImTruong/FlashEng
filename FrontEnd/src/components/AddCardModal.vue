@@ -66,14 +66,12 @@
 
     } catch (error) {
         console.error('Error saving word:', error);
-        alert('An error occurred while saving the word');
     }
   };
 
   const updateSetName = (event) => {
     emit('update:setName', event.target.value);
   };
-
 
 </script>
 <template>
