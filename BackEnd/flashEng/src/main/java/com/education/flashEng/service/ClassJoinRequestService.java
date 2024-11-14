@@ -21,4 +21,6 @@ public interface ClassJoinRequestService {
      Map<String,Long> checkExistance(Long classId);
 
      boolean revokeClassJoinRequest(Long requestId);
+
+     boolean deleteClassJoinRequestByEntity(ClassJoinRequestEntity classJoinRequestEntity);
 }

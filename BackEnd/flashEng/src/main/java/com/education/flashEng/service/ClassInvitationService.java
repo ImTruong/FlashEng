@@ -1,5 +1,6 @@
 package com.education.flashEng.service;
 
+import com.education.flashEng.entity.ClassInvitationEntity;
 import com.education.flashEng.payload.response.AllClassesInvitationResponse;
 import com.education.flashEng.payload.response.ClassInvitationResponse;
 
@@ -25,5 +26,6 @@ public interface ClassInvitationService {
      Map<String,Long> checkExistance(Long classId, String inviteeUsername);
 
      boolean revokeInvitation(Long invitationId);
+     boolean deleteInvitationByEntity(ClassInvitationEntity classInvitationEntity);
 }
 
