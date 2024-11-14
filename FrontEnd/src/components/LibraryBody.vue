@@ -56,6 +56,7 @@
     function closeOverlay() {
         emit('close');
         isMember.value = false;
+        window.location.reload();
     }
 
     const switchTab = () =>{

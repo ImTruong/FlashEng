@@ -6,7 +6,7 @@
     import OverlayBackground from './OverlayBackground.vue';
 
     
-    const { classItem, Overlay_background } = defineProps(['classItem', 'Overlay_background']);
+    const { classItem, Overlay_background, requestMode } = defineProps(['classItem', 'Overlay_background', 'requestMode']);
 
     const emit = defineEmits();
 
@@ -14,7 +14,10 @@
         emit('close');
     }
 
-    const join = ref("Join")
+    // const acceptRequest = async() =>{
+
+    // }
+
 
 </script>
 
@@ -35,8 +38,8 @@
                 <div class="accept-button" @click="closeOverlay">
                     <p>Accept</p>
                 </div>
-                <div class="delete-button" @click="closeOverlay">
-                    <p>Delete</p>
+                <div class="reject-button" @click="closeOverlay">
+                    <p>Reject</p>
                 </div>
 
             </div>
@@ -102,7 +105,7 @@
         box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.15); /* Tăng cường shadow khi hover */
     }
 
-    .delete-button{
+    .reject-button{
         background-color: #FF9FA8;
         padding: 10px ;
         width: 100px;
@@ -122,7 +125,7 @@
         background-color: #91e3df;
     }
 
-    .delete-button:hover {
+    .reject-button:hover {
         background-color: #f37c88;
     }
 

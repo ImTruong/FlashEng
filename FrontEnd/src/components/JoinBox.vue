@@ -77,6 +77,7 @@
                 },
             });
             joinRequestId.value = response.data.data.classJoinRequestId;
+            console.log(joinRequestId.value);
             if(response.status == 200 && response.data.data){
                 joinRovokeMode.value = "Revoke";
             }
