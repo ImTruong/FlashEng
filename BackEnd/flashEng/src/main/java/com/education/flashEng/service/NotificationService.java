@@ -35,4 +35,6 @@ public interface NotificationService {
     List<NotificationResponse> getAllCurrentUserNotifications();
 
     boolean deleteUserNotificationOfAClassWhenUserRoleChanged(ClassEntity classEntity, UserEntity userEntity);
+
+    boolean readNotification(Long notificationId);
 }
