@@ -156,4 +156,10 @@ public class ClassJoinRequestServiceImpl implements ClassJoinRequestService {
         }
         throw new AccessDeniedException("You are not authorized to revoke this request.");
     }
+
+    @Override
+    public boolean deleteClassJoinRequestByEntity(ClassJoinRequestEntity classJoinRequestEntity) {
+        classJoinRequestRepository.delete(classJoinRequestEntity);
+        return true;
+    }
 }

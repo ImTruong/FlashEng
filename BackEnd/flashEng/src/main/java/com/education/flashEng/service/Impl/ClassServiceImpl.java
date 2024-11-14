@@ -40,6 +40,17 @@ public class ClassServiceImpl implements ClassService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private ClassSetRequestService classSetRequestService;
+
+    @Autowired
+    @Lazy
+    private ClassInvitationService classInvitationService;
+
+    @Autowired
+    @Lazy
+    private ClassJoinRequestService classJoinRequestService;
+
     @Transactional
     @Override
     public ClassMemberListReponse createClass(CreateClassRequest createClassRequest) {
@@ -123,21 +134,26 @@ public class ClassServiceImpl implements ClassService {
     @Transactional
     @Override
     public boolean deleteClassByEntity(ClassEntity classEntity) {
-        classRepository.delete(classEntity);
+
         //delete all related notifications
         classEntity.getClassInvitationEntityList().forEach(classInvitationEntity -> {
             notificationService.deleteAllRelatedNotificationsByNotificationMetaData("classInvitationId", classInvitationEntity.getId().toString());
+            classInvitationService.deleteInvitationByEntity(classInvitationEntity);
         });
         classEntity.getClassJoinRequestEntityList().forEach(classJoinRequestEntity -> {
             notificationService.deleteAllRelatedNotificationsByNotificationMetaData("classJoinRequestId", classJoinRequestEntity.getId().toString());
+            classJoinRequestService.deleteClassJoinRequestByEntity(classJoinRequestEntity);
         });
         classEntity.getClassSetRequestEntityList().forEach(classSetRequestEntity -> {
             notificationService.deleteAllRelatedNotificationsByNotificationMetaData("classSetRequestId", classSetRequestEntity.getId().toString());
+            classSetRequestService.deleteClassSetRequestByEntity(classSetRequestEntity);
         });
         //set all sets privacy status to private
         classEntity.getSetsEntityList().forEach(setEntity -> {
             setEntity.setPrivacyStatus("Private");
         });
+        //delete class
+        classRepository.delete(classEntity);
         return true;
     }
 
