@@ -2,8 +2,16 @@
   import { ref, onMounted } from 'vue';
   import axios from 'axios';
   import NotificationItem from './NotificationItem.vue';
+  import InvitationBox from './InvitationBox.vue';
+  import {useRouter} from "vue-router"
+  // import router from '@/router';
   
   const notifications = ref([]);
+  const notiMode = ref(true);
+  const notification = ref("");
+  const requestId = ref("");
+  const router = useRouter();
+
 
   // Fetch notifications from the API
   const fetchNotifications = async () => {
@@ -18,7 +26,7 @@
           Authorization: `Bearer ${token}`
         }
       }); // Replace with your actual API endpoint
-      notifications.value = response.data.data; // Assuming response data is an array of notifications
+      notifications.value = response.data.data.reverse(); // Assuming response data is an array of notifications
     } catch (error) {
       console.error("Error fetching notifications:", error);
     }
@@ -26,31 +34,69 @@
   onMounted(() => {
     fetchNotifications();
   });
+  const openModal = (notificationItem) => {
+    console.log(notificationItem);
+    notification.value = notificationItem;
+    if (notificationItem.type === 'CLASS_JOIN_REQUEST') {
+      requestId.value = notificationItem.additionalInfo.classJoinRequestId;
+      notiMode.value = false;
+    }
+    else if(notificationItem.type === "CLASS_INVITATION"){
+      console.log(requestId.value);
+      requestId.value = notificationItem.additionalInfo.classInvitationId;
+      notiMode.value = false;
+    }
+     else {
+      console.log("review");
+      router.push('/review');
+    }
+  };
+  const closeModal = () => {
+    notiMode.value = true
+  };
+
 </script>
 <template>
-    <div class="notification-list">
+    <div class="notification-list" v-if="notiMode">
       <h3>Notifications</h3>
-      <NotificationItem
-        v-for="notification in notifications"
-        :key="notification.id"
-        :notification="notification"
-      />
+      <div class="notification" v-for="notificationItem in notifications"  @click="openModal(notificationItem)">
+        <NotificationItem
+          :key="notificationItem.id"
+          :notification="notificationItem"
+        />
+      </div>
     </div>
+
+    <InvitationBox v-if="!notiMode"
+        :requestId ="requestId" 
+        :Overlay_background ="!notiMode" 
+        :requestType="notification.type"
+        @close ="closeModal"
+      ></InvitationBox>
   </template>
   
   
  <style scoped>
   .notification-list {
+    position: fixed;
+    top: 30%;
+    left: 240px;
     width: 300px;
+    height: 400px;
     padding: 16px;
     background-color: #fff;
     border-radius: 8px;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5);
+    overflow: auto;
+    z-index: 10000;
   }
   
   .notification-list h3 {
-    font-size: 16px;
+    font-size: 20px;
+    font-weight: 400;
     margin-bottom: 12px;
   }
-  </style>
+
+  
+</style>
   
