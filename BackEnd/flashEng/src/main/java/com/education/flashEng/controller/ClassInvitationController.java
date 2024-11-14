@@ -42,9 +42,10 @@ public class ClassInvitationController {
         Map<String,Long> invitationId = classInvitationService.checkExistance(classId, inviteeUsername);
         ApiResponse<?> response = new ApiResponse<>(true,"Invitation existed",(Object) invitationId);
         HttpStatus status = HttpStatus.OK;
-        if (invitationId == null)
+        if (invitationId == null) {
             response.setMessage("Invitation does not exist");
             status = HttpStatus.NOT_FOUND;
+        }
         return new ResponseEntity<>(response, status);
     }
 
