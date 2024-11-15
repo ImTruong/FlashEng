@@ -13,16 +13,30 @@
   const emit = defineEmits(['notifyParent']);
   const isModalVisible = ref(false); 
   const modalAction = ref('');
+
+    // REMINDER_STUDY_SESSION 
+  // CLASS_SET_REJECT 
+  // CLASS_SET_ACCEPT 
+  // CLASS_SET_REQUEST 
+  // REJECT_CLASS_INVITATION 
+  // ACCEPT_CLASS_INVITATION 
+  // REJECT_CLASS_JOIN_REQUEST 
+  // ACCEPT_CLASS_JOIN_REQUEST 
+  // CLASS_INVITATION 
+  // CLASS_JOIN_REQUEST
   const getIconSrc = (type) => {
-    switch (type) {
-      case 'inviter':
-        return 'path_to_inviter_icon';
-      case 'REMINDER_STUDY_SESSION':
-        return 'path_to_reminder_icon';
-      case 'CLASS_JOIN_REQUEST':
-        return 'path_to_join_icon';
-      default:
-        return 'default_icon_path';
+      if (type === 'CLASS_JOIN_REQUEST' || type === 'REJECTED_CLASS_JOIN_REQUEST' || type === 'ACCEPTED_CLASS_JOIN_REQUEST') {
+      return new URL('@/assets/join_class_icon.svg', import.meta.url).href;
+    } else if (type === 'CLASS_INVITATION' || type === 'REJECTED_CLASS_INVITATION' || type === 'ACCEPTED_CLASS_INVITATION') {
+      return new URL('@/assets/invite.svg', import.meta.url).href;
+    } else if (type === 'CLASS_SET_REJECT ') {
+      return new URL('@/assets/set_reject.svg', import.meta.url).href;
+    } else if(type === "CLASS_SET_ACCEPT") {
+      return new URL('@/assets/set_accept.svg', import.meta.url).href;
+    } else if(type === "CLASS_SET_REQUEST") {
+      return new URL('@/assets/set_request.svg', import.meta.url).href;
+    }else {
+      return new URL('@/assets/review_icon.svg', import.meta.url).href;
     }
   };
   
@@ -66,8 +80,8 @@
   }
 
   .icon img {
-    width: 24px;
-    height: 24px;
+    width: 40px;
+    /* height: 24px; */
     margin-right: 10px;
   }
 

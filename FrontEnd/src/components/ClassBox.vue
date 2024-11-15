@@ -65,8 +65,13 @@
     const leaveClass = async() => {
         try{
             const token = localStorage.getItem('token');
-            console.log(classId)
-            const response = await axios.delete(`/class/member/leave?classId=${classId}`, {
+            console.log(token)
+            const response = await axios.delete(`/class/member/leave`, {
+                params: {
+                    classId: {classId}
+                }
+            }, 
+            {
                 headers: {
                     Authorization: `Bearer ${token}`, // Attach the token in the request headers
                 },
@@ -77,6 +82,8 @@
             closeOverlay();
         }catch(error){
             console.log(error);
+            console.log(error.response);
+            alert(error.response);
         }
     }
 </script>

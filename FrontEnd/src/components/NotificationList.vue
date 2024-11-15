@@ -34,14 +34,27 @@
   onMounted(() => {
     fetchNotifications();
   });
+
+
+  // REMINDER_STUDY_SESSION 
+  // CLASS_SET_REJECT 
+  // CLASS_SET_ACCEPT 
+  // CLASS_SET_REQUEST 
+  // REJECT_CLASS_INVITATION 
+  // ACCEPT_CLASS_INVITATION 
+  // REJECT_CLASS_JOIN_REQUEST 
+  // ACCEPT_CLASS_JOIN_REQUEST 
+  // CLASS_INVITATION 
+  // CLASS_JOIN_REQUEST
   const openModal = (notificationItem) => {
     console.log(notificationItem);
     notification.value = notificationItem;
-    if (notificationItem.type === 'CLASS_JOIN_REQUEST') {
+    const type = notificationItem.type;
+    if (type === 'CLASS_JOIN_REQUEST') {
       requestId.value = notificationItem.additionalInfo.classJoinRequestId;
       notiMode.value = false;
     }
-    else if(notificationItem.type === "CLASS_INVITATION"){
+    else if(type === "CLASS_INVITATION"){
       console.log(requestId.value);
       requestId.value = notificationItem.additionalInfo.classInvitationId;
       notiMode.value = false;
