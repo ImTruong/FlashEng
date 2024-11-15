@@ -4,12 +4,14 @@
   import SetTable from "../components/SetTable.vue"
   import axios from "axios"
   
-  const hover  = ref(false)
-  const router = useRouter()
-  const {set} = defineProps(['set'])
+  const hover  = ref(false);
+  const router = useRouter();
+  // const {set} = defineProps(['set'])
+  const props = defineProps(['set', 'classId']);
+  const set = props.set;
   const setTable = ref(false); 
-  const existingSet = ref({})
-  const isEditMode = ref(false)
+  const existingSet = ref({});
+  const isEditMode = ref(false);
   const navigateToSet = () => {
     router.push(`/set/${set.id}`);
   }
@@ -35,11 +37,11 @@
         },
       };
       const response = await axios.delete(`/set/${set.id}`, config);
-      if (response.status === 200) {
+      window.location.reload();
+      if (response.status === 201) {
         console.log(`Set with ID ${set.id} has been deleted.`);
         const index = set.value.findIndex(item => item.id === set.id);
         // router.push('/'); 
-        router.replace(router.currentRoute.fullPath)
       } else {
         console.error('Failed to delete the set');
       }
@@ -97,7 +99,8 @@
     <SetTable 
         v-if="setTable" 
         :isEditMode="isEditMode" 
-        :existingSet="existingSet" 
+        :existingSet="existingSet"
+        :classId="props.classId"
         @close="closeSetTable" 
         @update="handleUpdate"
       />

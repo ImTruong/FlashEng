@@ -3,17 +3,17 @@
   import axios from 'axios';
   import NotificationItem from './NotificationItem.vue';
   import InvitationBox from './InvitationBox.vue';
+  import ViewOnlySet from './OnlyViewSet.vue'
   import {useRouter} from "vue-router"
-  // import router from '@/router';
   
   const notifications = ref([]);
   const notiMode = ref(true);
   const notification = ref("");
   const requestId = ref("");
   const router = useRouter();
+  const setRequest = ref(false)
+  const classRequest = ref(false)
 
-
-  // Fetch notifications from the API
   const fetchNotifications = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -25,8 +25,8 @@
         headers: {
           Authorization: `Bearer ${token}`
         }
-      }); // Replace with your actual API endpoint
-      notifications.value = response.data.data.reverse(); // Assuming response data is an array of notifications
+      }); 
+      notifications.value = response.data.data.reverse(); 
     } catch (error) {
       console.error("Error fetching notifications:", error);
     }
@@ -34,7 +34,28 @@
   onMounted(() => {
     fetchNotifications();
   });
-
+  const editReadMode = async (notificationId) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.warn("Token không tồn tại");
+        return;
+      }
+      const response = await axios.put(`/notification/read?notificationId=${notificationId}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }); 
+      notifications.value = notifications.value.map(notification => {
+      if (notification.id === notificationId) {
+        notification.isRead = true;
+      }
+      return notification;
+    });
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  }
 
   // REMINDER_STUDY_SESSION 
   // CLASS_SET_REJECT 
@@ -50,22 +71,34 @@
     console.log(notificationItem);
     notification.value = notificationItem;
     const type = notificationItem.type;
+    editReadMode(notificationItem.id);
     if (type === 'CLASS_JOIN_REQUEST') {
       requestId.value = notificationItem.additionalInfo.classJoinRequestId;
       notiMode.value = false;
+      classRequest.value = true;
     }
     else if(type === "CLASS_INVITATION"){
       console.log(requestId.value);
       requestId.value = notificationItem.additionalInfo.classInvitationId;
       notiMode.value = false;
+      classRequest.value = true;
+
     }
-     else {
+    else if(notificationItem.type === "CLASS_SET_REQUEST"){
+      // console.log(requestId.value);
+      requestId.value = notificationItem.additionalInfo.classSetRequestId;
+      setRequest.value = true;
+      notiMode.value = false;
+    }
+     else if(notificationItem.type === "REMINDER_STUDY_SESSION"){
       console.log("review");
       router.push('/review');
     }
   };
   const closeModal = () => {
-    notiMode.value = true
+    notiMode.value = true;
+    classRequest.value = false;
+    setRequest.value = false; // Đặt setRequest về false để ẩn ViewOnlySet
   };
 
 </script>
@@ -80,14 +113,15 @@
       </div>
     </div>
 
-    <InvitationBox v-if="!notiMode"
+    <InvitationBox v-if="classRequest"
         :requestId ="requestId" 
-        :Overlay_background ="!notiMode" 
+        :Overlay_background ="classRequest" 
         :requestType="notification.type"
         @close ="closeModal"
       ></InvitationBox>
+    <ViewOnlySet v-if="setRequest" :requestId ="requestId"   @close="closeModal" ></ViewOnlySet>
   </template>
-  
+
   
  <style scoped>
   .notification-list {
@@ -101,7 +135,7 @@
     border-radius: 8px;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5);
     overflow: auto;
-    z-index: 10000;
+    z-index: 25;
   }
   
   .notification-list h3 {
@@ -110,6 +144,5 @@
     margin-bottom: 12px;
   }
 
-  
 </style>
   

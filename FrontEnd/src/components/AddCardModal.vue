@@ -1,14 +1,14 @@
 <script setup>
-  import axios from 'axios';
-  import { ref, defineEmits, defineProps, watch } from 'vue';
+  import { ref, defineEmits, defineProps } from 'vue';
   import OverlayBackground from '../components/OverlayBackground.vue';
+  import axios from 'axios';
 
   const emit = defineEmits(['close', 'save']);
   const visible = ref(true);
   const props = defineProps({
     setName: {
       type: String,
-      default: ""
+      default: ''
     },
     setId: {
       type: Number,
@@ -19,12 +19,20 @@
   const newWord = ref({
     word: '',
     ipa: '',
-    audio: 'temporary',
+    audio: '',
     definition: '',
     example: '',
-    image: null,
+    image: null
   });
 
+  // Lưu cache âm thanh cho các từ đã tìm
+  const audioCache = ref({});
+
+  const closeForm = () => {
+    emit('close');
+    visible.value = false;
+  };
+  
   const handleImageUpload = (event) => {
     if (event.target.files && event.target.files[0]) {
       newWord.value.image = event.target.files[0];
@@ -32,11 +40,64 @@
       console.log('No file selected');
     }
   };
-  const closeForm = () => {
-    emit('close');
-    visible.value = false;
+  // Fetch âm thanh và lưu vào cache
+  const fetchMeaning = async (word) => {
+    if (audioCache.value[word]) {
+      return audioCache.value[word]; // Trả lại kết quả từ cache nếu đã có
+    }
+
+    try {
+      const response = await fetch(`/api/meaning/${word}`);
+      if (!response.ok) {
+        console.error('API error:', response.statusText);
+        return null; // Return null if the API call fails
+      }
+
+      const data = await response.json();
+      if (data && data[0] && data[0].phonetics) {
+        const phonetic = data[0].phonetics.find(p => p.audio);
+        const audioUrl = phonetic ? phonetic.audio : null;
+        newWord.value.ipa = phonetic ? phonetic.text : null;
+
+        // Lưu vào cache
+        audioCache.value[word] = audioUrl;
+        return audioUrl;
+      }
+
+      return null; // Return null if no audio is available
+    } catch (error) {
+      console.error('Error fetching meaning:', error);
+      return null;
+    }
   };
 
+  // Hàm phát âm thanh
+  // const playAudio = () => {
+  //   const audioElement = document.getElementById('audio');
+  //   if (audioElement) {
+  //     audioElement.play(); // Play the audio
+  //   }
+  // };
+
+  // Hàm xử lý khi ấn vào loa để phát âm
+  const handlePlayAudio = async () => {
+    const word = newWord.value.word.trim();
+    if (word) {
+      const phonetic = await fetchMeaning(word);
+      if (phonetic) {
+        newWord.value.audio = phonetic; // Cập nhật âm thanh vào đối tượng
+        // Cập nhật nguồn và phát âm thanh
+        const audioElement = document.getElementById('audio');
+        audioElement.src = phonetic;
+        audioElement.style.display = "block"; // Hiển thị audio
+        audioElement.play(); // Phát âm thanh
+      } else {
+        // Ẩn loa nếu không có âm thanh
+        const audioElement = document.getElementById('audio');
+        audioElement.style.display = "none";
+      }
+    }
+  };
   const saveData = async () => {
     const token = localStorage.getItem('token');
     const formData = new FormData(); // Tạo đối tượng FormData
@@ -74,47 +135,61 @@
     emit('update:setName', event.target.value);
   };
 
-
 </script>
+
 <template>
-    <OverlayBackground :isVisible="visible" @clickOverlay="closeForm"> </OverlayBackground>
-    <div class="modal-content" @click.stop>
-      <div class="modal-header">
-        <div class="set-name">
-          <label for="set-name">Set:</label>
-          <input id="set-name" :value="props.setName" @input="updateSetName" placeholder="Enter set name" />
-        </div>
-        <button class="close-btn" @click="closeForm">×</button> <!-- Nút đóng góc phải -->
+  <OverlayBackground :isVisible="visible" @clickOverlay="closeForm" />
+  <div class="modal-content" @click.stop>
+    <div class="modal-header">
+      <div class="set-name">
+        <label for="set-name">Set:</label>
+        <input id="set-name" :value="props.setName" @input="updateSetName" placeholder="Enter set name" />
       </div>
-      <form @submit.prevent="saveData">
-        <div class="form-group">
-          <label for="word">Word:</label>
-          <input type="text" v-model="newWord.word" placeholder="Enter word" />
-        </div>
-        <div class="form-group">
-          <label for="ipa">IPA:</label>
-          <input type="text" v-model="newWord.ipa" placeholder="Enter IPA" />
-        </div>
-        <div class="form-group">
-          <label for="definition">Definition:</label>
-          <input type="text" v-model="newWord.definition" placeholder="Enter definition" />
-        </div>
-        <div class="form-group">
-          <label for="example">Example:</label> <!-- Thêm trường example -->
-          <input type="text" v-model="newWord.example" placeholder="Enter example" />
-        </div>
-        <div class="form-group">
-          <label for="image">Image:</label>
-          <input type="file" @change="handleImageUpload" ref="fileInput" style="display: none;" />
-          <img src="../assets/add_img.svg" alt="Upload Icon" class="icon-upload" @click="$refs.fileInput.click()" />
-        </div>
-        <div class="modal-actions">
-          <button type="submit"  class="add-btn" >Save</button>
-          <button type="button" @click="closeForm" class="cancel-btn">Cancel</button>
-        </div>
-      </form>
+      <button class="close-btn" @click="closeForm">×</button>
     </div>
+    <form @submit.prevent="saveData">
+      <div class="form-group">
+        <label for="word">Word:</label>
+        <input type="text" v-model="newWord.word" placeholder="Enter word" />
+      </div>
+
+      <div class="form-group">
+        <label for="ipa">IPA:</label>
+        <input type="text" v-model="newWord.ipa" placeholder="Enter IPA" />
+      </div>
+
+      <div class="form-group">
+        <label for="definition">Definition:</label>
+        <input type="text" v-model="newWord.definition" placeholder="Enter definition" />
+      </div>
+
+      <div class="form-group">
+        <label for="example">Example:</label>
+        <input type="text" v-model="newWord.example" placeholder="Enter example" />
+      </div>
+
+      <div class="form-group">
+        <label for="image">Image:</label>
+        <input type="file" @change="handleImageUpload" ref="fileInput" style="display: none;" />
+        <img src="../assets/add_img.svg" alt="Upload Icon" class="icon-upload" @click="$refs.fileInput.click()" />
+      </div>
+
+      <div class="form-group">
+        <label for="audio">Audio:</label>
+        <button class="audio-button" type="button" @click="handlePlayAudio">
+          <img src="../assets/speaker-icon.svg" alt="Speaker Icon" />
+        </button>
+        <audio id="audio" style="display: none;" controls></audio> <!-- Âm thanh sẽ được phát khi bấm loa -->
+      </div>
+
+      <div class="modal-actions">
+        <button type="submit" class="add-btn">Save</button>
+        <button type="button" @click="closeForm" class="cancel-btn">Cancel</button>
+      </div>
+    </form>
+  </div>
 </template>
+
 
 <style scoped>
   .modal-content {
@@ -126,7 +201,7 @@
     padding: 0px;
     border-radius: 12px;
     width: 400px;
-    height: 450px;
+    height: 500px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     z-index: 13;
     position: fixed; 
@@ -234,6 +309,18 @@
     width: 60px; /* Đặt kích thước cố định theo yêu cầu */
     height: 60px;
     vertical-align: middle;
+  }
+
+  .audio-button{
+    background-color: rgb(255, 255, 255);
+    border: none;
+    width: 50px;
+    height: 50px;
+  }
+
+  audio {
+    width: 100%; 
+    margin-top: 10px; 
   }
 </style>
 

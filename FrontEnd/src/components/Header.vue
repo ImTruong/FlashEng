@@ -196,7 +196,7 @@
         left: 0;
         width: 100%;
         height: 50.67px;
-        z-index: 9999; 
+        z-index: 20; 
     }
         
     .nav-header {
@@ -225,7 +225,7 @@
         flex-direction: column;
         justify-content: flex-start;
         padding: 20px;
-        z-index: 9999;
+        z-index: 20;
     }
 
     .menu-icon {
@@ -326,7 +326,7 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         border-radius: 8px;
         padding: 16px;
-        z-index: 9999; /* Đảm bảo bảng thông báo có độ ưu tiên hiển thị trên các phần tử khác */
+        z-index: 20; /* Đảm bảo bảng thông báo có độ ưu tiên hiển thị trên các phần tử khác */
         display: none; 
         max-height: 400px; /* Chiều cao tối đa khi có nhiều thông báo */
         overflow-y: auto; 
