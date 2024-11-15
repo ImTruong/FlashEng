@@ -51,6 +51,10 @@
     const toggleFlip = () => {
         isFlipped.value = !isFlipped.value;
     }
+    const playAudio = () => {
+        const audio = new Audio(currentSet.value.wordResponses[currentCard.value].audio);
+        audio.play();
+    }
 
     const submitRating = async (rating) => {
         try {
@@ -101,6 +105,7 @@
                     <p class="ipa">{{ totalCards[currentCard].ipa }}</p>
                     <p class="definition">{{ totalCards[currentCard].definition }}</p>
                     <p class="example">{{ totalCards[currentCard].example }}</p>
+                    <audio :src="currentSet.wordResponses[currentCard].audio" @play="playAudio" controls></audio>
                 </div>
             </div>    
         </div>
@@ -274,5 +279,15 @@
     /* Tùy chỉnh cho thông báo "Completed" */
     .completed .message p {
         color: #69cee0; /* Màu xanh */
+    }
+    .audio-btn {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        border: none;
+        cursor: pointer;
+    }
+    .audio-btn:hover {
+        background-color: #45a049;
     }
 </style>

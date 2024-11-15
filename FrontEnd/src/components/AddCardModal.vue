@@ -19,7 +19,7 @@
   const newWord = ref({
     word: '',
     ipa: '',
-    audio: null,
+    audio: '',
     definition: '',
     example: '',
     image: null
@@ -33,42 +33,19 @@
     visible.value = false;
   };
 
-  const saveData = async () => {
-    const token = localStorage.getItem('token');
-    const formData = new FormData();
-    formData.append('setId', props.setId);
-    formData.append('word', newWord.value.word);
-    formData.append('ipa', newWord.value.ipa);
-    // formData.append('audio', newWord.value.audio);
-    formData.append('definition', newWord.value.definition);
-    formData.append('example', newWord.value.example);
-    if (newWord.value.image) {
-      formData.append('image', newWord.value.image);
-    }
-
-    try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      };
-      const response = await axios.post('/word', formData, config);
-      if (response.status === 201) {
-        emit('save', response.data.data);
-        closeForm();
-      } else {
-        console.log('Failed to save word');
-      }
-    } catch (error) {
-      console.error('Error saving word:', error);
-      alert('An error occurred while saving the word');
-    }
-  };
+  
 
   const updateSetName = (event) => {
     emit('update:setName', event.target.value);
   };
-
+  
+  const handleImageUpload = (event) => {
+    if (event.target.files && event.target.files[0]) {
+      newWord.value.image = event.target.files[0];
+    } else {
+      console.log('No file selected');
+    }
+  };
   // Fetch âm thanh và lưu vào cache
   const fetchMeaning = async (word) => {
     if (audioCache.value[word]) {
@@ -115,7 +92,6 @@
       const phonetic = await fetchMeaning(word);
       if (phonetic) {
         newWord.value.audio = phonetic; // Cập nhật âm thanh vào đối tượng
-
         // Cập nhật nguồn và phát âm thanh
         const audioElement = document.getElementById('audio');
         audioElement.src = phonetic;
@@ -128,7 +104,37 @@
       }
     }
   };
+  const saveData = async () => {
+    const token = localStorage.getItem('token');
+    const formData = new FormData(); // Tạo đối tượng FormData
+    formData.append('setId', props.setId)
+    formData.append('word', newWord.value.word)
+    formData.append('ipa', newWord.value.ipa)
+    formData.append('audio', newWord.value.audio)
+    formData.append('definition', newWord.value.definition)
+    formData.append('example', newWord.value.example)
+    if (newWord.value.image) {
+      formData.append('image', newWord.value.image)
+    }
+    try {
+      const config = {
+        headers: {
+            Authorization: `Bearer ${token}` // Thêm token vào header
+        }
+      }
+      const response = await axios.post('/word', formData, config);
+      if (response.status === 201) { 
+        emit('save', response.data.data);
+        closeForm()
+        console.log('Word saved successfully!');
+      } else {
+        console.log('Failed to save word');
+      }
 
+    } catch (error) {
+        console.error('Error saving word:', error);
+    }
+  };
 </script>
 
 <template>

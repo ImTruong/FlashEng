@@ -20,7 +20,11 @@
     const totalCards = computed(() => currentSet.value ? currentSet.value.wordResponses.length : 0);
 
     const cardStatus = computed(() => `${currentCard.value + 1}/${totalCards.value}`);
-
+    
+    const playAudio = () => {
+        const audio = new Audio(currentSet.value.wordResponses[currentCard.value].audio);
+        audio.play();
+    }
     const nextCard = () => {
         if (currentCard.value < totalCards.value - 1) {
             // Chuyển sang thẻ tiếp theo nếu chưa đến cuối
@@ -91,6 +95,7 @@
                     <p class="ipa">{{ currentSet.wordResponses[currentCard].ipa }}</p>
                     <p class="definition">{{ currentSet.wordResponses[currentCard].definition }}</p>
                     <p class="example">{{ currentSet.wordResponses[currentCard].example }}</p>
+                    <audio :src="currentSet.wordResponses[currentCard].audio" @play="playAudio" controls></audio>
                   </div>
             </div>    
         </div>
@@ -202,5 +207,14 @@
         font-size: 20px;
     }
 
-    
+    .audio-btn {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        border: none;
+        cursor: pointer;
+    }
+    .audio-btn:hover {
+        background-color: #45a049;
+    }
 </style>
