@@ -74,9 +74,14 @@ public class ClassMemberServiceImpl implements ClassMemberService {
         ClassMemberEntity memberEntity = classMemberRepository.findByClassEntityIdAndUserEntityId(classId, userId)
                 .orElseThrow(() -> new EntityNotFoundWithIdException("Class Member", userId.toString()));
         memberEntity.setRoleClassEntity(roleClassService.getRoleClassByName(role.toUpperCase()));
-        classMemberRepository.save(memberEntity);
         if (!memberEntity.getRoleClassEntity().getName().equals("ADMIN"))
             notificationService.deleteUserNotificationOfAClassWhenUserRoleChanged(classMemberEntity.getClassEntity(),classMemberEntity.getUserEntity());
+        if (memberEntity.getClassEntity().getClassMemberEntityList().stream()
+                .filter(member -> member.getRoleClassEntity().getName().equals("ADMIN"))
+                .count() == 1 && memberEntity.getRoleClassEntity().getName().equals("ADMIN") && memberEntity.getUserEntity().getId().equals(user.getId())) {
+            throw new LastAdminException("You are the last admin in this class. You can`t change your role.");
+        }
+        classMemberRepository.save(memberEntity);
         return true;
     }
 
@@ -109,7 +114,7 @@ public class ClassMemberServiceImpl implements ClassMemberService {
         ClassEntity classEntity = classMemberEntity.getClassEntity();
         if(classEntity.getClassMemberEntityList().stream()
                 .filter(member -> member.getRoleClassEntity().getName().equals("ADMIN"))
-                .count() > 1  || classMemberEntity.getClassEntity().getClassMemberEntityList().size() == 1){
+                .count() >= 2|| classMemberEntity.getClassEntity().getClassMemberEntityList().size() == 1  || classEntity.getClassMemberEntityList().stream().filter(member -> member.getUserEntity() == user).anyMatch(member -> member.getRoleClassEntity().getName().equals("MEMBER"))){
             classMemberRepository.delete(classMemberEntity);
             classEntity.getClassMemberEntityList().remove(classMemberEntity);
             user.getSetsEntityList().stream().filter(setEntity -> setEntity.getClassEntity()!=null).filter(setsEntity -> setsEntity.getClassEntity().getId().equals(classId))
