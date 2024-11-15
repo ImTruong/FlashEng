@@ -8,6 +8,7 @@
     const isFlipped = ref(false);
     const totalCards = ref([]);
     const isCompleted = ref(false)
+    const isLoading = ref(true);
     const router = useRouter()
 
 
@@ -32,6 +33,8 @@
                 console.error('Network or Axios error:', error.message);
             }
             throw error; // Ném lỗi để xử lý ở nơi khác nếu cần
+        } finally {
+            isLoading.value = false; // Đặt isLoading thành false sau khi gọi API xong
         }
     };
 
@@ -118,13 +121,14 @@
         </div>
     </div>
     <div v-else>
-        <div class="alert no-cards" v-if="totalCards.length === 0">
+        <div class="alert no-cards" v-if="isLoading === false">
             <div class="message">
                 <p>No cards available</p>
                 <button @click="handleComplete">Go to Home</button>
             </div>
         </div>
-    </div></template>
+    </div>
+</template>
 
 <style scoped>
     .flashcard-container {
