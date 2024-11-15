@@ -32,10 +32,6 @@
     emit('close');
     visible.value = false;
   };
-
-  const updateSetName = (event) => {
-    emit('update:setName', event.target.value);
-  };
   
   const handleImageUpload = (event) => {
     if (event.target.files && event.target.files[0]) {
@@ -76,12 +72,12 @@
   };
 
   // Hàm phát âm thanh
-  const playAudio = () => {
-    const audioElement = document.getElementById('audio');
-    if (audioElement) {
-      audioElement.play(); // Play the audio
-    }
-  };
+  // const playAudio = () => {
+  //   const audioElement = document.getElementById('audio');
+  //   if (audioElement) {
+  //     audioElement.play(); // Play the audio
+  //   }
+  // };
 
   // Hàm xử lý khi ấn vào loa để phát âm
   const handlePlayAudio = async () => {
@@ -322,7 +318,10 @@
     height: 50px;
   }
 
-
+  audio {
+    width: 100%; 
+    margin-top: 10px; 
+  }
 </style>
 
   

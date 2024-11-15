@@ -22,6 +22,7 @@
     const cardStatus = computed(() => `${currentCard.value + 1}/${totalCards.value}`);
     
     const playAudio = () => {
+        event.stopPropagation(); 
         const audio = new Audio(currentSet.value.wordResponses[currentCard.value].audio);
         audio.play();
     }
@@ -94,8 +95,12 @@
                   <div v-else class="flashcard-back">
                     <p class="ipa">{{ currentSet.wordResponses[currentCard].ipa }}</p>
                     <p class="definition">{{ currentSet.wordResponses[currentCard].definition }}</p>
+                    <div class="audio-icon" @click="playAudio">
+                        <img src="../assets/speaker-icon.svg" alt="Speaker Icon" class="icon-play" />
+                    </div>
                     <p class="example">{{ currentSet.wordResponses[currentCard].example }}</p>
-                    <audio :src="currentSet.wordResponses[currentCard].audio" @play="playAudio" controls></audio>
+                    <!-- <audio :src="currentSet.wordResponses[currentCard].audio" @play="playAudio" controls></audio> -->
+                    
                   </div>
             </div>    
         </div>
