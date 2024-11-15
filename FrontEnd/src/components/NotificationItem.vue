@@ -21,6 +21,10 @@
         return 'path_to_reminder_icon';
       case 'CLASS_JOIN_REQUEST':
         return 'path_to_join_icon';
+      case 'CLASS_SET_REQUEST':
+        return '';
+      case 'CLASS_INVITATION':
+        return ;
       default:
         return 'default_icon_path';
     }

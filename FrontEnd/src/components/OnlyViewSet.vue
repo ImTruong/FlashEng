@@ -1,42 +1,62 @@
 <script setup>
     import axios from 'axios';
-    import { ref, watch, defineEmits, defineProps, computed} from 'vue';
+    import { ref, defineEmits, defineProps, computed, onMounted} from 'vue';
     import OverlayBackground from '../components/OverlayBackground.vue'
 
     const emit = defineEmits(['close']);
-    const props = defineProps(['existingSet']);
-
+    // const props = defineProps(['existingSet']);
+    const {requestId} = defineProps(['requestId'])
+    const existingSet = ref('')
     const visible = ref(true); 
-    const setName = ref(existingSet.name);
-    const rows = ref(existingSet.wordResponses);
+    const setName = ref('');
+    const rows = ref([]);
     const showSelectColumn = ref(false);
     const showOptions = ref(false)
-    const selectedOption = ref(props.existingSet.privacyStatus);
+    const selectedOption = ref('');
     const dropdownRef = ref(null)
-    const classId = ref(props.existingSet.privacyStatus === 'CLASS' ? props.existingSet.classId : '');
+    const classId = ref('');
     const isSearchVisible = ref(false);
     const searchTerm = ref('');
     
 
     const closeForm = () => {
-        emit('close');
         visible.value = false;
-        window.location.reload();
-
+        emit('close')
     };
+    const getSetById = async () => {
+        try {
+            console.log(requestId)
+            const token = localStorage.getItem('token');
+                const config = {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                };
+            const response = await axios.get(`/set-request/${requestId}`, config);
+            existingSet.value = response.data.data;
+            console.log(response.data.data)
+            setName.value = existingSet.value.name || ''; // Gán tên của set vào setName
+            rows.value = existingSet.value.wordResponses || []; // Gán từ vựng vào rows
+            selectedOption.value = existingSet.value.privacyStatus || ''; 
+            classId.value = existingSet.value.privacyStatus === 'CLASS' ? existingSet.value.classId : '';
+        } 
+        catch (error) {
+            console.error('Error while get data:', error.response || error.message);
+        }
+    }
 
 
     const acceptAction = async () => {
         try {
             const token = localStorage.getItem('token');
+            console.log(token)
             const config = {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }
             };
-
             // Send the accept request to API
-            const response = await axios.post(`/set-request/accept/${existingSet.id}`, config);
+            const response = await axios.put(`/set-request/accept/${requestId}`, {}, config);
             console.log('Accept response:', response.message);
             // Xử lý sau khi chấp nhận, ví dụ: đóng form hoặc hiển thị thông báo
             closeForm();
@@ -55,7 +75,7 @@
                 }
             };
             // Send the reject request to API
-            const response = await axios.post(`/set-request/reject/${existingSet.id}`, config);
+            const response = await axios.put(`/set-request/reject/${requestId}`, {}, config);
 
             console.log('Reject response:', response.message);
             closeForm();
@@ -82,7 +102,9 @@
         }
         return rows.value.filter(row => row.word.toLowerCase().includes(searchTerm.value.toLowerCase().trim()));
     });
-
+    onMounted( () => {
+        getSetById();
+    })
 </script>
 
 <template>
@@ -150,15 +172,16 @@
             </tbody>
           </table>
     </div>
-    <div class="actions">
-        <button @click="acceptAction" class="icon-button">
-            <img src="../assets/select.svg" alt="" class="icon">
-        </button>
-        <button @click="rejectAction" class="icon-button">
-            <img src="../assets/add-word.svg" alt="" class="icon">
-        </button>
-      </div>
+    <div class="button">
+        <div class="accept-button" @click="acceptAction">
+            <p>Accept</p>
+        </div>
+        <div class="reject-button" @click="rejectAction">
+            <p>Reject</p>
+        </div>
     </div>
+    </div>
+    
 </template>  
   
 <style scoped>
@@ -172,7 +195,7 @@
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         padding: 20px;
         width: 60%;
-        z-index: 11;
+        z-index: 26;
     }
   
     .set-header {
@@ -262,31 +285,6 @@
     .set-table th:not(.select-column) {
         width: calc((100% - 10px) / 5); /* Chiều rộng cho 5 cột còn lại */
     }  
-  
-    .actions {
-        display: flex;
-        justify-content: space-around; /* Căn giữa các icon */
-        margin: 5px;
-        margin-bottom: 0px;
-    }
-
-    .icon-button {
-        cursor: pointer; 
-        width: 80px; 
-        height: 40px; 
-        display: flex;
-        align-items: center; 
-        justify-content: center; 
-        border: none; 
-        background: none; 
-        transition: background-color 0.3s; 
-    }
-
-    .icon {
-        width: 100%; 
-        height: auto; 
-        cursor: pointer;
-    }
 
     .close-btn {
         background: none;
@@ -332,8 +330,46 @@
         color:rgb(218, 87, 87); 
         margin-left: 15px; 
     }
+    .button{
+        display: flex;
+        text-align: center;
+        flex-direction: row; 
+        align-items: center; 
+        gap: 0px;
+        justify-content: space-around; 
+        padding-top: 10px;
+    }
+
+    .accept-button {
+        background-color: #BDEDF5;
+        padding: 10px;
+        width: 100px;
+        border-radius: 20px;
+        cursor: pointer;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.15); 
+    }
+
+    .reject-button{
+        background-color: #FF9FA8;
+        padding: 10px ;
+        width: 100px;
+        border-radius: 20px;
+        cursor: pointer;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.15); 
+        margin-left: 10px;
+    }
+
+    .button p {
+        margin: 0;
+        font-size: 18px;
+        color: #333;
+    }
+
+    .accept-button:hover {
+        background-color: #91e3df;
+    }
+
+    .reject-button:hover {
+        background-color: #f37c88;
+    }
 </style>
-<!-- 
-Khi tạo set thẻ thì sẽ tự động lưu trong database, các thao tác với set thẻ sẽ thao tác trực tiếp với dữ liệu trong database
-Thiếu phần tìm kiếm
- -->

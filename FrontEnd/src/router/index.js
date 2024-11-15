@@ -8,7 +8,7 @@ import Statistics from "@/view/Statistics.vue";
 import FlashCard from "../view/FlashCardView.vue"
 import GameView from "../view/GameView.vue"
 import Review from  "../view/Review.vue"
-import Accept from "../components/AcceptSet.vue"
+import Accept from "../components/OnlyViewSet.vue"
 
 
 const router = createRouter({

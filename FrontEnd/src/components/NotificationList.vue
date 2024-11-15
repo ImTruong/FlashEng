@@ -3,6 +3,7 @@
   import axios from 'axios';
   import NotificationItem from './NotificationItem.vue';
   import InvitationBox from './InvitationBox.vue';
+  import ViewOnlySet from './OnlyViewSet.vue'
   import {useRouter} from "vue-router"
   // import router from '@/router';
   
@@ -11,6 +12,8 @@
   const notification = ref("");
   const requestId = ref("");
   const router = useRouter();
+  const setRequest = ref(false)
+  const classRequest = ref(false)
 
 
   // Fetch notifications from the API
@@ -40,10 +43,19 @@
     if (notificationItem.type === 'CLASS_JOIN_REQUEST') {
       requestId.value = notificationItem.additionalInfo.classJoinRequestId;
       notiMode.value = false;
+      classRequest.value = true;
     }
     else if(notificationItem.type === "CLASS_INVITATION"){
       console.log(requestId.value);
       requestId.value = notificationItem.additionalInfo.classInvitationId;
+      notiMode.value = false;
+      classRequest.value = true;
+
+    }
+    else if(notificationItem.type === "CLASS_SET_REQUEST"){
+      // console.log(requestId.value);
+      requestId.value = notificationItem.additionalInfo.classSetRequestId;
+      setRequest.value = true;
       notiMode.value = false;
     }
      else {
@@ -52,7 +64,9 @@
     }
   };
   const closeModal = () => {
-    notiMode.value = true
+    notiMode.value = true;
+    classRequest.value = false;
+    setRequest.value = false; // Đặt setRequest về false để ẩn ViewOnlySet
   };
 
 </script>
@@ -67,14 +81,15 @@
       </div>
     </div>
 
-    <InvitationBox v-if="!notiMode"
+    <InvitationBox v-if="classRequest"
         :requestId ="requestId" 
-        :Overlay_background ="!notiMode" 
+        :Overlay_background ="classRequest" 
         :requestType="notification.type"
         @close ="closeModal"
       ></InvitationBox>
+    <ViewOnlySet v-if="setRequest" :requestId ="requestId"   @close="closeModal" ></ViewOnlySet>
   </template>
-  
+
   
  <style scoped>
   .notification-list {
@@ -88,7 +103,7 @@
     border-radius: 8px;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5);
     overflow: auto;
-    z-index: 10000;
+    z-index: 25;
   }
   
   .notification-list h3 {
@@ -97,6 +112,5 @@
     margin-bottom: 12px;
   }
 
-  
 </style>
   
