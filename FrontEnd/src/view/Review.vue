@@ -54,6 +54,10 @@
     const toggleFlip = () => {
         isFlipped.value = !isFlipped.value;
     }
+    const playAudio = () => {
+        const audio = new Audio(currentSet.value.wordResponses[currentCard.value].audio);
+        audio.play();
+    }
 
     const submitRating = async (rating) => {
         try {
@@ -101,9 +105,10 @@
                     <p>{{ totalCards[currentCard].word }}</p>
                 </div>
                 <div v-else class="flashcard-back">
-                    <p>{{ totalCards[currentCard].ipa }}</p>
-                    <p>{{ totalCards[currentCard].definition }}</p>
-                    <p>{{ totalCards[currentCard].example }}</p>
+                    <p class="ipa">{{ totalCards[currentCard].ipa }}</p>
+                    <p class="definition">{{ totalCards[currentCard].definition }}</p>
+                    <p class="example">{{ totalCards[currentCard].example }}</p>
+                    <audio :src="currentSet.wordResponses[currentCard].audio" @play="playAudio" controls></audio>
                 </div>
             </div>    
         </div>
@@ -132,7 +137,7 @@
 
 <style scoped>
     .flashcard-container {
-        max-width: 500px; 
+        width: 600px; 
         margin: 40px auto;
         padding: 20px;
         text-align: center;
@@ -147,6 +152,8 @@
     }
 
     .flashcard-content {
+        width: 100%;
+        /* height: 350px; */
         padding: 20px;
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
@@ -154,18 +161,23 @@
         border: none;
     }
 
-    .flashcard {
+    .flashcard-front {
         width: 100%;
-        max-width: 300px; 
+        max-width: 350px; 
         margin: 0 auto;
         text-align: center;
     }
     
     .flashcard img {
-        max-width: 100%; /* Ảnh sẽ không vượt quá chiều rộng của flashcard */
-        height: auto; 
+        width: 100%; 
+        max-height: 300px;
         object-fit: cover; 
         border-radius: 8px;
+    }
+
+    .flashcard p{
+        margin: 20px;
+        font-size: 20px;
     }
 
     .flashcard-word {
@@ -194,19 +206,33 @@
     }
 
     .rating-btn:hover {
-        background-color: #b0b0b0;
+        background-color: #91e3df;
     }
     .flashcard-content {
         perspective: 1000px; /* Tạo hiệu ứng 3D */
+        width: 100%;
     }
     
     .flashcard-back{
-        max-width: 500px; 
-        margin: 40px auto;
-        padding: 20px;
+        width: 100%; 
+        /* margin: 40px auto; */
+        /* padding: 20px; */
         text-align: center;
-        font-size: 25px;
+        /* font-size: 25px; */
     }
+
+    .flashcard-back .ipa{
+        font-size: 20px;
+    }
+
+    .flashcard .definition{
+        font-size: 30px;
+    }
+
+    .flashcard .example{
+        font-size: 20px;
+    }
+    
     
     .alert {
         position: fixed;
@@ -237,8 +263,8 @@
     
     .alert .message button {
         padding: 15px 30px;
-        background-color: #3498db;
-        color: white;
+        background-color: #BDEDF5;
+        color: rgb(0, 0, 0);
         border: none;
         border-radius: 5px;
         cursor: pointer;
@@ -246,7 +272,7 @@
     }
     
     .alert .message button:hover {
-        background-color: #2980b9;
+        background-color: #91e3df;
     }
     
     /* Tùy chỉnh cho thông báo "No cards available" */
@@ -257,5 +283,15 @@
     /* Tùy chỉnh cho thông báo "Completed" */
     .completed .message p {
         color: #69cee0; /* Màu xanh */
+    }
+    .audio-btn {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        border: none;
+        cursor: pointer;
+    }
+    .audio-btn:hover {
+        background-color: #45a049;
     }
 </style>

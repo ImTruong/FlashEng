@@ -49,6 +49,7 @@
 </script>
 <template>
   <div class="notification-item" :class="{ 'read': notification.isRead }" >
+    <!-- {{ notification.type }} -->
     <div class="icon">
       <img :src="getIconSrc(notification.type)" alt="icon" />
     </div>
