@@ -88,9 +88,9 @@
                     <p>{{ currentSet.wordResponses[currentCard].word }}</p>
                   </div>
                   <div v-else class="flashcard-back">
-                    <p>{{ currentSet.wordResponses[currentCard].ipa }}</p>
-                    <p>{{ currentSet.wordResponses[currentCard].definition }}</p>
-                    <p>{{ currentSet.wordResponses[currentCard].example }}</p>
+                    <p class="ipa">{{ currentSet.wordResponses[currentCard].ipa }}</p>
+                    <p class="definition">{{ currentSet.wordResponses[currentCard].definition }}</p>
+                    <p class="example">{{ currentSet.wordResponses[currentCard].example }}</p>
                   </div>
             </div>    
         </div>
@@ -107,7 +107,7 @@
 
 <style scoped>
     .flashcard-container {
-        max-width: 500px; 
+        width: 600px; 
         margin: 40px auto;
         padding: 20px;
         text-align: center;
@@ -122,6 +122,7 @@
     }
 
     .flashcard-content {
+        width: 100%;
         padding: 20px;
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
@@ -129,18 +130,23 @@
         border: none;
     }
 
-    .flashcard {
+    .flashcard-front{
         width: 100%;
-        max-width: 300px; 
+        max-width: 350px; 
         margin: 0 auto;
         text-align: center;
     }
     
     .flashcard img {
         max-width: 100%; /* Ảnh sẽ không vượt quá chiều rộng của flashcard */
-        height: auto; 
+        max-height: 300px;
         object-fit: cover; 
         border-radius: 8px;
+    }
+
+    .flashcard p{
+        margin: 10px;
+        font-size: 25px;
     }
 
     .flashcard-word {
@@ -169,7 +175,7 @@
     }
 
     .rating-btn:hover {
-        background-color: #b0b0b0;
+        background-color: #91e3df;
     }
     .flashcard-content {
         perspective: 1000px; /* Tạo hiệu ứng 3D */
@@ -177,10 +183,24 @@
     
     .flashcard-back{
         max-width: 500px; 
-        margin: 40px auto;
-        padding: 20px;
+        /* margin: 40px auto; */
+        /* padding: 20px; */
         text-align: center;
-        font-size: 25px;
+        /* font-size: 25px; */
     }
+
+    .flashcard-back .ipa{
+        font-size: 20px;
+    }
+
+    .flashcard .definition{
+        font-size:25px;
+        margin-bottom: 30px;
+    }
+
+    .flashcard .example{
+        font-size: 20px;
+    }
+
     
 </style>
