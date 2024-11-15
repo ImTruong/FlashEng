@@ -5,7 +5,6 @@
   import InvitationBox from './InvitationBox.vue';
   import ViewOnlySet from './OnlyViewSet.vue'
   import {useRouter} from "vue-router"
-  // import router from '@/router';
   
   const notifications = ref([]);
   const notiMode = ref(true);
@@ -15,8 +14,6 @@
   const setRequest = ref(false)
   const classRequest = ref(false)
 
-
-  // Fetch notifications from the API
   const fetchNotifications = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -28,8 +25,8 @@
         headers: {
           Authorization: `Bearer ${token}`
         }
-      }); // Replace with your actual API endpoint
-      notifications.value = response.data.data.reverse(); // Assuming response data is an array of notifications
+      }); 
+      notifications.value = response.data.data.reverse(); 
     } catch (error) {
       console.error("Error fetching notifications:", error);
     }
@@ -37,7 +34,28 @@
   onMounted(() => {
     fetchNotifications();
   });
-
+  const editReadMode = async (notificationId) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.warn("Token không tồn tại");
+        return;
+      }
+      const response = await axios.put(`/notification/read?notificationId=${notificationId}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }); 
+      notifications.value = notifications.value.map(notification => {
+      if (notification.id === notificationId) {
+        notification.isRead = true;
+      }
+      return notification;
+    });
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  }
 
   // REMINDER_STUDY_SESSION 
   // CLASS_SET_REJECT 
@@ -53,6 +71,7 @@
     console.log(notificationItem);
     notification.value = notificationItem;
     const type = notificationItem.type;
+    editReadMode(notificationItem.id);
     if (type === 'CLASS_JOIN_REQUEST') {
       requestId.value = notificationItem.additionalInfo.classJoinRequestId;
       notiMode.value = false;
@@ -71,7 +90,7 @@
       setRequest.value = true;
       notiMode.value = false;
     }
-     else {
+     else if(notificationItem.type === "REMINDER_STUDY_SESSION"){
       console.log("review");
       router.push('/review');
     }

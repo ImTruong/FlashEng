@@ -123,7 +123,8 @@
             <Card 
                 v-for="set in sets" 
                 :key="set.id" 
-                :set="set" />
+                :set="set" 
+                :classId="classId"/>
         </div>
     </div>
     <ClassTable 

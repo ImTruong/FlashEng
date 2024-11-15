@@ -5,7 +5,7 @@
     import AddCardModal from '../components/AddCardModal.vue'
 
     const emit = defineEmits(['close', 'save', 'update']);
-    const props = defineProps(['isEditMode', 'existingSet']);
+    const props = defineProps(['isEditMode', 'existingSet', 'classId']);
 
     const visible = ref(true); 
     const setName = ref(props.isEditMode ? props.existingSet.name : '');
@@ -16,7 +16,7 @@
     const selectedOption = ref(props.isEditMode ? props.existingSet.privacyStatus : '');
     const dropdownRef = ref(null)
     const showAddCardModal = ref(false);
-    const classId = ref(props.isEditMode && props.existingSet.privacyStatus === 'CLASS' ? props.existingSet.classId : '');
+    const classId = ref(props.isEditMode && props.existingSet.privacyStatus === 'CLASS' ? props.classId : '');
     const isSearchVisible = ref(false);
     const searchTerm = ref('');
     
@@ -163,11 +163,12 @@
     });
 
     watch(() => props.existingSet, (newExistingSet) => {
+        console.log('New Existing Set:', newExistingSet); // Kiểm tra xem existingSet có giá trị đúng không
         if (newExistingSet && newExistingSet.words) {
             setName.value = newExistingSet.name; // Cập nhật tên set
             rows.value = newExistingSet.words; // Cập nhật các hàng
             selectedOption.value = newExistingSet.privacyStatus || '';
-            classId.value = newExistingSet.privacyStatus === 'CLASS' ? newExistingSet.classId : '';
+            classId.value = newExistingSet.privacyStatus === 'CLASS' ? props.classId : '';
         }
     }, { deep: true });
 

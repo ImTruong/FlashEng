@@ -29,16 +29,18 @@
       return new URL('@/assets/join_class_icon.svg', import.meta.url).href;
     } else if (type === 'CLASS_INVITATION' || type === 'REJECTED_CLASS_INVITATION' || type === 'ACCEPTED_CLASS_INVITATION') {
       return new URL('@/assets/invite.svg', import.meta.url).href;
-    } else if (type === 'CLASS_SET_REJECT ') {
-      return new URL('@/assets/set_reject.svg', import.meta.url).href;
+    } else if (type === 'CLASS_SET_REJECT') {
+      return new URL('@/assets/set_rejected.svg', import.meta.url).href;
     } else if(type === "CLASS_SET_ACCEPT") {
-      return new URL('@/assets/set_accept.svg', import.meta.url).href;
+      return new URL('@/assets/set_accepted.svg', import.meta.url).href;
     } else if(type === "CLASS_SET_REQUEST") {
       return new URL('@/assets/set_request.svg', import.meta.url).href;
     }else {
       return new URL('@/assets/review_icon.svg', import.meta.url).href;
     }
   };
+
+ 
   
   const formattedDate = computed(() => {
     return formatDistanceToNow(new Date(props.notification.createdAt), { addSuffix: true });
@@ -71,12 +73,12 @@
   }
 
   .notification-item.read {
-    /* opacity: 0.5; */
+    opacity: 0.5;
     background-color: #f8f9fa;
   }
 
   .notification-item:hover {
-    background-color: #f1f1f1; /* Màu nền khi hover */
+    background-color: #f1f1f1; 
   }
 
   .icon img {

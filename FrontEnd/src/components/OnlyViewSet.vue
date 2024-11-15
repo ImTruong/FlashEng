@@ -23,6 +23,7 @@
         visible.value = false;
         emit('close')
     };
+    
     const getSetById = async () => {
         try {
             console.log(requestId)
@@ -38,13 +39,13 @@
             setName.value = existingSet.value.name || ''; // Gán tên của set vào setName
             rows.value = existingSet.value.wordResponses || []; // Gán từ vựng vào rows
             selectedOption.value = existingSet.value.privacyStatus || ''; 
-            classId.value = existingSet.value.privacyStatus === 'CLASS' ? existingSet.value.classId : '';
+
         } 
         catch (error) {
             console.error('Error while get data:', error.response || error.message);
         }
     }
-
+    // classId.value = existingSet.value.privacyStatus === 'CLASS' ? existingSet.value.classId : '';
 
     const acceptAction = async () => {
         try {
@@ -123,18 +124,18 @@
             <button @click="closeForm" class="close-btn">✖</button>
         </div>
     <div v-show="showOptions" class="options-dropdown" ref="dropdownRef">
-        <button @click.stop="selectOption" class="option-button">
+        <button @click.stop="" class="option-button">
             <img src="../assets/globe.svg" alt="Public" class="option-icon" />
             <span class="option-text">Public</span>
             <span v-if="selectedOption === 'PUBLIC'" class="checkmark">✔</span>
         </button>
-        <button @click.stop="selectOption" class="option-button">
+        <button @click.stop="" class="option-button">
             <img src="../assets/lock.svg" alt="Private" class="option-icon" />
             <span class="option-text">Private</span>
             <span v-if="selectedOption === 'PRIVATE'" class="checkmark">✔</span>
         </button>
         <div class="option-container">
-            <button @click.stop="selectOption" class="option-button">
+            <button @click.stop="" class="option-button">
                 <img src="../assets/lock.svg" alt="Group" class="option-icon" />
                 <span class="option-text">Class</span>
                 <span v-if="selectedOption === 'CLASS'" class="checkmark">✔</span>
