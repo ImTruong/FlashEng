@@ -16,13 +16,13 @@
     const showSelectColumn = ref(false);
     const selectedOption = ref('')
     const dropdownRef = ref(null)
-    // const search = ref("")
-    // const showSearch = ref(false);
+    const search = ref("")
+    const showSearch = ref(false);
     const showAddMember = ref(false);
     const roleFilter = ref("Role");
     const classId = ref(null);
     const errorMessage = ref(null);
-    // const memberList = ref([]);
+    const memberList = ref([]);
 
     const updateClassName = (newClassName) => {
         className.value = newClassName;
@@ -137,17 +137,22 @@
     };
 
 
-    // chua test
-    // watch(search, () =>{
-    //     console.log(showSearch && !search);
-    //     console.log(memberList);
-    //     if(showSearch && !search){
-    //         memberList.value = rows.value.filter(member => member.username.toLowerCase().includes(search.value.toLowerCase()))
-    //     }
-    //     else{
-    //         memberList.value = rows.value;
-    //     }
-    // })
+    watch([search, showSearch], () =>{
+        console.log(showSearch.value && search.value);
+        console.log(memberList.value);
+        if(!showSearch.value || search.value == ""){
+            memberList.value = rows.value;
+            memberList.value = rows.value.filter(member => member.userName.toLowerCase().includes(search.value.toLowerCase()))
+        }
+        else{
+            memberList.value = rows.value.filter(member => member.userName.toLowerCase().includes(search.value.toLowerCase()))
+        }
+    })
+
+    const toggleSearch = () =>{
+        showSearch.value = !showSearch.value;
+        search.value = "";
+    }
 
     const openAddMember = () => {
         showAddMember.value = true;
@@ -181,6 +186,7 @@
                 },
             })
             rows.value = response.data.data.memberList;
+            memberList.value = rows.value;
             console.log(rows.value);
         } catch (error) {
             errorMessage.value = error.response ? error.response.data : 'An error occurred'
@@ -216,7 +222,6 @@
 
     onMounted(() => {
         if(props.isEditMode){
-            console.log(localStorage.getItem('classId'));
             classId.value = localStorage.getItem('classId');
             className.value = localStorage.getItem('className');
             getMember();
@@ -229,8 +234,8 @@
     <OverlayBackground :isVisible="visible" @clickOverlay="closeForm" />
     <div v-if="visible" class="class-window">
         <div class="class-header">
-            <!-- <img src="../assets/search_icon.svg" alt="Status" @click="showSearch=!showSearch"> -->
-            <!-- <input v-model.trim = "search" v-if="showSearch" type="text" placeholder="Search for username" class="search-bar"> -->
+            <img src="../assets/search_icon.svg" alt="Status" @click="toggleSearch">
+            <input v-model.trim = "search" v-if="showSearch" type="text" placeholder="Search for username" class="search-bar">
             <div class="class-name" v-if="!showSearch">
                 <label for="class-name">Class:</label>
                 <input id="class-name" v-model="className" placeholder="Enter class name" />
@@ -255,7 +260,7 @@
               </tr>
             </thead>
             <tbody>
-                <tr v-for="(row, index) in rows" :key="index">
+                <tr v-for="(row, index) in memberList" :key="index">
                     <td v-if="showSelectColumn">
                         <input type="checkbox" @change="toggleSelectMember(row.userId)" :checked="selectedUsers.includes(row.userId)" />
                     </td>
