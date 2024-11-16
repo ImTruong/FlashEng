@@ -54,30 +54,33 @@
     });
 
     // đã test chưa cập nhâpj lại lớp 
-    const leaveClass = async() => {
-        try{
+    const leaveClass = async () => {
+        try {
             const token = localStorage.getItem('token');
-            console.log(token)
+            console.log(token);
+
             const response = await axios.delete(`/class/member/leave`, {
                 params: {
-                    classId: {classId}
-                }
-            }, 
-            {
+                    classId: classId, // Sử dụng giá trị của classId
+                },
                 headers: {
-                    Authorization: `Bearer ${token}`, // Attach the token in the request headers
+                    Authorization: `Bearer ${token}`, // Đính kèm token vào headers
                 },
             });
+
             console.log(response);
             alert(response.data.message);
             window.location.reload();
             closeOverlay();
-        }catch(error){
+        } catch (error) {
             console.log(error);
-            console.log(error.response);
-            alert(error.response);
+            if (error.response && error.response.data && error.response.data.message) {
+                alert(error.response.data.message);
+            } else {
+                alert("An error occurred. Please try again.");
+            }
         }
-    }
+    };
 
     const getSetByClassId = async() => {
         try{
