@@ -25,6 +25,7 @@
     const classSuggestions = ref([]);
     const myClasses = computed(() => store.getters.getClasses);
     const searchClass = ref(props.isEditMode && props.existingSet.privacyStatus === 'CLASS' ? localStorage.getItem('className') : '');
+    const user =  JSON.parse(localStorage.getItem('user'));
 
     onMounted(() => {
         Promise.all([
@@ -32,7 +33,7 @@
         ]).catch((error) => {
             console.error("Error fetching data:", error);
         });
-        console.log(myClasses.value);
+        console.log(props.existingSet.userDetailResponse);
     });
 
     
@@ -145,6 +146,12 @@
         // showOptions.value = false; 
     };
     const openAddCardModal = () => {
+        // chờ sửa be user respone có id khác null
+        // if(props.isEditMode && props.existingSet.userDetailResponse.id != user.id){
+        if(props.isEditMode && props.existingSet.userDetailResponse.username != user.username){
+            alert("you aren't authorized to add cards");
+            return;
+        }
         showAddCardModal.value = true;
         visible.value = false;
     };
