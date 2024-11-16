@@ -4,6 +4,7 @@
     import OverlayBackground from '../components/OverlayBackground.vue'
     import AddCardModal from '../components/AddCardModal.vue'
     import { useStore } from 'vuex';
+    import ImageCard from './ImageCard.vue';
     const store = useStore();
     
 
@@ -26,6 +27,8 @@
     const myClasses = computed(() => store.getters.getClasses);
     const searchClass = ref(props.isEditMode && props.existingSet.privacyStatus === 'CLASS' ? localStorage.getItem('className') : '');
     const user =  JSON.parse(localStorage.getItem('user'));
+    const showImg = ref(false);
+    const image = ref("");
 
     onMounted(() => {
         Promise.all([
@@ -210,6 +213,17 @@
         classSuggestions.value = [];
     };
 
+    const openImage = (img) =>{
+        showImg.value = true;
+        image.value = img;
+        visible.value = false;
+    }
+
+    const closeImage = () =>{
+        showImg.value = false;
+        visible.value = true;
+    }
+
     
 </script>
 
@@ -279,7 +293,7 @@
                 <th>IPA</th>
                 <th>Definition</th>
                 <th>Example</th>
-                <th>Image</th>
+                <th class="image">Image</th>
               </tr>
             </thead>
             <tbody>
@@ -291,7 +305,10 @@
                 <td><input v-model="row.ipa" placeholder="IPA" /></td>
                 <td><input v-model="row.definition" placeholder="Definition" /></td>
                 <td><input v-model="row.example" placeholder="Example" /></td>
-                <td><input v-model="row.image" placeholder="Image URL" /></td>
+                <td class="image">
+                    <img src="../assets/image.svg" alt="class" class="image-icon" @click="openImage(row.image)" />
+
+                </td>
               </tr>
             </tbody>
           </table>
@@ -311,6 +328,7 @@
         </button>
       </div>
     </div>
+    <ImageCard :Overlay_background ="showImg" :image="image" v-if="showImg" @close="closeImage"></ImageCard>
     <AddCardModal :setName="setName" :setId="props.existingSet.id" @update:setName="updateSetName" v-if="showAddCardModal" @close="closeAddCardModal" @save="addNewWord"></AddCardModal>
 </template>  
   
@@ -439,11 +457,16 @@
     .select-column {
         width: 50px; /* Chiều rộng cho cột Select */
     }
+
+    .image{
+        width: 50px !important; 
+    }
     
     /* Các cột còn lại có chiều rộng bằng nhau */
     .set-table th:not(.select-column) {
-        width: calc((100% - 10px) / 5); /* Chiều rộng cho 5 cột còn lại */
-    }  
+        width: calc((100% - 50px) / 5); /* Chiều rộng cho 5 cột còn lại */
+    }
+      
   
     .actions {
         display: flex;
