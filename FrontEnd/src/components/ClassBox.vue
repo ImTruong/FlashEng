@@ -71,7 +71,6 @@
             console.log(response);
             alert(response.data.message);
             window.location.reload();
-            closeOverlay();
         } catch (error) {
             console.log(error);
             if (error.response && error.response.data && error.response.data.message) {

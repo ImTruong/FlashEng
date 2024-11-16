@@ -99,6 +99,9 @@
                     console.log('User deleted:', response.message);
                     rows.value = rows.value.filter(row => row.userId !== userId); // Xóa từ khỏi bảng
                     memberList.value = rows.value;
+                    if(memberList.value.length === 0){
+                        window.location.reload();
+                    }
                 } catch (error) {
                     console.log(error);
                     if (error.response && error.response.data && error.response.data.message) {

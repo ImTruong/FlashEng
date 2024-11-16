@@ -44,6 +44,7 @@
         const payload = {
             setId: props.isEditMode ? props.existingSet.id : null,
             name: setName.value,
+            description: "new set",
             privacyStatus: selectedOption.value,
             classId: classId.value || null // class_id có thể là null
         }
@@ -100,10 +101,11 @@
                 console.log('Word deleted:', response.message);
                 rows.value = rows.value.filter(row => row.id !== wordId); // Xóa từ khỏi bảng
             } catch (error) {
-                if (error.response) {
-                    console.error('API Error:', error.response.status, error.response.data);
+                console.log(error);
+                if (error.response && error.response.data && error.response.data.message) {
+                    alert(error.response.data.message);
                 } else {
-                    console.error('Network or Axios error:', error.message);
+                    alert("An error occurred. Please try again.");
                 }
             }
         }

@@ -6,6 +6,7 @@
   const emit = defineEmits(['close', 'save']);
   const visible = ref(true);
   const definitions = ref([]);
+  const isDropdownOpen= ref(false);
   const props = defineProps({
     setName: {
       type: String,
@@ -122,6 +123,9 @@
             Authorization: `Bearer ${token}` // Thêm token vào header
         }
       }
+      console.log(formData);
+      console.log(newWord.value);
+      console.log(newWord.value.image);
       const response = await axios.post('/word', formData, config);
       if (response.status === 201) { 
         emit('save', response.data.data);
@@ -132,14 +136,26 @@
       }
 
     } catch (error) {
-        console.error('Error saving word:', error);
-        alert('An error occurred while saving the word');
+      console.log(error);
+      if (error.response && error.response.data && error.response.data.message) {
+          alert(error.response.data.message);
+      } else {
+          alert("An error occurred. Please try again.");
+      }
     }
   };
 
   const updateSetName = (event) => {
     emit('update:setName', event.target.value);
   };
+
+  const toggleDropdown = () =>{
+      isDropdownOpen.value = !isDropdownOpen.value;
+  };
+  const selectDefinition = (definition) =>{
+      newWord.value.definition = definition;
+      isDropdownOpen.value = false;
+  }
 
 </script>
 
@@ -174,7 +190,7 @@
         <input type="text" v-model="newWord.ipa" placeholder="Auto fill" />
       </div>
 
-      <div class="form-group">
+      <!-- <div class="form-group">
         <label for="definition">Definition:</label>
         <input class="" type="text" v-model="newWord.definition" placeholder="Enter or select definition" />
         <select v-model="newWord.definition" class="select-definition">
@@ -183,7 +199,28 @@
             {{ definition }}
           </option>
         </select>      
-      </div>
+      </div> -->
+
+      <div class="form-group">
+        <label for="definition">Definition:</label>
+        <input class="definition-input" type="text" v-model="newWord.definition" placeholder="Enter or select definition" />
+        
+        <div class="custom-select">
+          <!-- <div class="selected-option" @click="toggleDropdown">
+              {{ newWord.definition }}
+          </div> -->
+          <img class="dropdown-icon" src="../assets/dropdown.svg" alt="Dropdown Icon"  @click="toggleDropdown"/>
+          <ul v-show="isDropdownOpen" class="options">
+              <li 
+                  v-for="(definition, index) in definitions" 
+                  :key="index" 
+                  class="option" 
+                  @click="selectDefinition(definition)">
+                  {{ definition }}
+              </li>
+          </ul>
+        </div>
+    </div>
 
       <div class="form-group">
         <label for="example">Example:</label>
@@ -269,19 +306,19 @@
     align-items: center;
   }
 
-  .select-definition{
+  /* .select-definition{
     width: 15px;
     height: 25px;
     border: none;
     position: fixed;
     top: 47%;
     left: 86%;
-  }
+  } */
 
-  .select-definition option{
+  /* .select-definition option{
     width: 100px;
     padding: 10px;
-  }
+  } */
 
   .form-group label {
     width: 130px; /* Thiết lập chiều rộng cố định cho label */
@@ -330,6 +367,63 @@
   .audio-icon{
     width: 20px;
   }
+
+  .definition-input{
+    padding-right: 20px !important;
+  }
+
+  .custom-select {
+    /* width: 200px; */
+    position: relative;
+    border: 1px solid #ccc;
+    background-color: white;
+  }
+
+  .selected-option {
+      padding: 10px;
+      cursor: pointer;
+      background-color: #f1f1f1;
+      border-bottom: 1px solid #ccc;
+  }
+
+  .dropdown-icon{
+    border: none;
+    position: absolute;
+    top: -12px;
+    left: -25px;
+  }
+
+  .options {
+      /* display: none; */
+      position: absolute;
+      top: 23px;
+      left: -280px;
+      width: 300px;
+      max-height: 150px;
+      overflow-y: auto;
+      background-color: rgb(255, 255, 255);
+      border: 1px solid #ffffff;
+      list-style-type: none;
+  }
+
+
+  .option {
+      display: flex;
+      padding: 5px;
+      cursor: pointer;
+      width: 100%;
+      white-space: normal; /* Cho phép nội dung xuống dòng */
+      word-wrap: break-word; /* Cho phép từ dài xuống dòng */
+      
+  }
+
+  .option:hover {
+      background-color: #ddd;
+  }
+
+  /* .custom-select:hover .options {
+      display: block;
+  } */
 
   .add-btn {
     background-color: #a8def0; /* Màu xanh nhạt */

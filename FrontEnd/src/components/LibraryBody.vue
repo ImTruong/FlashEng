@@ -232,7 +232,7 @@
     }
     
     .card-wrapper {
-        flex: 1 1 calc(33.33% - 20px);
+        /* flex: 1 1 calc(33.33% - 20px); */
         min-width: 250px;
     }
 </style>
