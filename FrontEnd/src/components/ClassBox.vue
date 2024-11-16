@@ -115,7 +115,10 @@
             <img src="../assets/add_member.svg" alt="Icon" class="add-member-icon" @click="showClassTable">
             <img src="../assets/leave-group.svg" alt="Icon" class="leave-group-icon" @click="leaveClass">
         </div>
-        <h2 @click="icon = !icon">{{ className }}</h2>
+        <h2 @click="icon = !icon">
+            {{ className }}
+            <img src="../assets/dropdown.svg" alt="Icon" class="dropdown-icon" >
+        </h2>
         <img src="../assets/close.svg" alt="Icon" class="close-icon" @click="closeOverlay">
         <div class="line"></div>
         
@@ -127,6 +130,7 @@
                 :classId="classId"/>
         </div>
     </div>
+    
     <ClassTable 
         v-if="classTable" 
         :isEditMode=true  
@@ -151,6 +155,10 @@
         background-color: white;
         overflow: hidden;
         z-index: 11;
+    }
+
+    .dropdown-icon{
+        width: 30px;
     }
 
     .classbox-container .close-icon{
@@ -207,8 +215,6 @@
 
     }
     
-
-
     .add-set-icon{
         cursor: pointer;
         height: 40px;

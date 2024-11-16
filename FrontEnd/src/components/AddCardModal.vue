@@ -154,8 +154,18 @@
       </div>
 
       <div class="form-group">
+        <label for="audio">Audio:</label>
+        <div class="audio-container">
+          <button class="audio-button" type="button" @click="handlePlayAudio">
+            <img class="audio-icon" src="../assets/speaker-icon.svg" alt="Speaker Icon" />
+          </button>
+          <audio id="audio" style="display: none;" controls></audio> <!-- Âm thanh sẽ được phát khi bấm loa -->
+        </div>
+      </div>
+
+      <div class="form-group">
         <label for="ipa">IPA:</label>
-        <input type="text" v-model="newWord.ipa" placeholder="Enter IPA" />
+        <input type="text" v-model="newWord.ipa" placeholder="Auto fill" />
       </div>
 
       <div class="form-group">
@@ -172,14 +182,6 @@
         <label for="image">Image:</label>
         <input type="file" @change="handleImageUpload" ref="fileInput" style="display: none;" />
         <img src="../assets/add_img.svg" alt="Upload Icon" class="icon-upload" @click="$refs.fileInput.click()" />
-      </div>
-
-      <div class="form-group">
-        <label for="audio">Audio:</label>
-        <button class="audio-button" type="button" @click="handlePlayAudio">
-          <img src="../assets/speaker-icon.svg" alt="Speaker Icon" />
-        </button>
-        <audio id="audio" style="display: none;" controls></audio> <!-- Âm thanh sẽ được phát khi bấm loa -->
       </div>
 
       <div class="modal-actions">
@@ -278,6 +280,31 @@
     margin-top: 10px; /* Tạo khoảng cách giữa label và input file */
   }
 
+  .audio-container {
+    display: flex;
+    align-items: center; /* Căn giữa theo chiều dọc */
+    /* gap: 10px;           Khoảng cách giữa label và icon */
+    width: 100%;         /* Đảm bảo phần tử chiếm hết chiều rộng */
+    justify-content: center; /* Căn trái mặc định */
+  }
+
+  .audio-button{
+    background-color: rgb(255, 255, 255);
+    border: none;
+    width: 30px;
+  }
+
+  audio {
+    width: 40%; 
+    margin-top: 10px; 
+    height: 20px;
+    margin-left: 10px;
+  }
+
+  .audio-icon{
+    width: 20px;
+  }
+
   .add-btn {
     background-color: #a8def0; /* Màu xanh nhạt */
     color: black;
@@ -311,17 +338,7 @@
     vertical-align: middle;
   }
 
-  .audio-button{
-    background-color: rgb(255, 255, 255);
-    border: none;
-    width: 50px;
-    height: 50px;
-  }
-
-  audio {
-    width: 100%; 
-    margin-top: 10px; 
-  }
+  
 </style>
 
   

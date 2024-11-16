@@ -397,7 +397,7 @@
     }
 
     .role-option {
-        width: 60%;
+        width: 70%;
         height: 25px;
         border: none;
     }
