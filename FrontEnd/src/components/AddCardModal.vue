@@ -127,14 +127,9 @@
       console.log(newWord.value);
       console.log(newWord.value.image);
       const response = await axios.post('/word', formData, config);
-      if (response.status === 201) { 
-        emit('save', response.data.data);
-        closeForm()
-        console.log('Word saved successfully!');
-      } else {
-        console.log('Failed to save word');
-      }
-
+      emit('save', response.data.data);
+      closeForm()
+      alert(response.data.message);
     } catch (error) {
       console.log(error);
       if (error.response && error.response.data && error.response.data.message) {

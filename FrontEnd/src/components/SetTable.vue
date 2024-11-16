@@ -59,14 +59,16 @@
                 emit('update', response.data.data); 
             } else {
                 const response = await axios.post('/set', payload, { headers: config.headers }); 
-                console.log(response.data)
                 emit('save', response.data.data); 
+            }
+            if (response.data.message) {
+                alert(response.data.message);
             }
         } catch (error) {
             if (error.response) {
-                console.error('API Error:', error.response.status, error.response.data);
+                alert(`${error.response.data.message || 'An error occurred'}`);
             } else {
-                console.error('Network or Axios error:', error.message);
+                alert(`Network or Axios error: ${error.message}`);
             }
         }
     };
@@ -92,22 +94,22 @@
                 };
                 const word = rows.value.find(row => row.id === wordId);
                 if (!word) {
-                    console.error('Không tìm thấy từ với ID:', wordId);
+                    alert('Not Found word with id: ' + wordId);                    
                     continue; // Skip nếu không tìm thấy từ
                 }
-                console.log('Request URL:', `/word/${wordId}`);
                 const response = await axios.delete(`/word/${wordId}`, config);
-                console.log('Request URL:', `/word/${wordId}`);
-                console.log('Word deleted:', response.message);
+                alert('Word deleted:', response.message);
                 rows.value = rows.value.filter(row => row.id !== wordId); // Xóa từ khỏi bảng
-            } catch (error) {
-                console.log(error);
-                if (error.response && error.response.data && error.response.data.message) {
-                    alert(error.response.data.message);
-                } else {
-                    alert("An error occurred. Please try again.");
+                if (response.data.message) {
+                    alert(response.data.message);
                 }
+        } catch (error) {
+            if (error.response) {
+                alert(`${error.response.data.message || 'An error occurred'}`);
+            } else {
+                alert(`Network or Axios error: ${error.message}`);
             }
+        }
         }
         selectedWords.value = []; // Reset selectedWords sau khi xóa
     }

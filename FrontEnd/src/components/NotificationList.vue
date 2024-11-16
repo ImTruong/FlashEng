@@ -28,7 +28,11 @@
       }); 
       notifications.value = response.data.data; 
     } catch (error) {
-      console.error("Error fetching notifications:", error);
+      if (error.response) {
+          alert('Error:', error.response.data.message);
+      } else {
+          alert('Network or Axios error:', error.message);
+      }
     }
   };
   onMounted(() => {
@@ -52,8 +56,15 @@
       }
       return notification;
     });
+    if (response.data.message) {
+                alert(response.data.message);
+            }
     } catch (error) {
-      console.error("Error fetching notifications:", error);
+        if (error.response) {
+            alert(`${error.response.data.message || 'An error occurred'}`);
+        } else {
+            alert(`Network or Axios error: ${error.message}`);
+        }
     }
   }
 
