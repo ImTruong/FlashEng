@@ -5,32 +5,29 @@
     import ClassTable from './ClassTable.vue';
     import { ref, watch } from 'vue';
     import { useStore } from 'vuex';
+    import axios from 'axios';
 
     const store = useStore();
     const classTable = ref(false);
-    const sets = computed(() => store.getters.getSets);
+    // const sets = computed(() => store.getters.getSets);
+    const sets = ref([])
     const filteredSets = ref([]);
     const visible = ref(true);
     const isEditMode = ref(false);
     const existingClass = ref({});
+    const className = localStorage.getItem('className');
+    const classId = localStorage.getItem('classId');
 
-    const { classItem, Overlay_background } = defineProps(['classItem', 'Overlay_background']);
+    const { Overlay_background } = defineProps(['Overlay_background']);
     const emit = defineEmits();
 
     const icon = ref(false);
     const search = ref("");
 
-    onMounted(() => {
-        store.dispatch('fetchLibrarySets');
-        filteredSets.value = sets.value;
-    });
-
-    // Hàm đóng overlay
     function closeOverlay() {
         emit('close');
     }
 
-    // Hàm hiển thị bảng ClassTable
     const showClassTable = (classItem) => {
         console.log(isEditMode);
         classTable.value = true;
@@ -39,7 +36,6 @@
         existingClass.value = classItem;
     };
 
-    // Hàm đóng bảng ClassTable
     const closeClassTable = () => {
         classTable.value = false;
         visible.value = true;
@@ -56,12 +52,58 @@
             set.name.toLowerCase().includes(search.value.toLowerCase())
         );
     });
+
+    // đã test chưa cập nhâpj lại lớp 
+    const leaveClass = async() => {
+        try{
+            const token = localStorage.getItem('token');
+            console.log(token)
+            const response = await axios.delete(`/class/member/leave`, {
+                params: {
+                    classId: {classId}
+                }
+            }, 
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Attach the token in the request headers
+                },
+            });
+            console.log(response);
+            alert(response.data.message);
+            window.location.reload();
+            closeOverlay();
+        }catch(error){
+            console.log(error);
+            console.log(error.response);
+            alert(error.response);
+        }
+    }
+
+    const getSetByClassId = async() => {
+        try{
+            const token = localStorage.getItem('token');
+            console.log(classId)
+            const response = await axios.get(`/set/class/${classId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Attach the token in the request headers
+                },
+            });
+            console.log(response.data.data);
+            sets.value = response.data.data
+            console.log(sets.value)
+        }catch(error){
+            console.log(error);
+        }
+    };
+    onMounted(() => {
+        getSetByClassId();
+    });
 </script>
 
 <template>
     <OverlayBackground 
-    :isVisible="OverlayBackground" 
-    @clickOverlay="closeOverlay" />
+        :isVisible="OverlayBackground" 
+        @clickOverlay="closeOverlay" />
     <div class="classbox-container" v-if="visible"> 
         <div class="search-container">
             
@@ -71,9 +113,9 @@
         <div v-if="icon" class="icon">
             <img src="../assets/add_set.svg" alt="Icon" class="add-set-icon">
             <img src="../assets/add_member.svg" alt="Icon" class="add-member-icon" @click="showClassTable">
-            <img src="../assets/leave-group.svg" alt="Icon" class="leave-group-icon" @click="closeOverlay">
+            <img src="../assets/leave-group.svg" alt="Icon" class="leave-group-icon" @click="leaveClass">
         </div>
-        <h2 @click="icon = !icon">{{ classItem.className }}</h2>
+        <h2 @click="icon = !icon">{{ className }}</h2>
         <img src="../assets/close.svg" alt="Icon" class="close-icon" @click="closeOverlay">
         <div class="line"></div>
         
@@ -81,18 +123,16 @@
             <Card 
                 v-for="set in sets" 
                 :key="set.id" 
-                :set="set" />
+                :set="set" 
+                :classId="classId"/>
         </div>
     </div>
-    <classTable 
+    <ClassTable 
         v-if="classTable" 
         :isEditMode=true  
-        :existingClass="existingClass" 
         @close="closeClassTable" 
         @update="handleUpdate"
-      />
-
-      
+    />   
 </template>
 
 

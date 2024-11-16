@@ -2,39 +2,87 @@
     import Header from '@/components/Header.vue';
     import ClassBox from '@/components/ClassBox.vue'
     import InvitationBox from './InvitationBox.vue';
+    import JoinBox from './JoinBox.vue';
     import Card from "../components/Set.vue"
-    import {ref} from "vue"
+    import {ref, onMounted, computed, unref} from "vue"
     import { defineProps} from 'vue';
+    import ClassTable from './ClassTable.vue';
+    import { useStore } from 'vuex';
+
+    const classBoxMode = ref(false);
+    const classTableMode = ref(false);
+    const joinMode = ref(false);
+    const store = useStore();
+    const myClasses = computed(() => store.getters.getClasses);
+    const myClassIds = ref([]);
+
 
     const {sets, classes} = defineProps(['sets','classes']);
 
     const activeTab = ref("Flashcard sets");
-    
-    const Overlay_background = ref(false);
-
     const selectedClassItem = ref("");
-    const selectedClassMember = ref("");
+    const isMember = ref(false);
 
     const selectClass = (classItem) => {
         selectedClassItem.value = classItem;
-        Overlay_background.value = true;
+        console.log(myClasses);
         localStorage.setItem('classId', selectedClassItem.value.classId);
         localStorage.setItem('className', selectedClassItem.value.className);
-
+        myClassIds.value = myClasses.value.map(item => item.classId);
+        console.log(myClassIds);
+        isMember.value = myClassIds.value.includes(selectedClassItem.value.classId);
+        joinMode.value = !isMember.value;
+        console.log(joinMode.value, isMember.value, selectedClassItem.value.classId, myClassIds);
     }
 
-    const selectedMember = (classMember) => {
-        selectedClassMember.value = classMember;
-        Overlay_background.value = true;
+    const showClassTable = (classItem) => {
+        if(isMember){
+            classTableMode.value = true;
+            localStorage.setItem('libraryMode', activeTab.value);
+            selectClass(classItem);
+        }
     }
+
+    const showClassBox = (classItem) => {
+        if(isMember){
+            classBoxMode.value = true;
+            selectClass(classItem);
+        }
+    }
+    
+
+    
+
+    function closeOverlay() {
+        emit('close');
+        isMember.value = false;
+        window.location.reload();
+    }
+
+    const switchTab = () =>{
+        if(activeTab.value == "Flashcard sets"){
+            activeTab.value = "Classes";
+        }
+        else{
+            activeTab.value = "Flashcard sets"
+        }
+        localStorage.setItem('libraryTab', activeTab.value);
+    }
+
+    onMounted(() => {
+        const savedTab = localStorage.getItem('libraryTab');
+        if (savedTab) {
+            activeTab.value = savedTab;
+        }
+    });
 
 </script>
 
 <template>
     <main>
         <div class="tabs">
-          <button :class="{ active: activeTab === 'Flashcard sets' }" @click="activeTab ='Flashcard sets'">Flashcard sets</button>
-          <button :class="{ active: activeTab === 'Classes' }" @click="activeTab = 'Classes'">Classes</button>
+          <button :class="{ active: activeTab === 'Flashcard sets' }" @click="switchTab">Flashcard sets</button>
+          <button :class="{ active: activeTab === 'Classes' }" @click="switchTab">Classes</button>
         </div>
         <div class="line"></div>
         <div class="sets-list"  v-if="activeTab === 'Flashcard sets'">
@@ -45,29 +93,40 @@
             </div>
         </div>
         <div class="class-list"  v-if="activeTab === 'Classes'">
-            <div v-for="classItem in classes" :key="classItem.id" class="class-card" @click="selectClass(classItem)">
+            <div v-for="classItem in classes" :key="classItem.id" class="class-card" @click="showClassBox(classItem)">
                 <img src="../assets/class.svg" alt="Icon" class="class-icon">
                 <div class="class-info">
                     <h3>{{ classItem.className }}</h3>
                     <div class="class-detail" @click.stop="">
-                        <p @click="selectClass(classItem)">{{ classItem.numberOfSets }} {{ classItem.numberOfMembers <= 1 ? 'set' : 'sets' }} |</p>
-                        <p @click=""> {{ classItem.numberOfMembers }} {{ classItem.numberOfMembers <= 1 ? 'member' : 'members' }}</p>
+                        <p @click="showClassBox(classItem)">{{ classItem.numberOfSets }} {{ classItem.numberOfMembers <= 1 ? 'set' : 'sets' }} |</p>
+                        <p @click="showClassTable(classItem)"> {{ classItem.numberOfMembers }} {{ classItem.numberOfMembers <= 1 ? 'member' : 'members' }}</p>
                     </div>
                 </div>
             </div>
+            
         </div>
-        <div v-if="Overlay_background">
-            <ClassBox 
+        <ClassBox 
+        v-if="classBoxMode && isMember" 
+        :Overlay_background ="classBoxMode" 
+        @close ="classBoxMode = false"
+        />
+        <ClassTable 
+            v-if="classTableMode && isMember" 
+            :isEditMode=true  
+            @close="classTableMode = false" 
+            @update=""
+        />
+        <JoinBox
+            v-if="!isMember && joinMode"
             :classItem ="selectedClassItem" 
-            :Overlay_background ="Overlay_background" 
-            @close ="Overlay_background = false"
-            />
-            <!-- <InvitationBox
-            :classItem ="selectedClassItem" 
-            :Overlay_background ="Overlay_background" 
-            @close ="Overlay_background = false"
-            ></InvitationBox> -->
-        </div>
+            :Overlay_background ="!isMember && joinMode" 
+            @close ="joinMode = false"
+        ></JoinBox>
+        <!-- <InvitationBox
+        :classItem ="selectedClassItem" 
+        :Overlay_background ="Overlay_background" 
+        @close ="Overlay_background = false"
+        ></InvitationBox> -->
     </main>
 </template>
   

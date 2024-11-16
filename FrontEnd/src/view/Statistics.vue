@@ -1,8 +1,33 @@
 <script setup>
     import Header from '@/components/Header.vue';    // import statistic from '@/data/statistic.json'
-    import { ref } from 'vue';
+    import { ref, onMounted } from 'vue';
     import statistics from '@/data/statistics'
+    import axios from 'axios';
+
     const data = ref(statistics);
+
+    const fetchStatistic = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if(!token){
+                console.warn('Not found the token!');
+                return;
+            }
+            const response = await axios.get('/study', {
+                headers: {
+                Authorization: `Bearer ${token}`
+                }
+            });
+            data.value = response.data.data;
+        }
+        catch (error) {
+            console.error("Error fetching statistics:", error);
+        }
+    };
+
+    onMounted(() => {
+        fetchStatistic();
+    });
 </script>
 
 <template>
@@ -17,10 +42,10 @@
                     <td>
                         <div class="point"></div>
                     </td>
-                    <td class="date">{{ d['Date'] }}</td>
-                    <td class="words">{{ d['Number of words']}} words</td>
+                    <td class="date">{{ d.date }}</td>
+                    <td class="words">{{ d.numberOfWords }} words</td>
                     <td >
-                        <div class="bar" :style="{width: d['Number of words'] * 5 + 'px'}" > </div>
+                        <div class="bar" :style="{width: d.numberOfWords * 5 + 'px'}" > </div>
                     </td>
                 </tr>
                 <!-- <p class="date">{{ d['Date'] }}</p>

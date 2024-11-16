@@ -1,9 +1,8 @@
 <script setup>
     import axios from "axios";
-    import classesData from "../data/classes.json"
     import Header from '@/components/Header.vue';
     import LibraryBody from "@/components/LibraryBody.vue";
-    import { ref, computed, onMounted } from "vue";
+    import { computed, onMounted } from "vue";
     import { useStore } from 'vuex';
     const store = useStore();
     

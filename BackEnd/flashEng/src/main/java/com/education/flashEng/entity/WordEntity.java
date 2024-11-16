@@ -41,6 +41,6 @@ public class WordEntity {
     @JoinColumn(name = "set_id", nullable = false)
     private SetEntity setEntity;
 
-    @OneToMany(mappedBy = "wordEntity")
+    @OneToMany(mappedBy = "wordEntity", cascade = CascadeType.ALL)
     private List<StudySessionEntity> studySessionEntityList;
 }

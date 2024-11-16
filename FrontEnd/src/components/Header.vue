@@ -5,10 +5,11 @@
     import OverlayBackground from "../components/OverlayBackground.vue";
     import classesData from "../data/classes.json" 
     // import JoinBox from "../components/JoinBox.vue"
-    import SeachClasses from './SeachClasses.vue';
+    import SeachBar from './SeachBar.vue';
     import ClassTable from './ClassTable.vue';
     import InviteMember from './AddMember.vue';
     import NotificationList from './NotificationList.vue'
+    import setsData from '../data/sets'
     
     const isEditMode = ref(false);
     const existingSet = ref(null);
@@ -66,6 +67,11 @@
     if (!newValue) {
       showNotifications.value = false; // Close notifications when nav menu is closed
     }
+
+    function closeOverlay(){
+        emit('close');
+    }
+
   });
 </script>
 
@@ -84,9 +90,7 @@
                     </li>
                     <li>
                         <img src="@/assets/icons/folder.png" alt="folder"  class="menu-icon"/>
-                        <router-link to="/classes" class="menu-link">Your Library
-                            
-                        </router-link>
+                        <router-link to="/library" class="menu-link">Your Library</router-link>
                     </li>
                     <li>
                         <img src="@/assets/icons/statistics.png" alt="Home"  class="menu-icon"/>
@@ -123,10 +127,8 @@
             </div>
 
             <div v-if="showSearch" class="search-class">
-                <SeachClasses
+                <SeachBar
                     :searchQuery="searchItem"
-                    :sets="setItems"
-                    :classes="classItems"
                     :Overlay_background="Overlay_background"
                     @close="Overlay_background = false"
                 />
@@ -194,7 +196,7 @@
         left: 0;
         width: 100%;
         height: 50.67px;
-        z-index: 9999; 
+        z-index: 20; 
     }
         
     .nav-header {
@@ -223,7 +225,7 @@
         flex-direction: column;
         justify-content: flex-start;
         padding: 20px;
-        z-index: 9999;
+        z-index: 20;
     }
 
     .menu-icon {
@@ -317,15 +319,17 @@
     }
     .notification-dropdown {
         position: absolute;  /* Đặt bảng thông báo ở vị trí tuyệt đối */
-        top: 240px;  /* Điều chỉnh giá trị này để bảng thông báo nằm gần icon, tránh đè lên thanh menu */
+        top: 100px;  /* Điều chỉnh giá trị này để bảng thông báo nằm gần icon, tránh đè lên thanh menu */
         left: 230px;  /* Đặt bảng thông báo vào phía bên phải của thanh nav */
         width: 300px;  /* Chiều rộng bảng thông báo */
         background-color: white;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         border-radius: 8px;
         padding: 16px;
-        z-index: 9999; /* Đảm bảo bảng thông báo có độ ưu tiên hiển thị trên các phần tử khác */
+        z-index: 20; /* Đảm bảo bảng thông báo có độ ưu tiên hiển thị trên các phần tử khác */
         display: none; 
+        max-height: 400px; /* Chiều cao tối đa khi có nhiều thông báo */
+        overflow-y: auto; 
     }
     
     .notification-dropdown.show {
