@@ -106,8 +106,8 @@
     <div class="game-container">
         <!-- Hiển thị từ -->
         <div class="card">
-            <p class="display-word">{{ displayWord }}</p>
-            <button class="audio-button" @click="playAudio">🔊</button>
+          <p class="display-word">{{ answer ? currentSet.wordResponses[currentCard].word : displayWord }}</p>
+          <button class="audio-button" @click="playAudio">🔊</button>
         </div>
         <div class="controls">
           <button class="check-button" @click="checkAnswer">Check</button>
@@ -124,9 +124,6 @@
             <p>Definition: {{ currentSet.wordResponses[currentCard].definition }}</p>
           <img src="../assets/next_card.svg" class="icon-button next-button" @click="nextCard" :disabled="currentCard === totalCards - 1"></img>
         </div>
-        <!-- Nút kiểm tra -->
-        <div class="word" v-if="answer"> {{ currentSet.wordResponses[currentCard].word }} </div>
-        <!-- Phản hồi -->
         <div v-if="feedback" :class="['feedback', { correct: isCorrect, incorrect: isCorrect === false }]">
             {{ feedback }}
         </div>
