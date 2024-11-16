@@ -215,7 +215,15 @@
             if(user.role == "ADMIN") user.role = "MEMBER"
             else user.role = "ADMIN";
             console.error('Error updating role:', error);
-            alert("You are not authorized to change roles from this class")
+            const errorMessage = error.response.data.message;
+            console.error('Error response:', error.response.data);
+            
+            // Hiển thị thông báo lỗi nếu có message từ server
+            if (errorMessage) {
+                alert(errorMessage);
+            } else {
+                alert("An error occurred. Please try again.");
+            }
         }
     };
 

@@ -26,7 +26,7 @@
           Authorization: `Bearer ${token}`
         }
       }); 
-      notifications.value = response.data.data.reverse(); 
+      notifications.value = response.data.data; 
     } catch (error) {
       console.error("Error fetching notifications:", error);
     }
