@@ -5,6 +5,7 @@
 
   const emit = defineEmits(['close', 'save']);
   const visible = ref(true);
+  const definitions = ref([]);
   const props = defineProps({
     setName: {
       type: String,
@@ -58,6 +59,11 @@
         const phonetic = data[0].phonetics.find(p => p.audio);
         const audioUrl = phonetic ? phonetic.audio : null;
         newWord.value.ipa = phonetic ? phonetic.text : null;
+
+        definitions.value = data[0].meanings?.flatMap(meaning =>
+          meaning.definitions?.map(def => def.definition) || []
+        )
+        console.log(definitions.value);
 
         // Lưu vào cache
         audioCache.value[word] = audioUrl;
@@ -170,7 +176,13 @@
 
       <div class="form-group">
         <label for="definition">Definition:</label>
-        <input type="text" v-model="newWord.definition" placeholder="Enter definition" />
+        <input class="" type="text" v-model="newWord.definition" placeholder="Enter or select definition" />
+        <select v-model="newWord.definition" class="select-definition">
+          <option value="" disabled selected>Choose a definition</option>
+          <option v-for="(definition, index) in definitions" :key="index" :value="definition">
+            {{ definition }}
+          </option>
+        </select>      
       </div>
 
       <div class="form-group">
@@ -255,6 +267,20 @@
     margin-bottom: 20px;
     display: flex;
     align-items: center;
+  }
+
+  .select-definition{
+    width: 15px;
+    height: 25px;
+    border: none;
+    position: fixed;
+    top: 47%;
+    left: 86%;
+  }
+
+  .select-definition option{
+    width: 100px;
+    padding: 10px;
   }
 
   .form-group label {

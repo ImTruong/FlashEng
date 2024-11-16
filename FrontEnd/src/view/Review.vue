@@ -44,7 +44,7 @@
         isCompleted.value = true; // Đánh dấu là đã hoàn thành
         setTimeout(() => {
             router.push('/');
-        }, 0); 
+        }, 3000); 
         } else {
         isFlipped.value = false;
         currentCard.value += 1;
