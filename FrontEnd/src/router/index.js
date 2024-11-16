@@ -6,9 +6,8 @@ import SignUp from "@/view/SignUp.vue";
 import User from "@/view/User.vue";
 import Statistics from "@/view/Statistics.vue";
 import FlashCard from "../view/FlashCardView.vue"
-import GameView from "../view/GameView.vue"
 import Review from  "../view/Review.vue"
-import Accept from "../components/OnlyViewSet.vue"
+import Fillgame from '../view/FillingGame.vue'
 
 
 const router = createRouter({
@@ -50,21 +49,15 @@ const router = createRouter({
             component: FlashCard
         },
         {
-            path: "/game/:id",
-            name: "game",
-            component: GameView
-        },
-        {
             path: "/review",
             name: "review",
             component: Review
         },
         {
-            path: "/accept",
-            name: "accpet",
-            component: Accept
-        }
-        
+            path: "/fillgame/:id",
+            name: "fillgame",
+            component: Fillgame
+        },
     ]
 })
 
