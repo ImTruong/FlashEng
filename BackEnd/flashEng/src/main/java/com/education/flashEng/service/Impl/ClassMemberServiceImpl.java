@@ -73,14 +73,14 @@ public class ClassMemberServiceImpl implements ClassMemberService {
             throw new AccessDeniedException("You are not authorized to change roles in this class.");
         ClassMemberEntity memberEntity = classMemberRepository.findByClassEntityIdAndUserEntityId(classId, userId)
                 .orElseThrow(() -> new EntityNotFoundWithIdException("Class Member", userId.toString()));
+        if (memberEntity.getClassEntity().getClassMemberEntityList().stream()
+                .filter(member -> member.getRoleClassEntity().getName().equals("ADMIN"))
+                .count() == 1 && user.getId() == userId && classMemberEntity.getRoleClassEntity().getName().equals("ADMIN")) {
+            throw new LastAdminException("You are the last admin in this class. You can`t change your role.");
+        }
         memberEntity.setRoleClassEntity(roleClassService.getRoleClassByName(role.toUpperCase()));
         if (!memberEntity.getRoleClassEntity().getName().equals("ADMIN"))
             notificationService.deleteUserNotificationOfAClassWhenUserRoleChanged(classMemberEntity.getClassEntity(),classMemberEntity.getUserEntity());
-        if (memberEntity.getClassEntity().getClassMemberEntityList().stream()
-                .filter(member -> member.getRoleClassEntity().getName().equals("ADMIN"))
-                .count() == 1 && memberEntity.getRoleClassEntity().getName().equals("ADMIN") && memberEntity.getUserEntity().getId().equals(user.getId())) {
-            throw new LastAdminException("You are the last admin in this class. You can`t change your role.");
-        }
         classMemberRepository.save(memberEntity);
         return true;
     }
