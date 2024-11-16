@@ -21,7 +21,7 @@
   }
 
   const gameSet = () => {
-    router.push(`/game/${set.id}`)
+    router.push(`/fillgame/${set.id}`)
   }
 
   const studySet = () => {
@@ -47,9 +47,9 @@
       }
     } catch (error) {
       if (error.response) {
-        console.error('Error while deleting set:', error.response.data);
+        alert('Error:', error.response.data.message);
       } else {
-        console.error('Network or Axios error:', error.message);
+        alert('Network or Axios error:', error.message);
       }
     }
   };

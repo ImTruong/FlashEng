@@ -10,7 +10,6 @@
     const router = useRouter();
     const route = useRoute();
     const selectedSet = ref(route.params.id);
-
     const currentCard = ref(0);
     const isFlipped = ref(false);
 
@@ -22,13 +21,12 @@
     const cardStatus = computed(() => `${currentCard.value + 1}/${totalCards.value}`);
     
     const playAudio = () => {
-        event.stopPropagation(); 
         const audio = new Audio(currentSet.value.wordResponses[currentCard.value].audio);
         audio.play();
     }
     const nextCard = () => {
         if (currentCard.value < totalCards.value - 1) {
-            // Chuyển sang thẻ tiếp theo nếu chưa đến cuối
+            // Chuyển sang   thẻ tiếp theo nếu chưa đến cuối
             isFlipped.value = false;
             currentCard.value += 1;
         } else {
@@ -62,9 +60,16 @@
             // Make API request to log study session
             await axios.post('/study', studySessionData, config); // Replace with your actual API endpoint
             console.log('Study session created:', studySessionData);
+            if (response.data.message) {
+                alert(response.data.message);
+            }
             nextCard();
         } catch (error) {
-            console.error('Error submitting rating:', error);
+            if (error.response) {
+                alert(`${error.response.data.message || 'An error occurred'}`);
+            } else {
+                alert(`Network or Axios error: ${error.message}`);
+            }
         }
     };
     watch([sets, selectedSet], () => {
@@ -75,6 +80,7 @@
 
     onMounted(() => {
         store.dispatch('fetchLibrarySets');
+        
     });
 </script>
 

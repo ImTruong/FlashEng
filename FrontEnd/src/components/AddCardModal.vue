@@ -117,17 +117,16 @@
         }
       }
       const response = await axios.post('/word', formData, config);
-      if (response.status === 201) { 
-        emit('save', response.data.data);
-        closeForm()
-        console.log('Word saved successfully!');
-      } else {
-        console.log('Failed to save word');
-      }
-
+      emit('save', response.data.data);
+      closeForm()
+      alert(response.data.message);
     } catch (error) {
-        console.error('Error saving word:', error);
-        alert('An error occurred while saving the word');
+      if (error.response) {
+        alert(`Error: ${error.response.data.message}`);
+      }
+      else {
+        alert(`Network or Axios error: ${error.message}`);
+      }
     }
   };
 

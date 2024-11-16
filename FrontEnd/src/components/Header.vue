@@ -4,10 +4,8 @@
     import SetTable from "../components/SetTable.vue"
     import OverlayBackground from "../components/OverlayBackground.vue";
     import classesData from "../data/classes.json" 
-    // import JoinBox from "../components/JoinBox.vue"
     import SeachBar from './SeachBar.vue';
     import ClassTable from './ClassTable.vue';
-    import InviteMember from './AddMember.vue';
     import NotificationList from './NotificationList.vue'
     import setsData from '../data/sets'
     
@@ -33,17 +31,12 @@
         showNotifications.value = !showNotifications.value
     }
 
-    // const showSetTable = () =>{
-    //     setTable.value = !setTable.value;
-    //     newItem.value = !newItem.value
-    // }
     const showClassTable = () =>{
         classTable.value = !classTable.value;
         newItem.value = !newItem;
     }
     const performSearch = (searchQuery, () => {
         if (searchQuery.value) {
-            // Lọc danh sách class từ dữ liệu classesData dựa trên searchQuery
             classItems.value = classesData.filter(classData => 
                 classData.name.toLowerCase().includes(searchQuery.value.toLowerCase())
             );
@@ -57,21 +50,21 @@
         searchQuery.value = ""
     })
 
-    const showSetTable = (editMode = false, setData = null) => {
+    const showSetTable = (editMode = false) => {
         isEditMode.value = editMode;
-        existingSet.value = setData; // Gán dữ liệu cho set hiện tại nếu cần
         setTable.value = true; // Hiển thị SetTable
     };
 
+    const handleSet = (data) => {
+        existingSet.value = data; // Gán dữ liệu cho set hiện tại nếu cần
+    }
     watch(menuOpen, (newValue) => {
     if (!newValue) {
-      showNotifications.value = false; // Close notifications when nav menu is closed
+      showNotifications.value = false; 
     }
-
     function closeOverlay(){
         emit('close');
     }
-
   });
 </script>
 
@@ -144,7 +137,12 @@
                     Class
                 </p>
             </div>
-            <SetTable v-if="setTable" @close="setTable = false" />
+            <SetTable 
+            v-if="setTable" 
+            @close="setTable = false" 
+            @save="handleSet"
+            :existingSet="existingSet"
+            />
             <ClassTable v-if="classTable" @close="classTable = false"></ClassTable>
             <NotificationList 
                 v-if="showNotifications" 
