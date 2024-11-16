@@ -8,6 +8,7 @@
 
     const emit = defineEmits();
     const {Overlay_background, image} = defineProps(['Overlay_background', 'image']);
+    console.log(image);
     function closeOverlay(){
         emit('close');
     }
