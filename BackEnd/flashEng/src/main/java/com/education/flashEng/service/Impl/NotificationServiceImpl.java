@@ -234,8 +234,6 @@ public class NotificationServiceImpl implements NotificationService {
 
         return notificationEntityList.stream()
                 .filter(notificationEntity -> notificationEntity.getReminderTime() == null || notificationEntity.getReminderTime().isBefore(LocalDateTime.now()))
-                .sorted(Comparator.comparing(NotificationEntity::getReminderTime, Comparator.nullsLast(Comparator.reverseOrder()))
-                        .thenComparing(Comparator.comparing(NotificationEntity::getCreatedAt).reversed()))
                 .map(notificationEntity -> {
 
                     NotificationResponse.NotificationResponseBuilder responseBuilder = NotificationResponse.builder()
@@ -257,6 +255,7 @@ public class NotificationServiceImpl implements NotificationService {
 
                     return responseBuilder.build();
                 })
+                .sorted(Comparator.comparing(notificationResponse -> notificationResponse.getCreatedAt(), Comparator.reverseOrder()))
                 .toList();
     }
 
