@@ -53,6 +53,7 @@
                 console.log(classId.value);
                 emit('save', response.data.data); 
                 rows.value = response.data.data.memberList;
+                memberList.value = response.data.data.memberList;
             }
 
             
@@ -226,6 +227,9 @@
             className.value = localStorage.getItem('className');
             getMember();
         }
+        else{
+            memberList.value = rows.value;
+        }
     });
 
 </script>
@@ -245,6 +249,7 @@
 
 
     <div class="table-container">
+        <!-- {{ memberList }} -->
         <table class="class-table">
             <thead>
               <tr>
