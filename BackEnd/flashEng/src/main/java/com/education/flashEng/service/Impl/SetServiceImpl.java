@@ -233,5 +233,37 @@ public class SetServiceImpl implements SetService {
         return setResponses;
     }
 
+    @Override
+    public List<SetResponse> findSetByName(String name) {
+        List<SetEntity> setEntities = setRepository.findAllByNameContaining(name);
+        List<SetResponse> setResponses = new ArrayList<>();
+        UserEntity currentUser = userService.getUserFromSecurityContext();
+        setEntities.stream().filter(setEntity -> {
+                    String publicKey = AccessModifierType.getKeyfromValue("Public");
+                    String privateKey = AccessModifierType.getKeyfromValue("Private");
+                    String classKey = AccessModifierType.getKeyfromValue("Class");
+                    boolean isPublic = setEntity.getPrivacyStatus().equals(publicKey);
+                    boolean isPrivate = setEntity.getPrivacyStatus().equals(privateKey) && setEntity.getUserEntity().equals(currentUser);
+                    boolean isClass = setEntity.getPrivacyStatus().equals(classKey) && setEntity.getClassEntity().getClassMemberEntityList().stream()
+                            .anyMatch(classMemberEntity -> classMemberEntity.getUserEntity().getId() == currentUser.getId());
+
+                    return isPublic || isPrivate || isClass;
+                })
+                .forEach(setEntity -> {
+                    SetResponse s = new SetResponse();
+                    modelMapper.map(setEntity, s);
+                    s.setUserDetailResponse(setEntity.getUserEntity().getFullName(),
+                            setEntity.getUserEntity().getUsername(),
+                            setEntity.getUserEntity().getEmail(),
+                            setEntity.getUserEntity().getCountry());
+
+                    List<WordResponse> wordListResponses = wordService.getWordBySetId(setEntity.getId());
+                    s.setWordResponses(wordListResponses);
+                    s.setNumberOfWords((long) wordListResponses.size());
+                    setResponses.add(s);
+                });
+        return setResponses;
+    }
+
 
 }
