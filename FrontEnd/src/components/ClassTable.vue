@@ -7,10 +7,10 @@
 
     const emit = defineEmits(['close', 'save']);
 
-    const props = defineProps(['isEditMode', 'existingClass']);
+    const props = defineProps(['isEditMode']);
 
     const visible = ref(true); 
-    const className = ref(props.isEditMode ? props.existingClass.className : '');
+    const className = ref(props.isEditMode ? localStorage.getItem.className : '');
     const rows = ref([{ username: '', role: 'Member'}]);
     const selectedUsers = ref([]); // Danh sách các từ được chọn
     const showSelectColumn = ref(false);
@@ -18,11 +18,11 @@
     const dropdownRef = ref(null)
     const search = ref("")
     const showSearch = ref(false);
-    // const membersData = ref([])
     const showAddMember = ref(false);
     const roleFilter = ref("Role");
     const classId = ref(null);
     const errorMessage = ref(null);
+    const memberList = ref([]);
 
     const updateClassName = (newClassName) => {
         className.value = newClassName;
@@ -31,7 +31,7 @@
     const saveData  = async () => {
         const token = localStorage.getItem('token');
         const payload = {
-            classId: props.isEditMode ? props.existingClass.id : null,
+            classId: props.isEditMode ? localStorage.getItem('classId') : null,
             name: className.value,
         }
         try {
@@ -47,11 +47,21 @@
             } else {
                 const response = await axios.post('/class', payload, { headers: config.headers }); 
                 console.log(response.data)
+                classId.value = response.data.data.classId;
+                localStorage.setItem('classId', classId.value);
+                localStorage.setItem('className', className.value);
+                console.log(classId.value);
                 emit('save', response.data.data); 
+                rows.value = response.data.data.memberList;
             }
+
+            
         } catch (error) {
             if (error.response) {
                 console.error('API Error:', error.response.status, error.response.data);
+                alert("You are not authorized to change this class's name.")
+                className.value = localStorage.getItem('className');
+                console.log(className.value);
             } else {
                 console.error('Network or Axios error:', error.message);
             }
@@ -67,13 +77,39 @@
         }
     };
 
-    const removeRow = () => {
+    const removeRow = async () => {
         if (selectedUsers.value.length > 0) {
-            rows.value = rows.value.filter(row => !selectedUsers.value.includes(row.username));
-            selectedUsers.value = []; 
-        } else if (rows.value.length > 1) {
-            rows.value.pop();
+            console.log('Selected Users:', selectedUsers.value);
+            const token = localStorage.getItem('token');
+            const classId = localStorage.getItem('classId');
+            for (const userId of selectedUsers.value) {
+                try {
+                    const config = {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    };
+                    const user = rows.value.find(row => row.userId === userId);
+                    if (!user) {
+                        console.error('Không tìm thấy từ với ID:', userId);
+                        continue; // Skip nếu không tìm thấy từ
+                    }
+                    console.log('Request URL:', `/class/member/delete?userId=${userId}&classId=${classId}`);
+                    const response = await axios.delete(`/class/member/delete?userId=${userId}&classId=${classId}`, config);
+                    console.log('User deleted:', response.message);
+                    rows.value = rows.value.filter(row => row.userId !== userId); // Xóa từ khỏi bảng
+                } catch (error) {
+                    if (error.response) {
+                        console.error('API Error:', error.response.status, error.response.data);
+                        alert("You are not authorized to delete members from this class");
+                    } else {
+                        console.error('Network or Axios error:', error.message);
+                    }
+                }
+            }
+            selectedUsers.value = []; // Reset selectedusers sau khi xóa
         }
+        emit('update', rows.value)                                                                                          
     };
 
     const closeForm = () => {
@@ -81,11 +117,13 @@
         visible.value = false;
     };
 
-    const toggleSelectMember = (username) => {
-        const index = selectedUsers.value.indexOf(username);
+    const toggleSelectMember = (userId) => {
+        const index = selectedUsers.value.indexOf(userId);
         if (index === -1) {
-            selectedUsers.value.push(username);
+            // Thêm ID vào nếu chưa có
+            selectedUsers.value.push(userId);
         } else {
+            // Loại bỏ ID nếu đã có
             selectedUsers.value.splice(index, 1);
         }
     };
@@ -99,14 +137,22 @@
     };
 
 
-    watch(search, () =>{
-        if(showSearch){
-            membersData.value = rows.filter(member => member.username.toLowerCase().includes(search.value.toLowerCase()))
+    watch([search, showSearch], () =>{
+        console.log(showSearch.value && search.value);
+        console.log(memberList.value);
+        if(!showSearch.value || search.value == ""){
+            memberList.value = rows.value;
+            memberList.value = rows.value.filter(member => member.userName.toLowerCase().includes(search.value.toLowerCase()))
         }
         else{
-            membersData.value = rows.value;
+            memberList.value = rows.value.filter(member => member.userName.toLowerCase().includes(search.value.toLowerCase()))
         }
     })
+
+    const toggleSearch = () =>{
+        showSearch.value = !showSearch.value;
+        search.value = "";
+    }
 
     const openAddMember = () => {
         showAddMember.value = true;
@@ -135,11 +181,12 @@
             return
             }
             const response = await axios.get(`class/member/list?classId=${classId.value}`, {
-            headers: {
-                Authorization: `Bearer ${token}`, // Đảm bảo gửi token trong header
-            },
+                headers: {
+                    Authorization: `Bearer ${token}`, // Đảm bảo gửi token trong header
+                },
             })
             rows.value = response.data.data.memberList;
+            memberList.value = rows.value;
             console.log(rows.value);
         } catch (error) {
             errorMessage.value = error.response ? error.response.data : 'An error occurred'
@@ -147,11 +194,34 @@
         }                                 
     };
 
+    const updateRole = async (user) => {
+        const token = localStorage.getItem('token'); // Lấy token từ localStorage
+        const payload = {
+            userId: user.userId,
+            classId: classId.value,
+            role: user.role,
+        };
+
+        try {
+            const response = await axios.put('/class/member/role', payload, {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Gửi token trong header
+                },
+            });
+            console.log('Role updated:', response.data);
+            alert(response.data.message);
+        } catch (error) {
+            if(user.role == "ADMIN") user.role = "MEMBER"
+            else user.role = "ADMIN";
+            console.error('Error updating role:', error);
+            alert("You are not authorized to change roles from this class")
+        }
+    };
+
 
 
     onMounted(() => {
         if(props.isEditMode){
-            console.log(localStorage.getItem('classId'));
             classId.value = localStorage.getItem('classId');
             className.value = localStorage.getItem('className');
             getMember();
@@ -164,7 +234,7 @@
     <OverlayBackground :isVisible="visible" @clickOverlay="closeForm" />
     <div v-if="visible" class="class-window">
         <div class="class-header">
-            <img src="../assets/search_icon.svg" alt="Status" @click="showSearch=!showSearch">
+            <img src="../assets/search_icon.svg" alt="Status" @click="toggleSearch">
             <input v-model.trim = "search" v-if="showSearch" type="text" placeholder="Search for username" class="search-bar">
             <div class="class-name" v-if="!showSearch">
                 <label for="class-name">Class:</label>
@@ -190,21 +260,15 @@
               </tr>
             </thead>
             <tbody>
-                <!-- <tr >
-                    <th v-if="showSelectColumn">
-                    </th>
-                    <th class="username-column">ptitstudent1</th>
-                    <th class="role">Admin</th>
-              </tr> -->
-                <tr v-for="row in rows" :key="row.userId">
+                <tr v-for="(row, index) in memberList" :key="index">
                     <td v-if="showSelectColumn">
-                        <input type="checkbox" @change="toggleSelectMember(row.username)" :checked="selectedUsers.includes(row.username)" />
+                        <input type="checkbox" @change="toggleSelectMember(row.userId)" :checked="selectedUsers.includes(row.userId)" />
                     </td>
-                    <td class="username-column"><input v-model="row.userName" placeholder="Username" /></td>
+                    <!-- <td> {{ row.userId }}</td> -->
+                    <td class="username-column"><p>{{row.userName}}</p></td>
                     <td class="role">
                         <!-- Thay input bằng select -->
-                        <select class="role-option" v-model="row.role">
-                            <!-- <option value="" disabled>Role</option> -->
+                        <select class="role-option" v-model="row.role" @change="updateRole(row)">
                             <option value="ADMIN">ADMIN</option>
                             <option value="MEMBER" selected>MEMBER</option>
                         </select>
@@ -285,10 +349,10 @@
     }
   
     .table-container {
-        max-height: 300px; /* Chiều cao tối đa cho bảng */
-        overflow-y: auto; /* Kích hoạt thanh cuộn dọc */
-        margin-top: 20px; /* Khoảng cách giữa tiêu đề và bảng */
-        flex-grow: 1; /* Cho phép phần này chiếm không gian còn lại */
+        max-height: 300px; 
+        overflow-y: auto; 
+        margin-top: 20px; 
+        flex-grow: 1; 
         position: relative;
     }
     .class-table {
@@ -305,7 +369,7 @@
     .class-table th {
         padding: 5px;
         border: 1px solid #ccc;
-        /* text-align: center;  */
+        text-align: center; 
     }
 
     .class-table th select{
@@ -326,14 +390,6 @@
         border: 1px solid #ccc;
         text-align: center; 
     }
-    
-  
-    .class-table input {
-        width: 100%;
-        padding: 5px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-    }
 
     .role-option {
         width: 60%;
@@ -341,18 +397,17 @@
         border: none;
     }
 
-
-
     .select-column {
         width: 50px; /* Chiều rộng cho cột Select */
     }
     
-    /* Các cột còn lại có chiều rộng bằng nhau */
-    /* .class-table th:not(.select-column) { */
-        /* width: calc((100% - 10px) / ); Chiều rộng cho 5 cột còn lại */
-    /* }   */
     .username-column{
         width: 70%;
+    }
+
+    .username-column p{
+        text-align: left;
+        margin-left: 10px;
     }
   
     .actions {
@@ -425,7 +480,3 @@
         margin-left: 15px; 
     }
 </style>
-<!-- 
-Khi tạo class thẻ thì sẽ tự động lưu trong database, các thao tác với set thẻ sẽ thao tác trực tiếp với dữ liệu trong database
-Thiếu phần tìm kiếm
- -->

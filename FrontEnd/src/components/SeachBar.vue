@@ -1,14 +1,16 @@
 <script setup>
-    import { defineProps, defineEmits } from 'vue';
-    import Card from './Set.vue';
-    import setsData from '@/data/sets.json'
+    import { defineProps, defineEmits, onMounted, computed } from 'vue';
     import { ref } from 'vue';
     import LibraryBody from './LibraryBody.vue';
     import OverlayBackground from './OverlayBackground.vue';
-       
+    import { useStore } from 'vuex';
+    import axios from 'axios';
+    
     const status = ref(true);
 
-    const {searchQuery, sets, classes, Overlay_background } = defineProps(['searchQuery', 'sets', 'classes', 'Overlay_background']);
+    const {searchQuery,  Overlay_background } = defineProps(['searchQuery', 'Overlay_background']);
+    const store = useStore();
+    const sets = computed(() => store.getters.getSets);
 
 
     const emit = defineEmits();
@@ -17,6 +19,26 @@
         emit('close');
     }
 
+    const classes = ref(null);
+
+    const getClasses = async() =>{
+        try{
+            const token = localStorage.getItem('token');
+            const response = await axios.get(`class?name=${searchQuery}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Đảm bảo gửi token trong header
+                },
+            })
+            classes.value = response.data.data;
+            console.log(classes);
+        } catch (error) {
+            console.error('Error fetching user info:', error)
+        }       
+    }
+    
+    onMounted(() => {
+        getClasses();
+    });
 
 </script>
 

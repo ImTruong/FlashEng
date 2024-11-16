@@ -8,16 +8,15 @@ import Statistics from "@/view/Statistics.vue";
 import FlashCard from "../view/FlashCardView.vue"
 import GameView from "../view/GameView.vue"
 import Review from  "../view/Review.vue"
-
-
+import Accept from "../components/OnlyViewSet.vue"
 
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes:[
         {
-            path: "/classes",
-            name: "classes",
+            path: "/library",
+            name: "library",
             component: YourLibrary
         },
         {
@@ -59,6 +58,11 @@ const router = createRouter({
             path: "/review",
             name: "review",
             component: Review
+        },
+        {
+            path: "/accept",
+            name: "accpet",
+            component: Accept
         }
         
     ]

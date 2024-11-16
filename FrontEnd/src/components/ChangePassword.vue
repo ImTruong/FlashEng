@@ -37,12 +37,6 @@ const saveData = async () => {
             errorMessage.value = 'You must be logged in to view user information';
             return;
         }
-
-        // Log the request data and token for debugging purposes
-        console.log(requestData);
-        console.log(token);
-
-        // Send a PUT request to the /user/password endpoint with the token in the Authorization header
         const response = await axios.put('/user/password', requestData, {
             headers: {
             Authorization: `Bearer ${token}`, // Attach the token in the request headers

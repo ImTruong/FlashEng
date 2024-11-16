@@ -53,6 +53,16 @@ export default defineConfig({
         changeOrigin: true,
         secure: false
       },
+      '/set-request': {
+        target: 'http://localhost:8080', 
+        changeOrigin: true,
+        secure: false
+      },
+      '/api/meaning': {
+        target: 'https://api.dictionaryapi.dev',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/meaning/, '/api/v2/entries/en')
+      },
     }
   }
 })

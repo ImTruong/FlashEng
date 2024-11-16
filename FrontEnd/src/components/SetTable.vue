@@ -1,11 +1,11 @@
 <script setup>
     import axios from 'axios';
-    import { ref, watch, defineEmits, defineProps} from 'vue';
+    import { ref, watch, defineEmits, defineProps, computed} from 'vue';
     import OverlayBackground from '../components/OverlayBackground.vue'
     import AddCardModal from '../components/AddCardModal.vue'
 
     const emit = defineEmits(['close', 'save', 'update']);
-    const props = defineProps(['isEditMode', 'existingSet']);
+    const props = defineProps(['isEditMode', 'existingSet', 'classId']);
 
     const visible = ref(true); 
     const setName = ref(props.isEditMode ? props.existingSet.name : '');
@@ -16,8 +16,10 @@
     const selectedOption = ref(props.isEditMode ? props.existingSet.privacyStatus : '');
     const dropdownRef = ref(null)
     const showAddCardModal = ref(false);
-    const classId = ref(props.isEditMode && props.existingSet.privacyStatus === 'CLASS' ? props.existingSet.classId : '');
-
+    const classId = ref(props.isEditMode && props.existingSet.privacyStatus === 'CLASS' ? props.classId : '');
+    const isSearchVisible = ref(false);
+    const searchTerm = ref('');
+    
     const updateSetName = (newSetName) => {
         setName.value = newSetName;
     };
@@ -97,6 +99,8 @@
     const closeForm = () => {
         emit('close');
         visible.value = false;
+        window.location.reload();
+
     };
 
     const toggleSelectWord = (row) => {
@@ -136,19 +140,35 @@
                     console.warn('Vui lòng nhập ID lớp khi chọn Group.');
                     return; 
                 }
+                
                 saveData();
         } else {
             console.warn('Vui lòng chọn Privacy Status.');
             }
         }
     };
+    const toggleSearch = () => {
+        isSearchVisible.value = !isSearchVisible.value;
+    };
+    // const filteredRows = computed(() => {
+    //     return rows.value.filter(row => row.word.toLowerCase().includes(searchTerm.value.toLowerCase()));
+    // });
+    const filteredRows = computed(() => {
+        if (!isSearchVisible.value || !searchTerm.value.trim()) {
+            // Nếu không có từ khóa tìm kiếm, hiển thị tất cả các từ
+            return rows.value;
+        }
+        // Nếu có từ khóa tìm kiếm, chỉ hiển thị các từ khớp
+        return rows.value.filter(row => row.word.toLowerCase().includes(searchTerm.value.toLowerCase().trim()));
+    });
 
     watch(() => props.existingSet, (newExistingSet) => {
+        console.log('New Existing Set:', newExistingSet); // Kiểm tra xem existingSet có giá trị đúng không
         if (newExistingSet && newExistingSet.words) {
             setName.value = newExistingSet.name; // Cập nhật tên set
             rows.value = newExistingSet.words; // Cập nhật các hàng
             selectedOption.value = newExistingSet.privacyStatus || '';
-            classId.value = newExistingSet.privacyStatus === 'CLASS' ? newExistingSet.classId : '';
+            classId.value = newExistingSet.privacyStatus === 'CLASS' ? props.classId : '';
         }
     }, { deep: true });
 
@@ -159,10 +179,14 @@
     <div v-if="visible" class="set-window">
         <div class="set-header">
             <img src="../assets/lock.svg" alt="Status" @click.stop="toggleOptions" class="option-icon">
-            <img src="../assets/search_icon.svg" alt="Status">
+            <!-- <img src="../assets/search_icon.svg" alt="Status"> -->
+            <img src="../assets/search_icon.svg" alt="Search" @click.stop="toggleSearch" class="option-icon">
+            <div v-show="isSearchVisible">
+                <input v-model="searchTerm" placeholder="Search for a word" class="common-input" />
+            </div>
             <div class="set-name">
                 <label for="set-name">Set:</label>
-                <input id="set-name" v-model="setName" placeholder="Enter set name" />
+                <input id="set-name" v-model="setName" placeholder="Enter set name" class="common-input"/>
             </div>
             <button @click="closeForm" class="close-btn">✖</button>
         </div>
@@ -191,6 +215,7 @@
                 class="class-input"
             />
         </div>
+        
     </div>
 
     <div class="table-container">
@@ -206,7 +231,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(row, index) in rows" :key="index">
+              <tr v-for="(row, index) in  filteredRows" :key="index">
                 <td v-if="showSelectColumn">
                     <input type="checkbox" @change="toggleSelectWord(row)" :checked="selectedWords.includes(row.id)" />
                 </td>
@@ -287,7 +312,7 @@
         margin-right: 5px;
     }    
 
-    .set-name input {
+    .common-input {
         margin-left: 10px;
         padding: 5px;
         border: 1px solid black;
