@@ -58,23 +58,22 @@
 
             
         } catch (error) {
-            if (error.response) {
-                console.error('API Error:', error.response.status, error.response.data);
-                alert("You are not authorized to change this class's name.")
+            console.log(error);
+            if (error.response && error.response.data && error.response.data.message) {
+                alert(error.response.data.message);
                 className.value = localStorage.getItem('className');
                 console.log(className.value);
             } else {
-                console.error('Network or Axios error:', error.message);
+                alert("An error occurred. Please try again.");
             }
-        }
-    };
-
-    const addMember = (newMember) => {
-        if(row.value[0].username === ''){
-            row.value[0] = newMember;
-        }
-        else{
-            rows.value.push(newMember);
+            // if (error.response) {
+            //     console.error('API Error:', error.response.status, error.response.data);
+            //     alert("You are not authorized to change this class's name.")
+            //     className.value = localStorage.getItem('className');
+            //     console.log(className.value);
+            // } else {
+            //     console.error('Network or Axios error:', error.message);
+            // }
         }
     };
 
@@ -99,12 +98,13 @@
                     const response = await axios.delete(`/class/member/delete?userId=${userId}&classId=${classId}`, config);
                     console.log('User deleted:', response.message);
                     rows.value = rows.value.filter(row => row.userId !== userId); // Xóa từ khỏi bảng
+                    memberList.value = rows.value;
                 } catch (error) {
-                    if (error.response) {
-                        console.error('API Error:', error.response.status, error.response.data);
-                        alert("You are not authorized to delete members from this class");
+                    console.log(error);
+                    if (error.response && error.response.data && error.response.data.message) {
+                        alert(error.response.data.message);
                     } else {
-                        console.error('Network or Axios error:', error.message);
+                        alert("An error occurred. Please try again.");
                     }
                 }
             }

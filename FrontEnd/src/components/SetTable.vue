@@ -24,8 +24,7 @@
     const searchTerm = ref('');
     const classSuggestions = ref([]);
     const myClasses = computed(() => store.getters.getClasses);
-    const searchClass = ref('');
-    const className = ref(null);
+    const searchClass = ref(props.isEditMode && props.existingSet.privacyStatus === 'CLASS' ? localStorage.getItem('className') : '');
 
     onMounted(() => {
         Promise.all([
