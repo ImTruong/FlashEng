@@ -46,6 +46,7 @@
         } catch (error) {
             errorMessage.value = error.response ? error.response.data : 'An error occurred'
             console.error('Error fetching user info:', error)
+            alert('Error: ', errorMessage.value)
         }                                 
     };
 
@@ -58,10 +59,13 @@
             },
             })
             recentSets.value = response.data.data
-            console.log(recentSets)
         }
         catch (error) {
-            console.error("Error fetching library sets:", error);
+            if (error.response) {
+                alert('Error:', error.response.data.message);
+            } else {
+                alert('Network or Axios error:', error.message);
+            }        
         }
     }
     onMounted(() => {
@@ -102,6 +106,8 @@
                 :set="set" />
         </div>
     </div>
+
+    
 </template>
 
 <style scoped>

@@ -54,30 +54,32 @@
     });
 
     // đã test chưa cập nhâpj lại lớp 
-    const leaveClass = async() => {
-        try{
+    const leaveClass = async () => {
+        try {
             const token = localStorage.getItem('token');
-            console.log(token)
+            console.log(token);
+
             const response = await axios.delete(`/class/member/leave`, {
                 params: {
-                    classId: {classId}
-                }
-            }, 
-            {
+                    classId: classId, // Sử dụng giá trị của classId
+                },
                 headers: {
-                    Authorization: `Bearer ${token}`, // Attach the token in the request headers
+                    Authorization: `Bearer ${token}`, // Đính kèm token vào headers
                 },
             });
+
             console.log(response);
             alert(response.data.message);
             window.location.reload();
-            closeOverlay();
-        }catch(error){
+        } catch (error) {
             console.log(error);
-            console.log(error.response);
-            alert(error.response);
+            if (error.response && error.response.data && error.response.data.message) {
+                alert(error.response.data.message);
+            } else {
+                alert("An error occurred. Please try again.");
+            }
         }
-    }
+    };
 
     const getSetByClassId = async() => {
         try{
@@ -115,7 +117,10 @@
             <img src="../assets/add_member.svg" alt="Icon" class="add-member-icon" @click="showClassTable">
             <img src="../assets/leave-group.svg" alt="Icon" class="leave-group-icon" @click="leaveClass">
         </div>
-        <h2 @click="icon = !icon">{{ className }}</h2>
+        <h2 @click="icon = !icon">
+            {{ className }}
+            <img src="../assets/dropdown.svg" alt="Icon" class="dropdown-icon" >
+        </h2>
         <img src="../assets/close.svg" alt="Icon" class="close-icon" @click="closeOverlay">
         <div class="line"></div>
         
@@ -127,6 +132,7 @@
                 :classId="classId"/>
         </div>
     </div>
+    
     <ClassTable 
         v-if="classTable" 
         :isEditMode=true  
@@ -151,6 +157,10 @@
         background-color: white;
         overflow: hidden;
         z-index: 11;
+    }
+
+    .dropdown-icon{
+        width: 30px;
     }
 
     .classbox-container .close-icon{
@@ -207,8 +217,6 @@
 
     }
     
-
-
     .add-set-icon{
         cursor: pointer;
         height: 40px;

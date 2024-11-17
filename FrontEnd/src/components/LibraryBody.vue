@@ -98,7 +98,8 @@
                 <div class="class-info">
                     <h3>{{ classItem.className }}</h3>
                     <div class="class-detail" @click.stop="">
-                        <p @click="showClassBox(classItem)">{{ classItem.numberOfSets }} {{ classItem.numberOfMembers <= 1 ? 'set' : 'sets' }} |</p>
+                        <p @click="showClassBox(classItem)">{{ classItem.numberOfSets }} {{ classItem.numberOfSets <= 1 ? 'set' : 'sets' }} |</p>
+
                         <p @click="showClassTable(classItem)"> {{ classItem.numberOfMembers }} {{ classItem.numberOfMembers <= 1 ? 'member' : 'members' }}</p>
                     </div>
                 </div>
@@ -231,7 +232,7 @@
     }
     
     .card-wrapper {
-        flex: 1 1 calc(33.33% - 20px);
+        /* flex: 1 1 calc(33.33% - 20px); */
         min-width: 250px;
     }
 </style>

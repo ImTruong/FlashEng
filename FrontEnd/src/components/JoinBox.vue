@@ -88,6 +88,7 @@
             } else {
                 console.error('Error while calling API:', error);
             }
+            alert("Something wrong!")
         }
     }
     

@@ -42,7 +42,11 @@
 
         } 
         catch (error) {
-            console.error('Error while get data:', error.response || error.message);
+            if (error.response) {
+                alert('Error:', error.response.data.message);
+            } else {
+                alert('Network or Axios error:', error.message);
+            }
         }
     }
     // classId.value = existingSet.value.privacyStatus === 'CLASS' ? existingSet.value.classId : '';
@@ -56,13 +60,18 @@
                     Authorization: `Bearer ${token}`,
                 }
             };
-            // Send the accept request to API
             const response = await axios.put(`/set-request/accept/${requestId}`, {}, config);
             console.log('Accept response:', response.message);
-            // Xử lý sau khi chấp nhận, ví dụ: đóng form hoặc hiển thị thông báo
+            if (response.data.message) {
+                alert(response.data.message);
+            }
             closeForm();
         } catch (error) {
-            console.error('Error while accepting:', error.response || error.message);
+            if (error.response) {
+                alert(`${error.response.data.message || 'An error occurred'}`);
+            } else {
+                alert(`Network or Axios error: ${error.message}`);
+            }
         }
     };
 
@@ -79,9 +88,16 @@
             const response = await axios.put(`/set-request/reject/${requestId}`, {}, config);
 
             console.log('Reject response:', response.message);
+            if (response.data.message) {
+                alert(response.data.message);
+            }
             closeForm();
         } catch (error) {
-            console.error('Error while rejecting:', error.response || error.message);
+            if (error.response) {
+                alert(`${error.response.data.message || 'An error occurred'}`);
+            } else {
+                alert(`Network or Axios error: ${error.message}`);
+            }
         }
     };  
 

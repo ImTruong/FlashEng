@@ -25,14 +25,12 @@
             const response = await axios.get('/word/userCurrent', config);
             totalCards.value = response.data.data;
             console.log('Review Card:', totalCards.value);
-
         } catch (error) {
             if (error.response) {
-                console.error('API Error:', error.response.status, error.response.data);
+                alert(`${error.response.data.message || 'An error occurred'}`);
             } else {
-                console.error('Network or Axios error:', error.message);
+                alert(`Network or Axios error: ${error.message}`);
             }
-            throw error; // Ném lỗi để xử lý ở nơi khác nếu cần
         } finally {
             isLoading.value = false; // Đặt isLoading thành false sau khi gọi API xong
         }
@@ -41,10 +39,7 @@
     const cardStatus = computed(() => `${currentCard.value + 1}/${totalCards.value.length}`);
     const nextCard = () => {
         if (currentCard.value + 1 >= totalCards.value.length) {
-        isCompleted.value = true; // Đánh dấu là đã hoàn thành
-        setTimeout(() => {
-            router.push('/');
-        }, 0); 
+        isCompleted.value = true; // Đánh dấu là đã hoàn thành 
         } else {
         isFlipped.value = false;
         currentCard.value += 1;
@@ -76,9 +71,16 @@
             // Make API request to log study session
             await axios.post('/study', studySessionData, config); // Replace with your actual API endpoint
             console.log('Study session created:', studySessionData);
+            if (response.data.message) {
+                alert(response.data.message);
+            }
             nextCard();
         } catch (error) {
-            console.error('Error submitting rating:', error);
+            if (error.response) {
+                alert(`${error.response.data.message || 'An error occurred'}`);
+            } else {
+                alert(`Network or Axios error: ${error.message}`);
+            }
         }
     };
     const handleComplete = () => {
