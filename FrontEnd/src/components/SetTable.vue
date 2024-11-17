@@ -1,8 +1,12 @@
 <script setup>
     import axios from 'axios';
-    import { ref, watch, defineEmits, defineProps, computed} from 'vue';
+    import { ref, watch, defineEmits, defineProps, computed, onMounted} from 'vue';
     import OverlayBackground from '../components/OverlayBackground.vue'
     import AddCardModal from '../components/AddCardModal.vue'
+    import { useStore } from 'vuex';
+    import ImageCard from './ImageCard.vue';
+    const store = useStore();
+    
 
     const emit = defineEmits(['close', 'save', 'update']);
     const props = defineProps(['isEditMode', 'existingSet', 'classId']);
@@ -22,6 +26,23 @@
     const editWord = ref(null)
 
 
+    const classSuggestions = ref([]);
+    const myClasses = computed(() => store.getters.getClasses);
+    const searchClass = ref(props.isEditMode && props.existingSet.privacyStatus === 'CLASS' ? localStorage.getItem('className') : '');
+    const user =  JSON.parse(localStorage.getItem('user'));
+    const showImg = ref(false);
+    const image = ref("");
+
+    onMounted(() => {
+        Promise.all([
+            store.dispatch('fetchClassData')
+        ]).catch((error) => {
+            console.error("Error fetching data:", error);
+        });
+        console.log(props.existingSet.userDetailResponse);
+    });
+
+    
     const updateSetName = (newSetName) => {
         setName.value = newSetName;
     };
@@ -125,9 +146,15 @@
 
     const selectOption = (option) => {
         selectedOption.value = option;
-        showOptions.value = false; 
+        // showOptions.value = false; 
     };
     const openAddCardModal = () => {
+        // chờ sửa be user respone có id khác null
+        // if(props.isEditMode && props.existingSet.userDetailResponse.id != user.id){
+        if(props.isEditMode && props.existingSet.userDetailResponse.username != user.username){
+            alert("you aren't authorized to add cards");
+            return;
+        }
         showAddCardModal.value = true;
         visible.value = false;
     };
@@ -175,6 +202,29 @@
         }
     }, { deep: true });
 
+    watch(searchClass, () =>{
+        classSuggestions.value = myClasses.value.filter(classItem => 
+            classItem.className.toLowerCase().includes(searchClass.value.toLowerCase())
+        );  
+    })
+    const selectClass = (classItem) => {
+        searchClass.value = classItem.className;
+        classId.value = classItem.classId;
+        classSuggestions.value = [];
+    };
+
+    const openImage = (img) =>{
+        showImg.value = true;
+        image.value = img;
+        visible.value = false;
+    }
+
+    const closeImage = () =>{
+        showImg.value = false;
+        visible.value = true;
+    }
+
+    
 </script>
 
 <template>
@@ -206,22 +256,35 @@
         </button>
         <div class="option-container">
             <button @click.stop="selectOption('CLASS')" class="option-button">
-                <img src="../assets/lock.svg" alt="Group" class="option-icon" />
+                <img src="../assets/lock.svg" alt="class" class="option-icon" />
                 <span class="option-text">Class</span>
                 <span v-if="selectedOption === 'CLASS'" class="checkmark">✔</span>
             </button>
+            <!-- {{ classSuggestions }} -->
             <input
                 v-if="selectedOption === 'CLASS'"
-                v-model="classId"
+                v-model="searchClass"
+                @input="fetchClassList"
                 type="text"
-                placeholder="Enter class ID"
+                placeholder="Enter class name"
                 class="class-input"
             />
+            <ul v-if="classSuggestions.length > 0 && selectedOption === 'CLASS'" class="dropdown-list">
+                <li
+                    v-for="(classItem, index) in classSuggestions"
+                    :key="index"
+                    @click="selectClass(classItem)"
+                    class="dropdown-item"
+                >
+                    {{ classItem.className }}
+                </li>
+            </ul>
         </div>
         
     </div>
 
     <div class="table-container">
+        <!-- {{ myClasses }} -->
         <table class="set-table">
             <thead>
               <tr>
@@ -231,7 +294,7 @@
                 <th>IPA</th>
                 <th>Definition</th>
                 <th>Example</th>
-                <th>Image</th>
+                <th class="image">Image</th>
               </tr>
             </thead>
             <tbody>
@@ -246,7 +309,10 @@
                 <td><input v-model="row.ipa" placeholder="IPA" /></td>
                 <td><input v-model="row.definition" placeholder="Definition" /></td>
                 <td><input v-model="row.example" placeholder="Example" /></td>
-                <td><input v-model="row.image" placeholder="Image URL" /></td>
+                <td class="image">
+                    <img src="../assets/image.svg" alt="class" class="image-icon" @click="openImage(row.image)" />
+
+                </td>
               </tr>
             </tbody>
           </table>
@@ -275,6 +341,8 @@
         @close="closeAddCardModal" 
         @save="addNewWord">
     </AddCardModal>
+    <ImageCard :Overlay_background ="showImg" :image="image" v-if="showImg" @close="closeImage"></ImageCard>
+    <AddCardModal :setName="setName" :setId="props.existingSet.id" @update:setName="updateSetName" v-if="showAddCardModal" @close="closeAddCardModal" @save="addNewWord"></AddCardModal>
 </template>  
   
 <style scoped>
@@ -319,13 +387,42 @@
         align-items: center;
         margin-right: 8px; /* Khoảng cách giữa button và input */
     }
-    
+
     .class-input {
-        padding: 4px;
-        font-size: 14px;
-        width: 100px;
-        margin-right: 5px;
-    }    
+        margin: 4px;
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .dropdown-list {
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        width: 50%;
+        /* margin-left: 50%; */
+        max-height: 200px;
+        overflow-y: auto;
+        margin: 0;
+        padding: 0;
+        list-style-type: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #fff;
+        z-index: 10;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .dropdown-item {
+        padding: 10px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .dropdown-item:hover {
+        background-color: #f0f0f0;
+    }
 
     .common-input {
         margin-left: 10px;
@@ -372,6 +469,10 @@
 
     .select-column {
         width: 50px; /* Chiều rộng cho cột Select */
+    }
+
+    .image{
+        width: 50px !important; 
     }
     
     .edit {
@@ -459,7 +560,3 @@
         margin-left: 15px; 
     }
 </style>
-<!-- 
-Khi tạo set thẻ thì sẽ tự động lưu trong database, các thao tác với set thẻ sẽ thao tác trực tiếp với dữ liệu trong database
-Thiếu phần tìm kiếm
- -->

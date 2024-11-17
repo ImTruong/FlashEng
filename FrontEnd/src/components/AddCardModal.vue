@@ -2,9 +2,13 @@
   import { ref, defineEmits, defineProps, watch } from 'vue';
   import OverlayBackground from '../components/OverlayBackground.vue';
   import axios from 'axios';
+  import ImageCard from './ImageCard.vue';
 
   const emit = defineEmits(['close', 'save']);
   const visible = ref(true);
+  const definitions = ref([]);
+  const isDropdownOpen= ref(false);
+  const showImg = ref(false);
   const props = defineProps({
     setName: {
       type: String,
@@ -67,6 +71,13 @@
         const phonetic = data[0].phonetics.find(p => p.audio);
         const audioUrl = phonetic ? phonetic.audio : null;
         newWord.value.ipa = phonetic ? phonetic.text : null;
+
+        definitions.value = data[0].meanings?.flatMap(meaning =>
+          meaning.definitions?.map(def => def.definition) || []
+        )
+        console.log(definitions.value);
+
+        // Lưu vào cache
         audioCache.value[word] = audioUrl;
         return audioUrl;
       }
@@ -118,14 +129,20 @@
       for (let [key, value] of formData.entries()) {
         console.log(`${key}:`, value);
       }
-      const response = props.word ? await axios.put('/word', formData, config) 
-                        : await axios.post('/word', formData, config);      
+    
+      console.log(formData);
+      console.log(newWord.value);
+      console.log(newWord.value.image);
+      const response = props.word ? await axios.put('/word', formData, config) : await axios.post('/word', formData, config);    
       emit('save', response.data.data);
       closeForm()
       alert(response.data.message);
     } catch (error) {
-      if (error.response) {
-        alert(`Error: ${error.response.data.message}`);
+      console.log(error);
+      if (error.response && error.response.data && error.response.data.message) {
+          alert(error.response.data.message);
+      } else {
+          alert("An error occurred. Please try again.");
       }
     }
   };
@@ -134,59 +151,122 @@
     emit('update:setName', event.target.value);
   };
 
+  const toggleDropdown = () =>{
+      isDropdownOpen.value = !isDropdownOpen.value;
+  };
+  const selectDefinition = (definition) =>{
+      newWord.value.definition = definition;
+      isDropdownOpen.value = false;
+  }
+
+  const openImage = (img) => {
+    if (img instanceof File) {
+        // Tạo URL tạm thời cho file ảnh
+        const imageUrl = URL.createObjectURL(img);
+        newWord.value.image = imageUrl;
+    } else {
+        // Trường hợp ảnh không phải là File
+        newWord.value.image = img;
+    }
+    showImg.value = true;
+    visible.value = false;
+};
+
+    const closeImage = () =>{
+        showImg.value = false;
+        visible.value = true;
+        console.log(visible.value);
+    }
+
 </script>
 
 <template>
   <OverlayBackground :isVisible="visible" @clickOverlay="closeForm" />
-  <div class="modal-content" @click.stop>
-    <div class="modal-header">
-      <div class="set-name">
-        <label for="set-name">Set:</label>
-        <input id="set-name" :value="props.setName" @input="updateSetName" placeholder="Enter set name" />
+  <div class="container" v-if="visible">
+    <div class="modal-content" @click.stop>
+      <div class="modal-header">
+        <div class="set-name">
+          <label for="set-name">Set:</label>
+          <input id="set-name" :value="props.setName" @input="updateSetName" placeholder="Enter set name" />
+        </div>
+        <button class="close-btn" @click="closeForm">×</button>
       </div>
-      <button class="close-btn" @click="closeForm">×</button>
+      <form @submit.prevent="saveData">
+        <div class="form-group">
+          <label for="word">Word:</label>
+          <input type="text" v-model="newWord.word" placeholder="Enter word" />
+        </div>
+  
+        <div class="form-group">
+          <label for="audio">Audio:</label>
+          <div class="audio-container">
+            <button class="audio-button" type="button" @click="handlePlayAudio">
+              <img class="audio-icon" src="../assets/speaker-icon.svg" alt="Speaker Icon" />
+            </button>
+            <audio id="audio" style="display: none;" controls></audio> <!-- Âm thanh sẽ được phát khi bấm loa -->
+          </div>
+        </div>
+  
+        <div class="form-group">
+          <label for="ipa">IPA:</label>
+          <input type="text" v-model="newWord.ipa" placeholder="Auto fill" />
+        </div>
+  
+        <!-- <div class="form-group">
+          <label for="definition">Definition:</label>
+          <input class="" type="text" v-model="newWord.definition" placeholder="Enter or select definition" />
+          <select v-model="newWord.definition" class="select-definition">
+            <option value="" disabled selected>Choose a definition</option>
+            <option v-for="(definition, index) in definitions" :key="index" :value="definition">
+              {{ definition }}
+            </option>
+          </select>      
+        </div> -->
+  
+        <div class="form-group">
+          <label for="definition">Definition:</label>
+          <input class="definition-input" type="text" v-model="newWord.definition" placeholder="Enter or select definition" />
+          
+          <div class="custom-select">
+            <!-- <div class="selected-option" @click="toggleDropdown">
+                {{ newWord.definition }}
+            </div> -->
+            <img class="dropdown-icon" src="../assets/dropdown.svg" alt="Dropdown Icon"  @click="toggleDropdown"/>
+            <ul v-show="isDropdownOpen" class="options">
+                <li 
+                    v-for="(definition, index) in definitions" 
+                    :key="index" 
+                    class="option" 
+                    @click="selectDefinition(definition)">
+                    {{ definition }}
+                </li>
+            </ul>
+          </div>
+      </div>
+  
+        <div class="form-group">
+          <label for="example">Example:</label>
+          <input type="text" v-model="newWord.example" placeholder="Enter example" />
+        </div>
+  
+        <div class="form-group">
+          <label for="image">Image:</label>
+          <div class="img-container">
+            <input type="file" @change="handleImageUpload" ref="fileInput" style="display: none;" />
+            <img src="../assets/add_img.svg" alt="Upload Icon" class="icon-upload" @click="$refs.fileInput.click()" />
+            <p v-if="newWord.image" class="new-image" @click="openImage(newWord.image)">Image</p>
+          </div>
+        </div>
+  
+        <div class="modal-actions">
+          <button type="submit" class="add-btn">Save</button>
+          <button type="button" @click="closeForm" class="cancel-btn">Cancel</button>
+        </div>
+      </form>
     </div>
-    <form @submit.prevent="saveData">
-      <div class="form-group">
-        <label for="word">Word:</label>
-        <input type="text" v-model="newWord.word" placeholder="Enter word" />
-      </div>
 
-      <div class="form-group">
-        <label for="ipa">IPA:</label>
-        <input type="text" v-model="newWord.ipa" placeholder="Enter IPA" />
-      </div>
-
-      <div class="form-group">
-        <label for="definition">Definition:</label>
-        <input type="text" v-model="newWord.definition" placeholder="Enter definition" />
-      </div>
-
-      <div class="form-group">
-        <label for="example">Example:</label>
-        <input type="text" v-model="newWord.example" placeholder="Enter example" />
-      </div>
-
-      <div class="form-group">
-        <label for="image">Image:</label>
-        <input type="file" @change="handleImageUpload" ref="fileInput" style="display: none;" />
-        <img src="../assets/add_img.svg" alt="Upload Icon" class="icon-upload" @click="$refs.fileInput.click()" />
-      </div>
-
-      <div class="form-group">
-        <label for="audio">Audio:</label>
-        <button class="audio-button" type="button" @click="handlePlayAudio">
-          <img src="../assets/speaker-icon.svg" alt="Speaker Icon" />
-        </button>
-        <audio id="audio" style="display: none;" controls></audio> <!-- Âm thanh sẽ được phát khi bấm loa -->
-      </div>
-
-      <div class="modal-actions">
-        <button type="submit" class="add-btn">Save</button>
-        <button type="button" @click="closeForm" class="cancel-btn">Cancel</button>
-      </div>
-    </form>
   </div>
+  <ImageCard :Overlay_background ="showImg" :image="newWord.image" v-if="showImg" @close="closeImage"></ImageCard>
 </template>
 
 
@@ -254,6 +334,20 @@
     align-items: center;
   }
 
+  /* .select-definition{
+    width: 15px;
+    height: 25px;
+    border: none;
+    position: fixed;
+    top: 47%;
+    left: 86%;
+  } */
+
+  /* .select-definition option{
+    width: 100px;
+    padding: 10px;
+  } */
+
   .form-group label {
     width: 130px; /* Thiết lập chiều rộng cố định cho label */
     margin-right: 10px; /* Khoảng cách giữa label và input */
@@ -275,6 +369,98 @@
   
   input[type="file"] {
     margin-top: 10px; /* Tạo khoảng cách giữa label và input file */
+  }
+
+  .audio-container {
+    display: flex;
+    align-items: center; /* Căn giữa theo chiều dọc */
+    /* gap: 10px;           Khoảng cách giữa label và icon */
+    width: 100%;         /* Đảm bảo phần tử chiếm hết chiều rộng */
+    justify-content: center; /* Căn trái mặc định */
+  }
+
+  .audio-button{
+    background-color: rgb(255, 255, 255);
+    border: none;
+    width: 30px;
+  }
+
+  audio {
+    width: 40%; 
+    margin-top: 10px; 
+    height: 20px;
+    margin-left: 10px;
+  }
+
+  .audio-icon{
+    width: 20px;
+  }
+
+  .definition-input{
+    padding-right: 20px !important;
+  }
+
+  .custom-select {
+    /* width: 200px; */
+    position: relative;
+    border: 1px solid #ccc;
+    background-color: white;
+  }
+
+  .selected-option {
+      padding: 10px;
+      cursor: pointer;
+      background-color: #f1f1f1;
+      border-bottom: 1px solid #ccc;
+  }
+
+  .dropdown-icon{
+    border: none;
+    position: absolute;
+    top: -12px;
+    left: -25px;
+  }
+
+  .options {
+      /* display: none; */
+      position: absolute;
+      top: 23px;
+      left: -280px;
+      width: 300px;
+      max-height: 150px;
+      overflow-y: auto;
+      background-color: rgb(255, 255, 255);
+      border: 1px solid #ffffff;
+      list-style-type: none;
+  }
+
+
+  .option {
+      display: flex;
+      padding: 5px;
+      cursor: pointer;
+      width: 100%;
+      white-space: normal; /* Cho phép nội dung xuống dòng */
+      word-wrap: break-word; /* Cho phép từ dài xuống dòng */
+      
+  }
+
+  .option:hover {
+      background-color: #ddd;
+  }
+
+  .img-container{
+    margin-right: 25px;
+    display: flex;
+    align-items: center; /* Căn giữa theo chiều dọc */
+    /* gap: 10px;           Khoảng cách giữa label và icon */
+    width: 100%;         /* Đảm bảo phần tử chiếm hết chiều rộng */
+    justify-content: center; /* Căn trái mặc định */
+  }
+
+  .new-image:hover{
+    color: blue;
+    font-weight: 500;
   }
 
   .add-btn {
@@ -310,17 +496,7 @@
     vertical-align: middle;
   }
 
-  .audio-button{
-    background-color: rgb(255, 255, 255);
-    border: none;
-    width: 50px;
-    height: 50px;
-  }
-
-  audio {
-    width: 100%; 
-    margin-top: 10px; 
-  }
+  
 </style>
 
   

@@ -10,7 +10,7 @@
 
     const {searchQuery,  Overlay_background } = defineProps(['searchQuery', 'Overlay_background']);
     const store = useStore();
-    const sets = computed(() => store.getters.getSets);
+    const sets = ref([]);
 
 
     const emit = defineEmits();
@@ -19,7 +19,7 @@
         emit('close');
     }
 
-    const classes = ref(null);
+    const classes = ref([]);
 
     const getClasses = async() =>{
         try{
@@ -35,9 +35,26 @@
             console.error('Error fetching user info:', error)
         }       
     }
-    
+
+    const getSets = async() =>{
+        try{
+            const token = localStorage.getItem('token');
+            const response = await axios.get(`/set/search?name=${searchQuery}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Đảm bảo gửi token trong header
+                },
+            })
+            sets.value = response.data.data;
+            console.log(classes);
+        } catch (error) {
+            console.error('Error fetching user info:', error)
+        } 
+    }
+
+
     onMounted(() => {
         getClasses();
+        getSets();
     });
 
 </script>
