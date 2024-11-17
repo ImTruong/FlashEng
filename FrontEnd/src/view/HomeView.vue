@@ -75,6 +75,10 @@
     const goToStudy = () => {
         router.push('/review');
     }
+
+    const goToLibrary = () =>{
+        router.push('/library');
+    }
 </script>
 
 <template>
@@ -96,7 +100,7 @@
         </div>
 
         <h1 class="section-header">
-            <span class="section-title">Your Library</span>
+            <span class="section-title-library" @click="goToLibrary">Your Library</span>
             <span v-if="sets.length > 3" class="more-link" @click="showAllSets">More...</span>
         </h1>
         <div class="set-container">
@@ -144,6 +148,16 @@
         margin-bottom: 20px;
     }
 
+    .section-title-library{
+        font-weight: bold;
+        margin-bottom: 20px;
+        cursor: pointer;
+    }
+
+    .section-title-library:hover{
+        transform: scale(1.05);
+    }
+
     .section-header {
         font-weight: bold;
         margin-bottom: 20px;
@@ -170,5 +184,7 @@
         cursor: pointer;
         margin-left: 20px;
     }
+
+
 
 </style>
