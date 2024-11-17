@@ -17,7 +17,7 @@
     const selectedWords = ref([]); 
     const showSelectColumn = ref(false);
     const showOptions = ref(false)
-    const selectedOption = ref(props.isEditMode ? props.existingSet.privacyStatus : '');
+    const selectedOption = ref(props.isEditMode ? props.existingSet.privacyStatus : 'PRIVATE');
     const dropdownRef = ref(null)
     const showAddCardModal = ref(false);
     const classId = ref(props.isEditMode && props.existingSet.privacyStatus === 'CLASS' ? props.classId : '');
@@ -43,10 +43,7 @@
         // ifconsole.log(props.existingSet.userDetailResponse);
     });
 
-    
-    const updateSetName = (newSetName) => {
-        setName.value = newSetName;
-    };
+
     const saveData  = async () => {
         const token = localStorage.getItem('token');
         const payload = {
@@ -65,16 +62,20 @@
             if (props.isEditMode) {
                 const response = await axios.put('/set', payload, { headers: config.headers });  // API cập nhật
                 emit('update', response.data.data);
+                if (response.data.message) {
+                alert(response.data.message);
+            }
                 
             } else {
                 const response = await axios.post('/set', payload, { headers: config.headers }); 
                 emit('save', response.data.data); 
-            }
-            if (response.data.message) {
+                if (response.data.message) {
                 alert(response.data.message);
             }
+            }
+            
         } catch (error) {
-            alert(`${error.response.data.message || 'An error occurred'}`);
+            alert(`${error.message|| 'An error occurred'}`);
         }
     };
 
@@ -166,16 +167,14 @@
     };
     const handleSaveData = () => {
         if (setName.value.trim()) {
-            if (selectedOption.value.trim()) {
-                if (selectedOption.value === 'CLASS' && !classId.value.trim()) {
-                    console.warn('Vui lòng nhập ID lớp khi chọn Group.');
-                    return; 
-                }
-                
-                saveData();
-        } else {
-            console.warn('Vui lòng chọn Privacy Status.');
+            if (selectedOption.value === 'CLASS' && !classId) {
+                console.log('Please enter classname');
+                return; 
             }
+            
+            saveData();
+        }else{
+            alert("Please enter setname");
         }
     };
     const toggleSearch = () => {
@@ -212,7 +211,7 @@
             classId.value = newExistingSet.privacyStatus === 'CLASS' ? props.classId : '';
         }
     }, { deep: true });
-
+    
     watch(searchClass, () =>{
         classSuggestions.value = myClasses.value.filter(classItem => 
             classItem.className.toLowerCase().includes(searchClass.value.toLowerCase())

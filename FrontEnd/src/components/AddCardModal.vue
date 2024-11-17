@@ -45,7 +45,7 @@
     if (event.target.files && event.target.files[0]) {
       newWord.value.image = event.target.files[0];
     } else {
-      console.log('No file selected');
+      alert('No file selected');
     }
   };
   // Fetch âm thanh và lưu vào cache
@@ -103,6 +103,7 @@
   const saveData = async () => {
     const token = localStorage.getItem('token');
     const formData = new FormData(); // Tạo đối tượng FormData
+    console.log(newWord.value)
     formData.append('setId', props.setId)
     if(newWord.value.id) formData.append('id', newWord.value.id)
     formData.append('word', newWord.value.word)
@@ -110,9 +111,7 @@
     formData.append('audio', newWord.value.audio)
     formData.append('definition', newWord.value.definition)
     formData.append('example', newWord.value.example)
-    if (newWord.value.image) {
-      formData.append('image', newWord.value.image);
-    }
+    formData.append('image', newWord.value.image);
     try {
       const config = {
         headers: {
@@ -168,13 +167,12 @@
     visible.value = false;
   };
 
-  const closeImage = () =>{
-      showImg.value = false;
-      visible.value = true;
-      console.log(visible.value);
-  }
-
-  watch(() => props.word, (newValue) => {
+    const closeImage = () =>{
+        showImg.value = false;
+        visible.value = true;
+        console.log(visible.value);
+    }
+    watch(() => props.word, (newValue) => {
     if (newValue) {
       newWord.value = { ...newValue };
     }
@@ -396,10 +394,6 @@
 
   .audio-icon{
     width: 20px;
-  }
-
-  .audio-icon:hover{
-    transform: scale(1.05);
   }
 
   .definition-input{
