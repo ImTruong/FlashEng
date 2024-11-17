@@ -45,7 +45,7 @@
     if (event.target.files && event.target.files[0]) {
       newWord.value.image = event.target.files[0];
     } else {
-      console.log('No file selected');
+      alert('No file selected');
     }
   };
   // Fetch âm thanh và lưu vào cache

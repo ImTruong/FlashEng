@@ -167,13 +167,13 @@
         if (setName.value.trim()) {
             if (selectedOption.value.trim()) {
                 if (selectedOption.value === 'CLASS' && !classId.value.trim()) {
-                    console.warn('Vui lòng nhập ID lớp khi chọn Group.');
+                    alert('Vui lòng nhập ID lớp khi chọn Group.');
                     return; 
                 }
                 
                 saveData();
         } else {
-            console.warn('Vui lòng chọn Privacy Status.');
+            alert('Vui lòng chọn Privacy Status.');
             }
         }
     };
