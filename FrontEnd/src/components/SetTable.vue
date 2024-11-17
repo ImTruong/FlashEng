@@ -9,7 +9,7 @@
     
 
     const emit = defineEmits(['close', 'save', 'update']);
-    const props = defineProps(['isEditMode', 'existingSet', 'classId', 'className']);
+    const props = defineProps(['isEditMode', 'existingSet', 'classId', 'className', 'inClass']);
 
     const visible = ref(true); 
     const setName = ref(props.isEditMode ? props.existingSet.name : '');
@@ -17,18 +17,40 @@
     const selectedWords = ref([]); 
     const showSelectColumn = ref(false);
     const showOptions = ref(false)
-    const selectedOption = ref(props.isEditMode ? props.existingSet.privacyStatus : 'PRIVATE');
+    const selectedOption = ref(props.isEditMode ? props.existingSet.privacyStatus :(props.inClass ? 'CLASS' : 'PRIVATE'));
+    // const selectedOption = ref(() => {
+    // if (props.isEditMode) {
+    //     return props.existingSet.privacyStatus;
+    //     } else if (props.inClass) {
+    //         return 'CLASS';
+    //     } else {
+    //         return 'PRIVATE';
+    //     }
+    // });
     const dropdownRef = ref(null)
     const showAddCardModal = ref(false);
-    const classId = ref(props.isEditMode && props.existingSet.privacyStatus === 'CLASS' ? props.classId : '');
+    // const classId = ref((props.isEditMode || props.inClass) && props.existingSet.privacyStatus === 'CLASS' ? props.classId : '');
+    // const classId = ref(props.isEditMode && props.existingSet.privacyStatus === 'CLASS' ? props.classId : '');
+        const classId = ref(
+        (props.isEditMode && props.existingSet.privacyStatus === 'CLASS') || props.inClass
+            ? props.classId 
+            : ''
+    );
     const isSearchVisible = ref(false);
     const searchTerm = ref('');
     const editWord = ref(null)
 
-
     const classSuggestions = ref([]);
     const myClasses = computed(() => store.getters.getClasses);
-    const searchClass = ref(props.isEditMode && props.existingSet.privacyStatus === 'CLASS' ? localStorage.getItem('className') : '');
+    // const searchClass = ref(props.isEditMode && props.existingSet.privacyStatus === 'CLASS' ? localStorage.getItem('className') : '');
+    const searchClass = ref(
+    props.isEditMode && props.existingSet.privacyStatus === 'CLASS'
+        ? localStorage.getItem('className') 
+        : (props.inClass 
+            ? props.className 
+            : ''
+        )
+);
     const user =  JSON.parse(localStorage.getItem('user'));
     const showImg = ref(false);
     const image = ref("");
@@ -192,15 +214,15 @@
         return rows.value.filter(row => row.word.toLowerCase().includes(searchTerm.value.toLowerCase().trim()));
     });
     
-        const updateWord = (updatedWord) => {
-            const index = rows.value.findIndex(row => row.id === updatedWord.id); // Tìm chỉ mục của từ trong rows
-            if (index !== -1) {
-                rows.value[index] = updatedWord; // Cập nhật từ trong rows
-            } else {
-                console.error('Word not found in rows');
-            }
-            emit('update', rows.value); // Emit sự kiện 'update' để cập nhật lại mảng rows
-        };
+    const updateWord = (updatedWord) => {
+        const index = rows.value.findIndex(row => row.id === updatedWord.id); // Tìm chỉ mục của từ trong rows
+        if (index !== -1) {
+            rows.value[index] = updatedWord; // Cập nhật từ trong rows
+        } else {
+            console.error('Word not found in rows');
+        }
+        emit('update', rows.value); // Emit sự kiện 'update' để cập nhật lại mảng rows
+    };
 
     watch(() => props.existingSet, (newExistingSet) => {
         console.log('New Existing Set:', newExistingSet); // Kiểm tra xem existingSet có giá trị đúng không
