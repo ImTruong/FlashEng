@@ -107,8 +107,10 @@ public class WordServiceImpl implements WordService {
         }
         modelMapper.map(updateWordRequest, wordEntity);
         try{
-            String imageUrl = cloudinaryService.updateFile(wordEntity.getImagePublicId(), updateWordRequest.getImage());
-            wordEntity.setImage(imageUrl);
+            if(updateWordRequest.getImage() != null && !updateWordRequest.getImage().isEmpty()){
+                String imageUrl = cloudinaryService.updateFile(wordEntity.getImagePublicId(), updateWordRequest.getImage());
+                wordEntity.setImage(imageUrl);
+            }
             wordRepository.save(wordEntity);
         }catch (IOException e){
             throw new IllegalArgumentException("Failed to update file to Cloudinary");
