@@ -103,6 +103,7 @@
   const saveData = async () => {
     const token = localStorage.getItem('token');
     const formData = new FormData(); // Tạo đối tượng FormData
+    console.log(newWord.value)
     formData.append('setId', props.setId)
     if(newWord.value.id) formData.append('id', newWord.value.id)
     formData.append('word', newWord.value.word)
@@ -166,13 +167,12 @@
     visible.value = false;
   };
 
-  const closeImage = () =>{
-      showImg.value = false;
-      visible.value = true;
-      console.log(visible.value);
-  }
-
-  watch(() => props.word, (newValue) => {
+    const closeImage = () =>{
+        showImg.value = false;
+        visible.value = true;
+        console.log(visible.value);
+    }
+    watch(() => props.word, (newValue) => {
     if (newValue) {
       newWord.value = { ...newValue };
     }
@@ -394,10 +394,6 @@
 
   .audio-icon{
     width: 20px;
-  }
-
-  .audio-icon:hover{
-    transform: scale(1.05);
   }
 
   .definition-input{
