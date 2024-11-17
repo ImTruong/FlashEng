@@ -70,9 +70,9 @@
                 const response = await axios.post('/set', payload, { headers: config.headers }); 
                 emit('save', response.data.data); 
             }
-            if (response.data.message) {
+            // if (response.data.message) {
                 alert(response.data.message);
-            }
+            // }
         } catch (error) {
             if (error.response) {
                 alert('Error:', error.response.data.message);
@@ -170,16 +170,13 @@
     };
     const handleSaveData = () => {
         if (setName.value.trim()) {
-            if (selectedOption.value.trim()) {
-                if (selectedOption.value === 'CLASS' && !classId.value.trim()) {
-                    console.warn('Vui lòng nhập ID lớp khi chọn Group.');
-                    return; 
-                }
-                
-                saveData();
-        } else {
-            console.warn('Vui lòng chọn Privacy Status.');
+            if (selectedOption.value === 'CLASS' && !classId) {
+                alert('Enter your classname');
+                return; 
             }
+            saveData();
+        }else{
+            alert("Please enter classname");
         }
     };
     const toggleSearch = () => {
