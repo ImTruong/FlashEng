@@ -182,7 +182,7 @@
     };
     const EditRow = (row) =>{
         editWord.value = row;
-        openAddCardModal(); // Open the modal to edit the word
+        openAddCardModal();
     }
     
     const filteredRows = computed(() => {
@@ -192,6 +192,16 @@
         return rows.value.filter(row => row.word.toLowerCase().includes(searchTerm.value.toLowerCase().trim()));
     });
     
+        const updateWord = (updatedWord) => {
+            const index = rows.value.findIndex(row => row.id === updatedWord.id); // Tìm chỉ mục của từ trong rows
+            if (index !== -1) {
+                rows.value[index] = updatedWord; // Cập nhật từ trong rows
+            } else {
+                console.error('Word not found in rows');
+            }
+            emit('update', rows.value); // Emit sự kiện 'update' để cập nhật lại mảng rows
+        };
+
     watch(() => props.existingSet, (newExistingSet) => {
         console.log('New Existing Set:', newExistingSet); // Kiểm tra xem existingSet có giá trị đúng không
         if (newExistingSet && newExistingSet.words) {
@@ -223,8 +233,6 @@
         showImg.value = false;
         visible.value = true;
     }
-
-    
 </script>
 
 <template>
@@ -336,13 +344,12 @@
         :setName="setName" 
         :setId="props.existingSet.id" 
         :word="editWord"
-        @update:setName="updateSetName" 
         v-if="showAddCardModal" 
+        @update="updateWord"
         @close="closeAddCardModal" 
         @save="addNewWord">
     </AddCardModal>
     <ImageCard :Overlay_background ="showImg" :image="image" v-if="showImg" @close="closeImage"></ImageCard>
-    <AddCardModal :setName="setName" :setId="props.existingSet.id" @update:setName="updateSetName" v-if="showAddCardModal" @close="closeAddCardModal" @save="addNewWord"></AddCardModal>
 </template>  
   
 <style scoped>

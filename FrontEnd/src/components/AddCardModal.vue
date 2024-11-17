@@ -4,7 +4,7 @@
   import axios from 'axios';
   import ImageCard from './ImageCard.vue';
 
-  const emit = defineEmits(['close', 'save']);
+  const emit = defineEmits(['close', 'save', 'update']);
   const visible = ref(true);
   const definitions = ref([]);
   const isDropdownOpen= ref(false);
@@ -36,11 +36,6 @@
 
   const audioCache = ref({});
 
-  watch(() => props.word, (newValue) => {
-    if (newValue) {
-      newWord.value = { ...newValue }; // Clone the word data to avoid direct mutation
-    }
-  }, { immediate: true });
   const closeForm = () => {
     emit('close');
     visible.value = false;
@@ -71,13 +66,10 @@
         const phonetic = data[0].phonetics.find(p => p.audio);
         const audioUrl = phonetic ? phonetic.audio : null;
         newWord.value.ipa = phonetic ? phonetic.text : null;
-
         definitions.value = data[0].meanings?.flatMap(meaning =>
           meaning.definitions?.map(def => def.definition) || []
         )
         console.log(definitions.value);
-
-        // Lưu vào cache
         audioCache.value[word] = audioUrl;
         return audioUrl;
       }
@@ -111,7 +103,9 @@
   const saveData = async () => {
     const token = localStorage.getItem('token');
     const formData = new FormData(); // Tạo đối tượng FormData
+    console.log(newWord.value)
     formData.append('setId', props.setId)
+    if(newWord.value.id) formData.append('id', newWord.value.id)
     formData.append('word', newWord.value.word)
     formData.append('ipa', newWord.value.ipa)
     formData.append('audio', newWord.value.audio)
@@ -129,14 +123,19 @@
       for (let [key, value] of formData.entries()) {
         console.log(`${key}:`, value);
       }
-    
-      console.log(formData);
       console.log(newWord.value);
       console.log(newWord.value.image);
-      const response = props.word ? await axios.put('/word', formData, config) : await axios.post('/word', formData, config);    
-      emit('save', response.data.data);
+      if(props.word){
+        const response = await axios.put('/word', formData, config);
+        emit('update', newWord.value);
+        alert(response.data.message);
+      }
+      else {
+        const response = await axios.post('/word', formData, config);    
+        emit('save', response.data.data);
+        alert(response.data.message);
+      }
       closeForm()
-      alert(response.data.message);
     } catch (error) {
       console.log(error);
       if (error.response && error.response.data && error.response.data.message) {
@@ -161,22 +160,25 @@
 
   const openImage = (img) => {
     if (img instanceof File) {
-        // Tạo URL tạm thời cho file ảnh
         const imageUrl = URL.createObjectURL(img);
         newWord.value.image = imageUrl;
     } else {
-        // Trường hợp ảnh không phải là File
         newWord.value.image = img;
     }
     showImg.value = true;
     visible.value = false;
-};
+  };
 
     const closeImage = () =>{
         showImg.value = false;
         visible.value = true;
         console.log(visible.value);
     }
+    watch(() => props.word, (newValue) => {
+    if (newValue) {
+      newWord.value = { ...newValue };
+    }
+  }, { immediate: true });
 
 </script>
 
