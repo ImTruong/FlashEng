@@ -3,6 +3,7 @@
   import {useRouter} from "vue-router"
   import SetTable from "../components/SetTable.vue"
   import axios from "axios"
+  import { useStore } from 'vuex';
   
   const hover  = ref(false);
   const router = useRouter();
@@ -12,6 +13,8 @@
   const setTable = ref(false); 
   const existingSet = ref({});
   const isEditMode = ref(false);
+
+  const store = useStore();
   const navigateToSet = () => {
     router.push(`/set/${set.id}`);
   }
@@ -21,7 +24,8 @@
   }
 
   const gameSet = () => {
-    router.push(`/fillgame/${set.id}`)
+    store.commit('setCurrentSet', set); // Gọi mutation để lưu vào Vuex
+    router.push(`/fillgame/${set.id}`);
   }
 
   const studySet = () => {
@@ -37,14 +41,7 @@
         },
       };
       const response = await axios.delete(`/set/${set.id}`, config);
-      window.location.reload();
-      if (response.status === 201) {
-        console.log(`Set with ID ${set.id} has been deleted.`);
-        const index = set.value.findIndex(item => item.id === set.id);
-        // router.push('/'); 
-      } else {
-        console.error('Failed to delete the set');
-      }
+      // window.location.reload();
     } catch (error) {
       if (error.response) {
         alert('Error:', error.response.data.message);

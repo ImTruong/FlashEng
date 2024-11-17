@@ -110,9 +110,7 @@
     formData.append('audio', newWord.value.audio)
     formData.append('definition', newWord.value.definition)
     formData.append('example', newWord.value.example)
-    if (newWord.value.image) {
-      formData.append('image', newWord.value.image);
-    }
+    formData.append('image', newWord.value.image);
     try {
       const config = {
         headers: {
