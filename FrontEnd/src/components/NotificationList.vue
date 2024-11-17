@@ -26,7 +26,7 @@
           Authorization: `Bearer ${token}`
         }
       }); 
-      notifications.value = response.data.data.reverse(); 
+      notifications.value = response.data.data; 
     } catch (error) {
       if (error.response) {
           alert('Error:', error.response.data.message);
@@ -115,12 +115,16 @@
 </script>
 <template>
     <div class="notification-list" v-if="notiMode">
-      <h3>Notifications</h3>
-      <div class="notification" v-for="notificationItem in notifications"  @click="openModal(notificationItem)">
-        <NotificationItem
-          :key="notificationItem.id"
-          :notification="notificationItem"
-        />
+      <div class="notification-header">
+        <h3>Notifications</h3>
+      </div>
+      <div class="notification-body">
+        <div class="notification" v-for="notificationItem in notifications"  @click="openModal(notificationItem)">
+          <NotificationItem
+            :key="notificationItem.id"
+            :notification="notificationItem"
+          />
+        </div>
       </div>
     </div>
 
@@ -147,6 +151,18 @@
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5);
     overflow: auto;
     z-index: 25;
+  }
+
+  .notification-header{
+    position: fixed;
+  }
+
+  .notification-body{
+    position: fixed;
+    top: 240px;
+    width: 280px;
+    height: 330px;
+    overflow: auto;
   }
   
   .notification-list h3 {

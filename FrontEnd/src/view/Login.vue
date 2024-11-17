@@ -9,6 +9,10 @@
   const router = useRouter();
 
   const Login = async () => {
+    if(username.value == ""){
+      alert("Please enter your username");
+      return;
+    }
     try {
       const response = await axios.post('/user/login', {
         username: username.value,
@@ -23,13 +27,14 @@
 
 
         router.push('/');
-      } else {
-        message.value = 'Login failed. Please try again.';
-        alert(message.value);
-      }
+      } 
     } catch (error) {
-      message.value = 'Invalid username or password. Please try again.';
-      alert(message.value);
+      console.log(error);
+      if (error.response && error.response.data && error.response.data.message) {
+          alert(error.response.data.message);
+      } else {
+        alert("An error occurred. Please try again.");
+      }
     }
   };
 </script>
@@ -48,9 +53,6 @@
         <div class="input-group">
           <label for="password">Password</label>
           <input type="password" id="password" v-model="password" required />
-        </div>
-        <div class="forgot-password">
-          <a href="#">Forgot password?</a>
         </div>
         <button type="submit" class="login-button">Login</button>
       </form>
@@ -128,6 +130,7 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    margin-top: 30px;
   }
 
   .login-button:hover {

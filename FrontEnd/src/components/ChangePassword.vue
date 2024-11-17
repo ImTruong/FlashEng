@@ -52,7 +52,12 @@ const saveData = async () => {
         }
         } catch (error) {
         // Handle errors (e.g., server issues, invalid response)
-        errorMessage.value = error.response?.data?.message || 'Error connecting to the server!';
+            console.log(error);
+            if (error.response && error.response.data && error.response.data.message) {
+                alert(error.response.data.message);
+            } else {
+                alert("An error occurred. Please try again.");
+            }
     }
 };
 </script>

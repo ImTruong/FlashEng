@@ -36,7 +36,12 @@
       country.value = '';
 
     } catch (error) {
-      console.error("Error data:", error.response?.data);
+      console.log(error);
+      if (error.response && error.response.data && error.response.data.message) {
+          alert(error.response.data.message);
+      } else {
+          alert("An error occurred. Please try again.");
+      }
     }
   };
 </script>
@@ -49,26 +54,30 @@
         <form @submit.prevent="registerUser">
           <div class="input-group">
             <label for="fullname">Fullname</label>
-            <input type="text" id="fullname" v-model="fullname" required />
+            <input type="text" id="fullname" v-model="fullname" placeholder="Enter your name without accents" required />
           </div>
+
           <div class="input-group">
             <label for="username">Username</label>
-            <input type="text" id="username" v-model="username" required />
+            <input type="text" id="username" v-model="username" placeholder="Choose a username" required />
           </div>
+
           <div class="input-group">
             <label for="password">Password</label>
-            <input type="password" id="password" v-model="password" required />
+            <input type="password" id="password" v-model="password" placeholder="Enter your password" required />
           </div>
+
           <div class="input-group">
             <label for="email">Email</label>
-            <input type="email" id="email" v-model="email" required />
+            <input type="email" id="email" v-model="email" placeholder="Enter your email address" required />
           </div>
-          
+
           <div class="input-group">
             <label for="country">Country</label>
-            <input type="text" id="country" v-model="country" required />
+            <input type="text" id="country" v-model="country" placeholder="Enter your country" required />
           </div>
-          <button type="submit" class="signup-button" >Sign in</button>
+
+          <button type="submit" class="signup-button">Sign in</button>
         </form>
         <div class="login" @click="">
           <span>Already have an account? <a href="/login">Login</a></span>
