@@ -167,19 +167,14 @@
     };
     const handleSaveData = () => {
         if (setName.value.trim()) {
-            if (selectedOption.value.trim()) {
-                if (selectedOption.value === 'CLASS' && !classId.value.trim()) {
-                    console.log('Vui lòng nhập tên lớp khi chọn Class.');
-                    return; 
-                }
-                
-                saveData();
-        } else {
-            alert('Vui lòng chọn Privacy Status.');
+            if (selectedOption.value === 'CLASS' && !classId) {
+                console.log('Please enter classname');
+                return; 
             }
+            
             saveData();
         }else{
-            alert("Please enter classname");
+            alert("Please enter setname");
         }
     };
     const toggleSearch = () => {
@@ -216,7 +211,7 @@
             classId.value = newExistingSet.privacyStatus === 'CLASS' ? props.classId : '';
         }
     }, { deep: true });
-
+    
     watch(searchClass, () =>{
         classSuggestions.value = myClasses.value.filter(classItem => 
             classItem.className.toLowerCase().includes(searchClass.value.toLowerCase())
