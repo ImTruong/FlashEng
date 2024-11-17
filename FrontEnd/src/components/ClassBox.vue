@@ -43,10 +43,9 @@
         visible.value = true;
     };
 
-    const handleUpdate = (updatedRows) => {
-        // existingSet.value.wordListResponses = updatedRows;
-        // console.log('Dữ liệu đã được cập nhật:', existingSet.value);
-    };
+    // const handleUpdate = (updatedRows) => {
+    //     existingClass.value.className;
+    // };
 
     // Theo dõi thay đổi trong ô tìm kiếm và cập nhật danh sách `filteredSets`
     watch(search, () => {
@@ -161,7 +160,7 @@
         v-if="classTable" 
         :isEditMode=true  
         @close="closeClassTable" 
-        @update="handleUpdate"
+        
     />   
 </template>
 

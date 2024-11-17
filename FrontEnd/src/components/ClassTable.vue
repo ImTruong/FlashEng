@@ -42,21 +42,23 @@
             }
             if (props.isEditMode) {
                 
-                const response = await axios.put('/class', payload, { headers: config.headers });  // API cập nhật
-                emit('update', response.data.data); 
+                const response = await axios.put('/class/update/name', payload, { headers: config.headers });  // API cập nhật
+                // emit('update', response.data.data); 
+                alert(response.data.message);
+                localStorage.setItem('classId', classId.value);
+                localStorage.setItem('className', className.value);
             } else {
                 const response = await axios.post('/class', payload, { headers: config.headers }); 
                 console.log(response.data)
                 classId.value = response.data.data.classId;
-                localStorage.setItem('classId', classId.value);
-                localStorage.setItem('className', className.value);
                 console.log(classId.value);
                 emit('save', response.data.data); 
                 rows.value = response.data.data.memberList;
                 memberList.value = response.data.data.memberList;
             }
-
-            
+            localStorage.setItem('classId', classId.value);
+            localStorage.setItem('className', className.value);
+            // alert(res)
         } catch (error) {
             console.log(error);
             if (error.response && error.response.data && error.response.data.message) {
@@ -391,6 +393,9 @@
     .class-table thead th {
         background-color: #A8D5E5; 
         border: 1px solid black;
+        position: sticky;
+        top: 0; /* Cố định hàng tiêu đề khi cuộn */
+        z-index: 1; /* Đảm bảo hàng tiêu đề luôn nằm trên cùng */
     }
     .class-table th {
         padding: 5px;
@@ -400,7 +405,7 @@
 
     .class-table th select{
         background-color: #A8D5E5;
-        width: 60%;
+        width: 80px;
         border: none;
 
     }
@@ -418,7 +423,7 @@
     }
 
     .role-option {
-        width: 70%;
+        width: 80px;
         height: 25px;
         border: none;
         cursor: pointer;
@@ -430,7 +435,7 @@
     }
     
     .username-column{
-        width: 70%;
+        width: 300px
     }
 
     .username-column p{
