@@ -6,6 +6,7 @@
     import { ref, watch } from 'vue';
     import { useStore } from 'vuex';
     import axios from 'axios';
+    import SetTable from '../components/SetTable.vue'
 
     const store = useStore();
     const classTable = ref(false);
@@ -17,6 +18,8 @@
     const existingClass = ref({});
     const className = localStorage.getItem('className');
     const classId = localStorage.getItem('classId');
+    const setTable = ref(false)
+    const existingSet = ref(null);
 
     const { Overlay_background } = defineProps(['Overlay_background']);
     const emit = defineEmits();
@@ -97,6 +100,18 @@
             console.log(error);
         }
     };
+
+    const handleSet = (data) => {
+        existingSet.value = data; // Gán dữ liệu cho set hiện tại nếu cần
+    }
+
+    const showSetTable = (editMode = false) => {
+        isEditMode.value = editMode;
+        setTable.value = true; // Hiển thị SetTable
+        // visible.value = false;
+        icon.value = false;
+        existingClass.value = classItem;  
+    };
     onMounted(() => {
         getSetByClassId();
     });
@@ -113,7 +128,7 @@
             <img src="../assets/search.svg" alt="Icon" class="search-icon">
         </div>
         <div v-if="icon" class="icon">
-            <img src="../assets/add_set.svg" alt="Icon" class="add-set-icon">
+            <img src="../assets/add_set.svg" alt="Icon" class="add-set-icon" @click="showSetTable(false)">
             <img src="../assets/add_member.svg" alt="Icon" class="add-member-icon" @click="showClassTable">
             <img src="../assets/leave-group.svg" alt="Icon" class="leave-group-icon" @click="leaveClass">
         </div>
@@ -131,6 +146,12 @@
                 :set="set" 
                 :classId="classId"/>
         </div>
+        <SetTable 
+            v-if="setTable" 
+            :classId="classId"
+            @close="setTable = false" 
+            @save="handleSet"
+            />
     </div>
     
     <ClassTable 

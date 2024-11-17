@@ -43,10 +43,6 @@
         // ifconsole.log(props.existingSet.userDetailResponse);
     });
 
-    
-    const updateSetName = (newSetName) => {
-        setName.value = newSetName;
-    };
     const saveData  = async () => {
         const token = localStorage.getItem('token');
         const payload = {

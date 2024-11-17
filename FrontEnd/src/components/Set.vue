@@ -41,9 +41,9 @@
         },
       };
       const response = await axios.delete(`/set/${set.id}`, config);
-      // window.location.reload();
+      window.location.reload();
     } catch (error) {
-      if (error.response) {
+      if (error.response) { 
         alert('Error:', error.response.data.message);
       } else {
         alert('Network or Axios error:', error.message);
