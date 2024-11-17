@@ -22,6 +22,7 @@ public class WordEntity {
     @Column(name = "ipa", nullable = false)
     private String ipa;
 
+    @Lob
     @Column(name = "definition", nullable = false)
     private String definition;
 
