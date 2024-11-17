@@ -23,11 +23,11 @@ public class WordEntity {
     private String ipa;
 
     @Lob
-    @Column(name = "definition", nullable = false)
+    @Column(name = "definition", nullable = false, columnDefinition = "LONGTEXT")
     private String definition;
 
     @Lob
-    @Column(name = "example", nullable = false)
+    @Column(name = "example", nullable = false, columnDefinition = "LONGTEXT")
     private String example;
 
     @Column(name = "image", nullable = false)

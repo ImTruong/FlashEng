@@ -21,7 +21,7 @@ public class NotificationEntity {
     private Long id;
 
     @Lob
-    @Column(name = "message", nullable = false)
+    @Column(name = "message", nullable = false, columnDefinition = "LONGTEXT")
     private String message;
 
     @Column(name = "type", nullable = false)
