@@ -43,10 +43,7 @@
         // ifconsole.log(props.existingSet.userDetailResponse);
     });
 
-    
-    const updateSetName = (newSetName) => {
-        setName.value = newSetName;
-    };
+
     const saveData  = async () => {
         const token = localStorage.getItem('token');
         const payload = {
@@ -65,20 +62,20 @@
             if (props.isEditMode) {
                 const response = await axios.put('/set', payload, { headers: config.headers });  // API cập nhật
                 emit('update', response.data.data);
+                if (response.data.message) {
+                alert(response.data.message);
+            }
                 
             } else {
                 const response = await axios.post('/set', payload, { headers: config.headers }); 
                 emit('save', response.data.data); 
-            }
-            // if (response.data.message) {
+                if (response.data.message) {
                 alert(response.data.message);
-            // }
-        } catch (error) {
-            if (error.response) {
-                alert('Error:', error.response.data.message);
-            } else {
-                alert('Network or Axios error:', error.message);
             }
+            }
+            
+        } catch (error) {
+            alert(`${error.message|| 'An error occurred'}`);
         }
     };
 
@@ -170,9 +167,15 @@
     };
     const handleSaveData = () => {
         if (setName.value.trim()) {
-            if (selectedOption.value === 'CLASS' && !classId) {
-                alert('Enter your classname');
-                return; 
+            if (selectedOption.value.trim()) {
+                if (selectedOption.value === 'CLASS' && !classId.value.trim()) {
+                    console.log('Vui lòng nhập tên lớp khi chọn Class.');
+                    return; 
+                }
+                
+                saveData();
+        } else {
+            alert('Vui lòng chọn Privacy Status.');
             }
             saveData();
         }else{

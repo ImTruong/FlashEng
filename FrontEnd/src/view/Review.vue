@@ -69,10 +69,10 @@
                 }
             }
             // Make API request to log study session
-            await axios.post('/study', studySessionData, config); // Replace with your actual API endpoint
+            const response = await axios.post('/study', studySessionData, config); // Replace with your actual API endpoint
             console.log('Study session created:', studySessionData);
             if (response.data.message) {
-                alert(response.data.message);
+                console.log(response.data.message);
             }
             nextCard();
         } catch (error) {

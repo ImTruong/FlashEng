@@ -45,7 +45,7 @@
     if (event.target.files && event.target.files[0]) {
       newWord.value.image = event.target.files[0];
     } else {
-      console.log('No file selected');
+      alert('No file selected');
     }
   };
   // Fetch âm thanh và lưu vào cache
@@ -111,9 +111,7 @@
     formData.append('audio', newWord.value.audio)
     formData.append('definition', newWord.value.definition)
     formData.append('example', newWord.value.example)
-    if (newWord.value.image) {
-      formData.append('image', newWord.value.image)
-    }
+    formData.append('image', newWord.value.image);
     try {
       const config = {
         headers: {
