@@ -176,7 +176,7 @@
         // chờ sửa be user respone có id khác null
         // if(props.isEditMode && props.existingSet.userDetailResponse.id != user.id){
         if(props.isEditMode && props.existingSet.userDetailResponse.username != user.username){
-            alert("you aren't authorized to add cards");
+            alert("You aren't authorized to modify this set!");
             return;
         }
         showAddCardModal.value = true;
@@ -482,6 +482,7 @@
     .set-table th {
         background-color: #A8D5E5; 
         border: 1px solid black;
+       
     }
 
     .set-table td {
