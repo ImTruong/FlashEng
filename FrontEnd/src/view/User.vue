@@ -75,7 +75,10 @@ const handleSavePassword = (data) => {
             </div>
             <div class="form-group">
               <label for="email">Email</label>
-              <input v-model="user.email" id="email" type="email" />
+              <div class="user-email">
+                <p>{{ user.email }}</p>
+              </div>
+              <!-- <input v-model="user.email" id="email" type="email" /> -->
             </div>
             <div class="form-group">
               <label for="country">Country</label>
@@ -162,6 +165,13 @@ const handleSavePassword = (data) => {
     border: 1px solid #ccc;
     border-radius: 4px;
   }
+
+  .user-email{
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
   
   .actions {
     display: flex;
@@ -171,14 +181,15 @@ const handleSavePassword = (data) => {
   .actions button {
     padding: 10px 15px;
     border: none;
-    background-color: #007bff;
-    color: white;
+    background-color: #b5f4ff;
+    color: rgb(0, 0, 0);
     border-radius: 4px;
     cursor: pointer;
   }
   
   .actions button:first-of-type {
-    background-color: #6c757d;
+    background-color: #97a3ad;
+    color: white;
   }
   </style>
   

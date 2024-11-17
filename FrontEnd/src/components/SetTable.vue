@@ -17,7 +17,7 @@
     const selectedWords = ref([]); 
     const showSelectColumn = ref(false);
     const showOptions = ref(false)
-    const selectedOption = ref(props.isEditMode ? props.existingSet.privacyStatus : '');
+    const selectedOption = ref(props.isEditMode ? props.existingSet.privacyStatus : 'PRIVATE');
     const dropdownRef = ref(null)
     const showAddCardModal = ref(false);
     const classId = ref(props.isEditMode && props.existingSet.privacyStatus === 'CLASS' ? props.classId : '');
@@ -74,7 +74,11 @@
                 alert(response.data.message);
             }
         } catch (error) {
-            alert(`${error.response.data.message || 'An error occurred'}`);
+            if (error.response) {
+                alert('Error:', error.response.data.message);
+            } else {
+                alert('Network or Axios error:', error.message);
+            }
         }
     };
 

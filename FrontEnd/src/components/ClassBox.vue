@@ -163,6 +163,10 @@
         width: 30px;
     }
 
+    .dropdown-icon:hover{
+        transform: scale(1.1);
+    }
+
     .classbox-container .close-icon{
         position: absolute;
         top: 10px;
@@ -178,6 +182,10 @@
         cursor: pointer;
         display: flex;
         align-content: center;
+    }
+
+    .classbox-container h2:hover{
+        transform: scale(1.1);
     }
 
     .search-container{
@@ -200,6 +208,7 @@
         padding: 8px 16px 8px 30px;
         border-radius: 5px;
         display:inline-block;
+        cursor: pointer;
     }
 
     .icon{
