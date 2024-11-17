@@ -1,5 +1,5 @@
 <script setup>
-  import { ref, defineEmits, defineProps } from 'vue';
+  import { ref, defineEmits, defineProps, watch } from 'vue';
   import OverlayBackground from '../components/OverlayBackground.vue';
   import axios from 'axios';
 
@@ -13,10 +13,15 @@
     setId: {
       type: Number,
       default: null
+    }, 
+    word:{
+      type: Object,
+      default: null
     }
   });
 
   const newWord = ref({
+    id: '',
     word: '',
     ipa: '',
     audio: '',
@@ -25,9 +30,13 @@
     image: null
   });
 
-  // Lưu cache âm thanh cho các từ đã tìm
   const audioCache = ref({});
 
+  watch(() => props.word, (newValue) => {
+    if (newValue) {
+      newWord.value = { ...newValue }; // Clone the word data to avoid direct mutation
+    }
+  }, { immediate: true });
   const closeForm = () => {
     emit('close');
     visible.value = false;
@@ -52,14 +61,12 @@
         console.error('API error:', response.statusText);
         return null; // Return null if the API call fails
       }
-
+      console.log(props.word)
       const data = await response.json();
       if (data && data[0] && data[0].phonetics) {
         const phonetic = data[0].phonetics.find(p => p.audio);
         const audioUrl = phonetic ? phonetic.audio : null;
         newWord.value.ipa = phonetic ? phonetic.text : null;
-
-        // Lưu vào cache
         audioCache.value[word] = audioUrl;
         return audioUrl;
       }
@@ -70,14 +77,6 @@
       return null;
     }
   };
-
-  // Hàm phát âm thanh
-  // const playAudio = () => {
-  //   const audioElement = document.getElementById('audio');
-  //   if (audioElement) {
-  //     audioElement.play(); // Play the audio
-  //   }
-  // };
 
   // Hàm xử lý khi ấn vào loa để phát âm
   const handlePlayAudio = async () => {
@@ -116,16 +115,17 @@
             Authorization: `Bearer ${token}` // Thêm token vào header
         }
       }
-      const response = await axios.post('/word', formData, config);
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+      }
+      const response = props.word ? await axios.put('/word', formData, config) 
+                        : await axios.post('/word', formData, config);      
       emit('save', response.data.data);
       closeForm()
       alert(response.data.message);
     } catch (error) {
       if (error.response) {
         alert(`Error: ${error.response.data.message}`);
-      }
-      else {
-        alert(`Network or Axios error: ${error.message}`);
       }
     }
   };

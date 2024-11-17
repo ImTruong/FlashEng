@@ -19,7 +19,9 @@
     const classId = ref(props.isEditMode && props.existingSet.privacyStatus === 'CLASS' ? props.classId : '');
     const isSearchVisible = ref(false);
     const searchTerm = ref('');
-    
+    const editWord = ref(null)
+
+
     const updateSetName = (newSetName) => {
         setName.value = newSetName;
     };
@@ -28,6 +30,7 @@
         const payload = {
             setId: props.isEditMode ? props.existingSet.id : null,
             name: setName.value,
+            description: "My set",
             privacyStatus: selectedOption.value,
             classId: classId.value || null // class_id có thể là null
         }
@@ -39,7 +42,8 @@
             }
             if (props.isEditMode) {
                 const response = await axios.put('/set', payload, { headers: config.headers });  // API cập nhật
-                emit('update', response.data.data); 
+                emit('update', response.data.data);
+                
             } else {
                 const response = await axios.post('/set', payload, { headers: config.headers }); 
                 emit('save', response.data.data); 
@@ -48,11 +52,7 @@
                 alert(response.data.message);
             }
         } catch (error) {
-            if (error.response) {
-                alert(`${error.response.data.message || 'An error occurred'}`);
-            } else {
-                alert(`Network or Axios error: ${error.message}`);
-            }
+            alert(`${error.response.data.message || 'An error occurred'}`);
         }
     };
 
@@ -153,18 +153,18 @@
     const toggleSearch = () => {
         isSearchVisible.value = !isSearchVisible.value;
     };
-    // const filteredRows = computed(() => {
-    //     return rows.value.filter(row => row.word.toLowerCase().includes(searchTerm.value.toLowerCase()));
-    // });
+    const EditRow = (row) =>{
+        editWord.value = row;
+        openAddCardModal(); // Open the modal to edit the word
+    }
+    
     const filteredRows = computed(() => {
         if (!isSearchVisible.value || !searchTerm.value.trim()) {
-            // Nếu không có từ khóa tìm kiếm, hiển thị tất cả các từ
             return rows.value;
         }
-        // Nếu có từ khóa tìm kiếm, chỉ hiển thị các từ khớp
         return rows.value.filter(row => row.word.toLowerCase().includes(searchTerm.value.toLowerCase().trim()));
     });
-
+    
     watch(() => props.existingSet, (newExistingSet) => {
         console.log('New Existing Set:', newExistingSet); // Kiểm tra xem existingSet có giá trị đúng không
         if (newExistingSet && newExistingSet.words) {
@@ -226,6 +226,7 @@
             <thead>
               <tr>
                 <th v-if="showSelectColumn" class="select-column">Select</th>
+                <th class="edit">Edit</th>
                 <th>Word</th>
                 <th>IPA</th>
                 <th>Definition</th>
@@ -238,7 +239,10 @@
                 <td v-if="showSelectColumn">
                     <input type="checkbox" @change="toggleSelectWord(row)" :checked="selectedWords.includes(row.id)" />
                 </td>
-                <td><input v-model="row.word" placeholder="Word" /></td>
+                <td>
+                    <img src="../assets/edit-02.svg" alt="" @click="EditRow(row)">
+                </td>
+                <td ><input v-model="row.word" placeholder="Word" /></td>
                 <td><input v-model="row.ipa" placeholder="IPA" /></td>
                 <td><input v-model="row.definition" placeholder="Definition" /></td>
                 <td><input v-model="row.example" placeholder="Example" /></td>
@@ -262,7 +266,15 @@
         </button>
       </div>
     </div>
-    <AddCardModal :setName="setName" :setId="props.existingSet.id" @update:setName="updateSetName" v-if="showAddCardModal" @close="closeAddCardModal" @save="addNewWord"></AddCardModal>
+    <AddCardModal 
+        :setName="setName" 
+        :setId="props.existingSet.id" 
+        :word="editWord"
+        @update:setName="updateSetName" 
+        v-if="showAddCardModal" 
+        @close="closeAddCardModal" 
+        @save="addNewWord">
+    </AddCardModal>
 </template>  
   
 <style scoped>
@@ -362,9 +374,19 @@
         width: 50px; /* Chiều rộng cho cột Select */
     }
     
-    /* Các cột còn lại có chiều rộng bằng nhau */
-    .set-table th:not(.select-column) {
-        width: calc((100% - 10px) / 5); /* Chiều rộng cho 5 cột còn lại */
+    .edit {
+        width: 50px; /* Chiều rộng cố định nhỏ gọn */
+    }
+    
+    /* Styling cho hình ảnh trong cột Edit */
+    .set-table td img {
+        width: 20px; /* Kích thước nhỏ hơn cho icon Edit */
+        height: auto;
+        cursor: pointer; /* Hiển thị con trỏ khi hover vào */
+    }
+    
+    .set-table th:not(.select-column, .edit) {
+        width: calc((100% - 20px) / 5); /* Chiều rộng cho 5 cột còn lại */
     }  
   
     .actions {
