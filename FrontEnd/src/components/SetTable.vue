@@ -39,7 +39,8 @@
         ]).catch((error) => {
             console.error("Error fetching data:", error);
         });
-        console.log(props.existingSet.userDetailResponse);
+        // console.log(props.existingSet);
+        // ifconsole.log(props.existingSet.userDetailResponse);
     });
 
     
@@ -297,12 +298,12 @@
             <thead>
               <tr>
                 <th v-if="showSelectColumn" class="select-column">Select</th>
-                <th class="edit">Edit</th>
                 <th>Word</th>
                 <th>IPA</th>
                 <th>Definition</th>
                 <th>Example</th>
                 <th class="image">Image</th>
+                <th class="edit">Edit</th>
               </tr>
             </thead>
             <tbody>
@@ -310,16 +311,16 @@
                 <td v-if="showSelectColumn">
                     <input type="checkbox" @change="toggleSelectWord(row)" :checked="selectedWords.includes(row.id)" />
                 </td>
-                <td>
-                    <img src="../assets/edit-02.svg" alt="" @click="EditRow(row)">
-                </td>
-                <td ><input v-model="row.word" placeholder="Word" /></td>
-                <td><input v-model="row.ipa" placeholder="IPA" /></td>
-                <td><input v-model="row.definition" placeholder="Definition" /></td>
-                <td><input v-model="row.example" placeholder="Example" /></td>
+                
+                <td ><p>{{ row.word }}</p></td>
+                <td><p>{{ row.ipa }}</p></td>
+                <td><p>{{ row.definition }}</p></td>
+                <td><p>{{ row.example }}</p></td>
                 <td class="image">
-                    <img src="../assets/image.svg" alt="class" class="image-icon" @click="openImage(row.image)" />
-
+                    <img v-if="row.image" src="../assets/image.svg" alt="class" class="image-icon" @click="openImage(row.image)" />
+                </td>
+                <td>
+                    <img v-if="row.word" src="../assets/edit-02.svg" alt="" @click="EditRow(row)" class="edit-icon">
                 </td>
               </tr>
             </tbody>
@@ -451,6 +452,7 @@
     }
     .set-table {
         width: 100%;
+        min-height: 60px;
         margin-top: 20px;
         border-collapse: collapse; /* Bỏ khoảng cách giữa các cột */
         table-layout: fixed;
@@ -466,13 +468,6 @@
         border: 1px solid #ccc;
         text-align: center; 
     }
-  
-    .set-table input {
-        width: 100%;
-        padding: 5px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-    }
 
     .select-column {
         width: 50px; /* Chiều rộng cho cột Select */
@@ -481,9 +476,18 @@
     .image{
         width: 50px !important; 
     }
+
+    .image-icon:hover{
+        transform: scale(1.05);
+    }
+
     
     .edit {
         width: 50px; /* Chiều rộng cố định nhỏ gọn */
+    }
+
+    .edit-icon:hover{
+        transform: scale(1.05);
     }
     
     /* Styling cho hình ảnh trong cột Edit */
