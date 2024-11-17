@@ -41,38 +41,42 @@ public class WordServiceImpl implements WordService {
 
     @Transactional
     @Override
-    public WordResponse createWord(CreateWordRequest createWordRequest){
+    public WordResponse createWord(CreateWordRequest createWordRequest) {
         UserEntity user = userService.getUserFromSecurityContext();
-
-        if(createWordRequest.getImage().isEmpty()){
-            throw new IllegalArgumentException("Invalid File");
-        }
-        // Cho phép nhiều định dạng ảnh (png, jpg, jpeg)
-        List<String> validImageTypes = Arrays.asList("image/png", "image/jpeg", "image/jpg");
-        if (!validImageTypes.contains(createWordRequest.getImage().getContentType())) {
-            throw new IllegalArgumentException("Please send a valid image file (png, jpg, jpeg)");
-        }
 
         SetEntity setEntity = setRepository.findById(createWordRequest.getSetId())
                 .orElseThrow(() -> new EntityNotFoundWithIdException("SetEntity", createWordRequest.getSetId().toString()));
-        if(!Objects.equals(setEntity.getUserEntity().getId(), user.getId())){
-            throw new IllegalArgumentException("You do not permission to create word in this set");
+        if (!Objects.equals(setEntity.getUserEntity().getId(), user.getId())) {
+            throw new IllegalArgumentException("You do not have permission to create word in this set");
         }
-        try{
+
+        try {
             WordEntity wordEntity = new WordEntity();
             modelMapper.map(createWordRequest, wordEntity);
             wordEntity.setSetEntity(setEntity);
-            // Tải ảnh lên Cloudinary và lưu URL, publicId vào cơ sở dữ liệu
-            Map<String, String> uploadResult = cloudinaryService.uploadFile(createWordRequest.getImage(), setEntity.getId().toString());
-            String imageUrl = uploadResult.get("url");
-            String publicId = uploadResult.get("publicId");
-            wordEntity.setImage(imageUrl);
-            wordEntity.setImagePublicId(publicId);
+
+            if (createWordRequest.getImage() != null && !createWordRequest.getImage().isEmpty()) {
+                // Cho phép nhiều định dạng (png, jpg, jpeg)
+                List<String> validImageTypes = Arrays.asList("image/png", "image/jpeg", "image/jpg");
+                if (!validImageTypes.contains(createWordRequest.getImage().getContentType())) {
+                    throw new IllegalArgumentException("Please send a valid image file (png, jpg, jpeg)");
+                }
+                Map<String, String> uploadResult = cloudinaryService.uploadFile(createWordRequest.getImage(), setEntity.getId().toString());
+                String imageUrl = uploadResult.get("url");
+                String publicId = uploadResult.get("publicId");
+                wordEntity.setImage(imageUrl);
+                wordEntity.setImagePublicId(publicId);
+            }
+
+            if (createWordRequest.getAudio() != null && !createWordRequest.getAudio().isEmpty()) {
+                wordEntity.setAudio(createWordRequest.getAudio());
+            }
+
             WordEntity wordSaved = wordRepository.save(wordEntity);
             WordResponse wordResponse = new WordResponse();
             modelMapper.map(wordSaved, wordResponse);
             return wordResponse;
-        }catch (IOException e){
+        } catch (IOException e) {
             throw new IllegalArgumentException("Failed to upload file to Cloudinary");
         }
     }
@@ -107,8 +111,10 @@ public class WordServiceImpl implements WordService {
         }
         modelMapper.map(updateWordRequest, wordEntity);
         try{
-            String imageUrl = cloudinaryService.updateFile(wordEntity.getImagePublicId(), updateWordRequest.getImage());
-            wordEntity.setImage(imageUrl);
+            if(updateWordRequest.getImage() != null && !updateWordRequest.getImage().isEmpty()){
+                String imageUrl = cloudinaryService.updateFile(wordEntity.getImagePublicId(), updateWordRequest.getImage());
+                wordEntity.setImage(imageUrl);
+            }
             wordRepository.save(wordEntity);
         }catch (IOException e){
             throw new IllegalArgumentException("Failed to update file to Cloudinary");
@@ -150,7 +156,7 @@ public class WordServiceImpl implements WordService {
                 wordIds.add(wordId);
                 if(studySessionService.getReminderTimeBasedOnLevel(studySessionEntity.getDifficulty(), studySessionEntity.getCreatedAt()).isAfter(LocalDateTime.now()))
                     continue;
-                
+
                 WordResponse wordResponse = new WordResponse();
                 modelMapper.map(studySessionEntity.getWordEntity(), wordResponse);
                 wordResponses.add(wordResponse);

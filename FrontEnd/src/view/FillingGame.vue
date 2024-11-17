@@ -2,13 +2,9 @@
     import { ref, computed, onMounted, onUnmounted, watch, nextTick } from "vue";
     import {useStore} from 'vuex';
     import Header from '../components/Header.vue';
-    import { useRoute } from 'vue-router';
 
-    const route = useRoute()
     const store = useStore();
-    const sets = computed(() => store.getters.getSets);
-    const currentSet = ref(null);
-    const selectedSet = ref(route.params.id);
+    const currentSet = computed(() => store.state.currentSet); 
     const totalCards = computed(() => currentSet.value ? currentSet.value.wordResponses.length : 0);
     const currentCard = ref(0)
     const userInput = ref("");
@@ -72,6 +68,7 @@
         feedback.value = "";
         isCorrect.value = null;
         currentCard.value += 1;
+        answer.value = false;
     } else {
         feedback.value = "Well done! 🎉";
     }
@@ -85,14 +82,7 @@
       answer.value = !answer.value;
     }
 
-    watch([sets, selectedSet], () => {
-        if (sets.value && sets.value.length > 0) {
-            currentSet.value = sets.value.find(set => set.id == selectedSet.value) || null;
-        }
-        }, { immediate: true });
-
     onMounted(() => {
-      store.dispatch('fetchLibrarySets');
       window.addEventListener("keydown", handleKeydown);
     });
     onUnmounted(() => {

@@ -56,9 +56,6 @@
       }
       return notification;
     });
-    if (response.data.message) {
-                alert(response.data.message);
-            }
     } catch (error) {
         if (error.response) {
             alert(`${error.response.data.message || 'An error occurred'}`);

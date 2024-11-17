@@ -11,7 +11,7 @@
 
     const visible = ref(true); 
     const className = ref(props.isEditMode ? localStorage.getItem.className : '');
-    const rows = ref([{ username: '', role: 'Member'}]);
+    const rows = ref([{ username: '', role: ''}]);
     const selectedUsers = ref([]); // Danh sách các từ được chọn
     const showSelectColumn = ref(false);
     const selectedOption = ref('')
@@ -146,7 +146,7 @@
         console.log(memberList.value);
         if(!showSearch.value || search.value == ""){
             memberList.value = rows.value;
-            memberList.value = rows.value.filter(member => member.userName.toLowerCase().includes(search.value.toLowerCase()))
+            // memberList.value = rows.value.filter(member => member.userName.toLowerCase().includes(search.value.toLowerCase()))
         }
         else{
             memberList.value = rows.value.filter(member => member.userName.toLowerCase().includes(search.value.toLowerCase()))
@@ -243,6 +243,15 @@
         }
     });
 
+    watch(roleFilter, () =>{
+        if(roleFilter.value == "Role"){
+            memberList.value = rows.value;
+        }
+        else{
+            memberList.value = rows.value.filter(member => member.role === roleFilter.value);
+        }
+    })
+
 </script>
 
 <template>
@@ -269,8 +278,8 @@
                 <th>
                     <select class="role-option" v-model="roleFilter">
                         <option value="Role">Role</option>
-                        <option value="Admin">Admin</option>
-                        <option value="Member" selected>Member</option>
+                        <option value="ADMIN">ADMIN</option>
+                        <option value="MEMBER" selected>MEMBER</option>
                     </select>
                 </th>
               </tr>
@@ -284,7 +293,7 @@
                     <td class="username-column"><p>{{row.userName}}</p></td>
                     <td class="role">
                         <!-- Thay input bằng select -->
-                        <select class="role-option" v-model="row.role" @change="updateRole(row)">
+                        <select v-if="row.role" class="role-option" v-model="row.role" @change="updateRole(row)">
                             <option value="ADMIN">ADMIN</option>
                             <option value="MEMBER" selected>MEMBER</option>
                         </select>
@@ -372,6 +381,7 @@
         position: relative;
     }
     .class-table {
+        min-height: 70px;
         width: 100%;
         margin-top: 20px;
         border-collapse: collapse; /* Bỏ khoảng cách giữa các cột */
@@ -411,7 +421,9 @@
         width: 70%;
         height: 25px;
         border: none;
+        cursor: pointer;
     }
+
 
     .select-column {
         width: 50px; /* Chiều rộng cho cột Select */
@@ -443,6 +455,10 @@
         border: none; 
         background: none; 
         transition: background-color 0.3s; 
+    }
+
+    .icon-button:hover {
+        transform: scale(1.05);
     }
 
     .icon {

@@ -1,12 +1,14 @@
 // store.js
 import { createStore } from 'vuex';
 import axios from 'axios';
+import createPersistedState from "vuex-persistedstate";
 
 const store = createStore({
   state: {
     sets: [],
     displayedSets: [],
-    classes: []
+    classes: [],
+    currentSet: null
   },
   mutations: {
     setSets(state, newSets) {
@@ -17,6 +19,9 @@ const store = createStore({
     },
     setClassData(state, classes){
       state.classes = classes;
+    },
+    setCurrentSet(state, set) {
+      state.currentSet = set;
     }
   },
   actions: {
@@ -60,7 +65,8 @@ const store = createStore({
     getSets: (state) => state.sets,
     getDisplayedSets: (state) => state.displayedSets,
     getClasses: (state) => state.classes 
-  }
+  },
+  plugins: [createPersistedState()],
 });
 
 export default store;
