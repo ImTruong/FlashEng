@@ -26,6 +26,7 @@ public class WordEntity {
     @Column(name = "definition", nullable = false)
     private String definition;
 
+    @Lob
     @Column(name = "example", nullable = false)
     private String example;
 

@@ -20,6 +20,7 @@ public class NotificationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Lob
     @Column(name = "message", nullable = false)
     private String message;
 
