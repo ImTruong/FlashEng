@@ -67,6 +67,7 @@
 
 
     const saveData  = async () => {
+        showOptions.value = false;
         const token = localStorage.getItem('token');
         const payload = {
             setId: props.isEditMode ? props.existingSet.id : null,
@@ -97,7 +98,9 @@
             }
             
         } catch (error) {
-            alert(`${error.message|| 'An error occurred'}`);
+            alert("Sorry! You can't update this set!");
+            selectedOption.value = props.existingSet.privacyStatus;
+            // alert(`${error.message|| 'An error occurred'}`);
         }
     };
 
@@ -161,6 +164,7 @@
     };
 
     const toggleSelectColumn = () => {
+        showOptions.value = false;
         showSelectColumn.value = !showSelectColumn.value;
     };
 
@@ -173,10 +177,16 @@
         // showOptions.value = false; 
     };
     const openAddCardModal = () => {
+        showOptions.value = false;
         // chờ sửa be user respone có id khác null
         // if(props.isEditMode && props.existingSet.userDetailResponse.id != user.id){
         if(props.isEditMode && props.existingSet.userDetailResponse.username != user.username){
             alert("You aren't authorized to modify this set!");
+            return;
+        }
+        // console.log
+        if(!props.isEditMode && !setName.value){
+            alert("Save set before add words.");
             return;
         }
         showAddCardModal.value = true;
@@ -184,25 +194,27 @@
     };
 
     const closeAddCardModal = () => {
+        visible.value = true;
         showAddCardModal.value = false;
-        visible.value = true
     };
+    
     const handleSaveData = () => {
         if (setName.value.trim()) {
             if (selectedOption.value === 'CLASS' && !classId) {
                 console.log('Please enter classname');
                 return; 
             }
-            
             saveData();
         }else{
             alert("Please enter setname");
         }
     };
     const toggleSearch = () => {
+        showOptions.value = false;
         isSearchVisible.value = !isSearchVisible.value;
     };
     const EditRow = (row) =>{
+        
         editWord.value = row;
         openAddCardModal();
     }

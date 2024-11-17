@@ -2,8 +2,11 @@
     import { ref, computed, onMounted, onUnmounted, watch, nextTick } from "vue";
     import {useStore} from 'vuex';
     import Header from '../components/Header.vue';
+    import { useRouter } from 'vue-router';
+
 
     const store = useStore();
+    const router = useRouter();
     const currentSet = computed(() => store.state.currentSet); 
     const totalCards = computed(() => currentSet.value ? currentSet.value.wordResponses.length : 0);
     const currentCard = ref(0)
@@ -63,31 +66,39 @@
     };
 //     // Chuyển sang thẻ tiếp theo
     const nextCard = () => {
-    if (currentCard.value < totalCards.value - 1) {
+      if(feedback.value === "Incorrect! Try again."){
+        userInput.value = "";
+        return;
+      }
+      if (currentCard.value < totalCards.value - 1) {
         userInput.value = "";
         feedback.value = "";
         isCorrect.value = null;
         currentCard.value += 1;
         answer.value = false;
-    } else {
-        feedback.value = "Well done! 🎉";
-    }
-    };
+      } else {
+          if(feedback.value === "Correct!"){
+            feedback.value = "Well done! 🎉";
+            alert("Well done! 🎉");
+            router.push('/'); 
+          }
+      }
+  };
 
-    const playAudio = () => {
-        const audio = new Audio(currentSet.value.wordResponses[currentCard.value].audio);
-        audio.play();
-    };
-    const showAnswer = () => {
-      answer.value = !answer.value;
-    }
+  const playAudio = () => {
+      const audio = new Audio(currentSet.value.wordResponses[currentCard.value].audio);
+      audio.play();
+  };
+  const showAnswer = () => {
+    answer.value = !answer.value;
+  }
 
-    onMounted(() => {
-      window.addEventListener("keydown", handleKeydown);
-    });
-    onUnmounted(() => {
-      window.removeEventListener("keydown", handleKeydown);
-    });
+  onMounted(() => {
+    window.addEventListener("keydown", handleKeydown);
+  });
+  onUnmounted(() => {
+    window.removeEventListener("keydown", handleKeydown);
+  });
 </script>
 
 
@@ -97,7 +108,8 @@
         <!-- Hiển thị từ -->
         <div class="card">
           <p class="display-word">{{ answer ? currentSet.wordResponses[currentCard].word : displayWord }}</p>
-          <button class="audio-button" @click="playAudio">🔊</button>
+          <img class="speaker-icon" v-if="!(currentSet.wordResponses[currentCard]?.audio === null)" src="../assets/speaker-icon.svg"/>
+          <!-- <button class="audio-button" @click="playAudio">🔊</button> -->
         </div>
         <div class="controls">
           <button class="check-button" @click="checkAnswer">Check</button>
@@ -109,7 +121,7 @@
         </div>
         <div class="card-container">
           <img src="../assets/previous_card.svg" class="icon-button prev-button" @click="prevCard" :disabled="currentCard === 0"></img>
-            <img :src="currentSet.wordResponses[currentCard].image" :alt="currentSet.wordResponses[currentCard].word" class="card-image" />
+            <img v-if="!(currentSet.wordResponses[currentCard]?.image === null)" :src="currentSet.wordResponses[currentCard].image" :alt="currentSet.wordResponses[currentCard].word" class="card-image" />
             <p>IPA: {{ currentSet.wordResponses[currentCard].ipa }}</p>
             <p>Definition: {{ currentSet.wordResponses[currentCard].definition }}</p>
           <img src="../assets/next_card.svg" class="icon-button next-button" @click="nextCard" :disabled="currentCard === totalCards - 1"></img>
@@ -160,12 +172,13 @@
     font-weight: bold;
     letter-spacing: 3px;
   }
+  
 
-  .audio-button {
+  .speaker-icon {
     position: absolute;
     right: 10px;
     top: 10px;
-    font-size: 20px;
+    height: 15px;
     cursor: pointer;
     background: none;
     border: none;

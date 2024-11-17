@@ -110,6 +110,7 @@
         icon.value = false;
         existingClass.value = classItem;  
     };
+    
     onMounted(() => {
         getSetByClassId();
     });

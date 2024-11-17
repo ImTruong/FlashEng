@@ -80,7 +80,7 @@
 
     onMounted(() => {
         store.dispatch('fetchLibrarySets');
-        
+        console.log(currentSet.value.wordResponses);
     });
 </script>
 
@@ -95,14 +95,15 @@
         <div class="flashcard-content" @click="toggleFlip">
             <div class="flashcard">
                 <div v-if="!isFlipped" class="flashcard-front">
-                    <img :src="currentSet.wordResponses[currentCard].image" alt="Flashcard Image" />
-                    <p>{{ currentSet.wordResponses[currentCard].word }}</p>
+                    <img v-if="!(currentSet.wordResponses[currentCard]?.image === null)" :src="currentSet.wordResponses[currentCard].image" alt="Flashcard Image" />
+                    <p v-if="!(currentSet.wordResponses[currentCard]?.image === null)" >{{ currentSet.wordResponses[currentCard].word }}</p>
+                    <h1 v-else>{{ currentSet.wordResponses[currentCard].word }}</h1>
                   </div>
                   <div v-else class="flashcard-back">
                     <p class="ipa">{{ currentSet.wordResponses[currentCard].ipa }}</p>
                     <p class="definition">{{ currentSet.wordResponses[currentCard].definition }}</p>
-                    <div class="audio-icon" @click="playAudio">
-                        <img src="../assets/speaker-icon.svg" alt="Speaker Icon" class="icon-play" />
+                    <div v-if="currentSet.wordResponses[currentCard].audio" class="audio-icon" @click="playAudio">
+                        <img v-if="!(currentSet.wordResponses[currentCard]?.audio === null)" src="../assets/speaker-icon.svg" alt="Speaker Icon" class="icon-play" />
                     </div>
                     <p class="example">{{ currentSet.wordResponses[currentCard].example }}</p>
                     <!-- <audio :src="currentSet.wordResponses[currentCard].audio" @play="playAudio" controls></audio> -->
@@ -149,8 +150,10 @@
     .flashcard-front{
         width: 100%;
         max-width: 350px; 
+        min-height: 200px;
         margin: 0 auto;
         text-align: center;
+        align-content: center;
     }
     
     .flashcard img {
@@ -199,6 +202,8 @@
     
     .flashcard-back{
         max-width: 500px; 
+        min-height: 200px;
+        align-content: center;
         /* margin: 40px auto; */
         /* padding: 20px; */
         text-align: center;

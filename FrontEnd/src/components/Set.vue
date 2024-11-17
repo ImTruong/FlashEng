@@ -41,10 +41,12 @@
         },
       };
       const response = await axios.delete(`/set/${set.id}`, config);
+      alert(response.data.message);
       window.location.reload();
     } catch (error) {
       if (error.response) { 
-        alert('Error:', error.response.data.message);
+        // alert("'Error:', error.response.data.message");
+        alert("Sorry! You can't delete this set!");
       } else {
         alert('Network or Axios error:', error.message);
       }
