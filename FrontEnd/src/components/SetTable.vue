@@ -9,7 +9,7 @@
     
 
     const emit = defineEmits(['close', 'save', 'update']);
-    const props = defineProps(['isEditMode', 'existingSet', 'classId']);
+    const props = defineProps(['isEditMode', 'existingSet', 'classId', 'className']);
 
     const visible = ref(true); 
     const setName = ref(props.isEditMode ? props.existingSet.name : '');

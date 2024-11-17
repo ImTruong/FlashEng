@@ -20,7 +20,6 @@
     const classId = localStorage.getItem('classId');
     const setTable = ref(false)
     const existingSet = ref(null);
-
     const { Overlay_background } = defineProps(['Overlay_background']);
     const emit = defineEmits();
 
@@ -149,6 +148,8 @@
         <SetTable 
             v-if="setTable" 
             :classId="classId"
+            :isEditMode="isEditMode"
+            :existingSet="existingSet"
             @close="setTable = false" 
             @save="handleSet"
             />
