@@ -24,16 +24,17 @@
   }
 
   const gameSet = () => {
-    store.commit('setCurrentSet', set); // Gọi mutation để lưu vào Vuex
+    store.commit('setCurrentSet', set); 
     router.push(`/fillgame/${set.id}`);
   }
 
   const studySet = () => {
-    if(set.numberOfWords == 0){
-      alert("Please add words before study!")
+    if (!set.wordResponses || set.wordResponses.length === 0) {
+        alert("Please add words before studying!");
+        return; 
     }
-    router.push(`/flashcard/${set.id}`)
-  }
+    router.push(`/flashcard/${set.id}`); 
+  };
 
   const deleteSet = async () => {
     const token = localStorage.getItem('token'); // Lấy token từ localStorage
@@ -83,9 +84,7 @@
       </div>
       <div class="set-option">
         <div class="icon-container">
-          <router-link :to="{ name: 'flashcard', params: { id: set.id } }">
             <img src="../assets/study.svg" alt="Study" @click.stop="studySet" />
-          </router-link>
         </div>
         <div class="icon-container" @click.stop="gameSet" >
           <img src="../assets/game.svg" alt="Game">
