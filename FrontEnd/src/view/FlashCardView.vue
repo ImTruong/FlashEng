@@ -100,11 +100,9 @@
                         <img v-if="!(currentSet.wordResponses[currentCard]?.audio === null)" src="../assets/speaker-icon.svg" alt="Speaker Icon" class="icon-play" />
                     </div>
                     <p class="example">{{ currentSet.wordResponses[currentCard].example }}</p>
-                    <!-- <audio :src="currentSet.wordResponses[currentCard].audio" @play="playAudio" controls></audio> -->
                   </div>
             </div>    
         </div>
-
         <div class="flashcard-rating">
             <button @click="submitRating('Very Difficult')" class="rating-btn">Very Difficult</button>
             <button @click="submitRating('Difficult')" class="rating-btn">Difficult</button>
@@ -216,6 +214,14 @@
         font-size: 20px;
     }
 
+    .audio-icon{
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        width: 40px;
+        height: 40px; 
+        margin: 0 auto; 
+    }
     .audio-btn {
         background-color: #4CAF50;
         color: white;

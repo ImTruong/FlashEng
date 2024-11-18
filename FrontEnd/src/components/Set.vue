@@ -24,6 +24,10 @@
   }
 
   const gameSet = () => {
+    if (!set.wordResponses || set.wordResponses.length === 0) {
+        alert("No words in this set!");
+        return; 
+    }
     store.commit('setCurrentSet', set); 
     router.push(`/fillgame/${set.id}`);
   }

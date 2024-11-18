@@ -305,6 +305,14 @@
     .completed .message p {
         color: #69cee0; /* Màu xanh */
     }
+    .audio-icon{
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        width: 40px;
+        height: 40px; 
+        margin: 0 auto; 
+    }
     .audio-btn {
         background-color: #4CAF50;
         color: white;
