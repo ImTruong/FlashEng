@@ -91,8 +91,9 @@
         border-radius: 50%;
     }
     .bar{
+        border-radius: 20px;
         height: 8px;
         width: 200px;
-        background-color: #BDEDF5;
+        background-color: #94e6f5;
     }
 </style>

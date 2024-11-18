@@ -150,7 +150,6 @@
                 class="notification-dropdown"
                 :class="{ show: showNotifications }"
             />
-        
         </header>
     </div>
 </template>

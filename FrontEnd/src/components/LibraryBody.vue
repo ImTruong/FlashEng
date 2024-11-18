@@ -71,6 +71,7 @@
 
     onMounted(() => {
         const savedTab = localStorage.getItem('libraryTab');
+        console.log(savedTab);
         if (savedTab) {
             activeTab.value = savedTab;
         }

@@ -31,7 +31,7 @@
     audio: '',
     definition: '',
     example: '',
-    image: null
+    image: ''
   });
 
   const audioCache = ref({});
@@ -108,10 +108,11 @@
     if(newWord.value.id) formData.append('id', newWord.value.id)
     formData.append('word', newWord.value.word)
     formData.append('ipa', newWord.value.ipa)
-    formData.append('audio', newWord.value.audio)
+    if(newWord.value.audio)formData.append('audio', newWord.value.audio)
     formData.append('definition', newWord.value.definition)
     formData.append('example', newWord.value.example)
-    formData.append('image', newWord.value.image);
+    if(newWord.value.image)formData.append('image', newWord.value.image);
+    console.log(formData);
     try {
       const config = {
         headers: {
@@ -394,6 +395,11 @@
 
   .audio-icon{
     width: 20px;
+    cursor: pointer;
+  }
+
+  .audio-icon:hover{
+    transform: scale(1.05);
   }
 
   .definition-input{

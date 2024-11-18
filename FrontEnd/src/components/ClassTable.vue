@@ -42,21 +42,23 @@
             }
             if (props.isEditMode) {
                 
-                const response = await axios.put('/class', payload, { headers: config.headers });  // API cập nhật
-                emit('update', response.data.data); 
+                const response = await axios.put('/class/update/name', payload, { headers: config.headers });  // API cập nhật
+                // emit('update', response.data.data); 
+                alert(response.data.message);
+                localStorage.setItem('classId', classId.value);
+                localStorage.setItem('className', className.value);
             } else {
                 const response = await axios.post('/class', payload, { headers: config.headers }); 
                 console.log(response.data)
                 classId.value = response.data.data.classId;
-                localStorage.setItem('classId', classId.value);
-                localStorage.setItem('className', className.value);
                 console.log(classId.value);
                 emit('save', response.data.data); 
                 rows.value = response.data.data.memberList;
                 memberList.value = response.data.data.memberList;
             }
-
-            
+            localStorage.setItem('classId', classId.value);
+            localStorage.setItem('className', className.value);
+            // alert(res)
         } catch (error) {
             console.log(error);
             if (error.response && error.response.data && error.response.data.message) {
@@ -78,6 +80,9 @@
     };
 
     const removeRow = async () => {
+        if(selectedUsers.value.length > 0 && !selectedUsers.value[0]){
+            return;
+        }
         if (selectedUsers.value.length > 0) {
             console.log('Selected Users:', selectedUsers.value);
             const token = localStorage.getItem('token');
@@ -134,10 +139,6 @@
 
     const toggleSelectColumn = () => {
         showSelectColumn.value = !showSelectColumn.value;
-    };
-
-    const toggleOptions = () => {
-        showOptions.value = !showOptions.value;
     };
 
 
@@ -258,7 +259,7 @@
     <OverlayBackground :isVisible="visible" @clickOverlay="closeForm" />
     <div v-if="visible" class="class-window">
         <div class="class-header">
-            <img src="../assets/search_icon.svg" alt="Status" @click="toggleSearch">
+            <img src="../assets/search_icon.svg" alt="Status" @click="toggleSearch" class="search-icon">
             <input v-model.trim = "search" v-if="showSearch" type="text" placeholder="Search for username" class="search-bar">
             <div class="class-name" v-if="!showSearch">
                 <label for="class-name">Class:</label>
@@ -341,6 +342,15 @@
         justify-content: space-between;
         align-items: center;
     }
+
+    .search-icon{
+        height: 20px;
+        cursor: pointer;
+    }
+
+    .search-icon:hover{
+        transform: scale(1.1);
+    }
   
     .class-header img{
         margin-left: 10px;
@@ -354,6 +364,8 @@
         text-align: center; 
         width: 50%;
     }
+
+    
 
     .class-name {
         display: flex;
@@ -391,6 +403,9 @@
     .class-table thead th {
         background-color: #A8D5E5; 
         border: 1px solid black;
+        position: sticky;
+        top: 0; /* Cố định hàng tiêu đề khi cuộn */
+        z-index: 1; /* Đảm bảo hàng tiêu đề luôn nằm trên cùng */
     }
     .class-table th {
         padding: 5px;
@@ -400,7 +415,7 @@
 
     .class-table th select{
         background-color: #A8D5E5;
-        width: 60%;
+        width: 80px;
         border: none;
 
     }
@@ -418,7 +433,7 @@
     }
 
     .role-option {
-        width: 70%;
+        width: 80px;
         height: 25px;
         border: none;
         cursor: pointer;
@@ -430,7 +445,7 @@
     }
     
     .username-column{
-        width: 70%;
+        width: 300px
     }
 
     .username-column p{
@@ -442,7 +457,7 @@
         display: flex;
         justify-content: space-around; /* Căn giữa các icon */
         margin: 5px;
-        margin-bottom: 0px;
+        margin-top: 15px;
     }
 
     .icon-button {

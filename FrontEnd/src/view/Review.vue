@@ -103,14 +103,18 @@
         <div class="flashcard-content" @click="toggleFlip">
             <div class="flashcard">
                 <div v-if="!isFlipped" class="flashcard-front">
-                    <img :src="totalCards[currentCard].image" alt="Flashcard Image" />
-                    <p>{{ totalCards[currentCard].word }}</p>
+                    <img v-if="!(totalCards[currentCard]?.image === null)" :src="totalCards[currentCard].image" alt="Flashcard Image" />
+                    <p v-if="!(totalCards[currentCard]?.image === null)" >{{ totalCards[currentCard].word }}</p>
+                    <h1 v-else>{{ totalCards[currentCard].word }}</h1>
                 </div>
                 <div v-else class="flashcard-back">
                     <p class="ipa">{{ totalCards[currentCard].ipa }}</p>
                     <p class="definition">{{ totalCards[currentCard].definition }}</p>
+                    <div v-if="totalCards[currentCard].audio" class="audio-icon" @click="playAudio">
+                        <img v-if="!(totalCards[currentCard]?.audio === null)" src="../assets/speaker-icon.svg" alt="Speaker Icon" />
+                    </div>                    
                     <p class="example">{{ totalCards[currentCard].example }}</p>
-                    <audio :src="currentSet.wordResponses[currentCard].audio" @play="playAudio" controls></audio>
+                    <!-- <audio v-if="!(totalCards[currentCard]?.audio === null)" :src="totalCards[currentCard].audio" @play="playAudio" controls></audio> -->
                 </div>
             </div>    
         </div>
@@ -161,13 +165,16 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
         background-color: #f9f9f9;
         border: none;
+        cursor: pointer;
     }
 
-    .flashcard-front {
+    .flashcard-front{
         width: 100%;
         max-width: 350px; 
+        min-height: 200px;
         margin: 0 auto;
         text-align: center;
+        align-content: center;
     }
     
     .flashcard img {
@@ -216,7 +223,9 @@
     }
     
     .flashcard-back{
-        width: 100%; 
+        max-width: 500px; 
+        min-height: 200px;
+        align-content: center;
         /* margin: 40px auto; */
         /* padding: 20px; */
         text-align: center;
@@ -227,8 +236,17 @@
         font-size: 20px;
     }
 
+    .flashcard-back img{
+        height:25px;
+        width: 30px;
+    }
+
     .flashcard .definition{
         font-size: 30px;
+    }
+
+    .audio-icon{
+        height: 20px;
     }
 
     .flashcard .example{

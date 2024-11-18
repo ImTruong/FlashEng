@@ -20,10 +20,9 @@
     const classId = localStorage.getItem('classId');
     const setTable = ref(false)
     const existingSet = ref(null);
-
     const { Overlay_background } = defineProps(['Overlay_background']);
     const emit = defineEmits();
-
+    const inClass = ref(true)
     const icon = ref(false);
     const search = ref("");
 
@@ -44,10 +43,9 @@
         visible.value = true;
     };
 
-    const handleUpdate = (updatedRows) => {
-        // existingSet.value.wordListResponses = updatedRows;
-        // console.log('Dữ liệu đã được cập nhật:', existingSet.value);
-    };
+    // const handleUpdate = (updatedRows) => {
+    //     existingClass.value.className;
+    // };
 
     // Theo dõi thay đổi trong ô tìm kiếm và cập nhật danh sách `filteredSets`
     watch(search, () => {
@@ -112,6 +110,7 @@
         icon.value = false;
         existingClass.value = classItem;  
     };
+    
     onMounted(() => {
         getSetByClassId();
     });
@@ -149,6 +148,10 @@
         <SetTable 
             v-if="setTable" 
             :classId="classId"
+            :className="className"
+            :inClass="inClass = true"
+            :isEditMode="isEditMode"
+            :existingSet="existingSet"
             @close="setTable = false" 
             @save="handleSet"
             />
@@ -158,7 +161,7 @@
         v-if="classTable" 
         :isEditMode=true  
         @close="closeClassTable" 
-        @update="handleUpdate"
+        
     />   
 </template>
 
