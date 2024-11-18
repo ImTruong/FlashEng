@@ -29,6 +29,9 @@
   }
 
   const studySet = () => {
+    if(set.numberOfWords == 0){
+      alert("Please add words before study!")
+    }
     router.push(`/flashcard/${set.id}`)
   }
 
