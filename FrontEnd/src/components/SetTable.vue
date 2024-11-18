@@ -28,9 +28,8 @@
     //     }
     // });
     const dropdownRef = ref(null)
+    const isEditWord = ref(false)
     const showAddCardModal = ref(false);
-    // const classId = ref((props.isEditMode || props.inClass) && props.existingSet.privacyStatus === 'CLASS' ? props.classId : '');
-    // const classId = ref(props.isEditMode && props.existingSet.privacyStatus === 'CLASS' ? props.classId : '');
         const classId = ref(
         (props.isEditMode && props.existingSet.privacyStatus === 'CLASS') || props.inClass
             ? props.classId 
@@ -50,7 +49,7 @@
             ? props.className 
             : ''
         )
-);
+    );
     const user =  JSON.parse(localStorage.getItem('user'));
     const showImg = ref(false);
     const image = ref("");
@@ -194,6 +193,7 @@
     };
 
     const closeAddCardModal = () => {
+        isEditWord.value = false;
         visible.value = true;
         showAddCardModal.value = false;
     };
@@ -214,7 +214,7 @@
         isSearchVisible.value = !isSearchVisible.value;
     };
     const EditRow = (row) =>{
-        
+        isEditWord.value = true;
         editWord.value = row;
         openAddCardModal();
     }
@@ -375,9 +375,9 @@
       </div>
     </div>
     <AddCardModal 
-        :setName="setName" 
+        :setName="setName"         
         :setId="props.existingSet.id" 
-        :word="editWord"
+        :word="isEditWord ? editWord : null"
         v-if="showAddCardModal" 
         @update="updateWord"
         @close="closeAddCardModal" 

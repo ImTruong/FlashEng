@@ -108,7 +108,7 @@
         <!-- Hiển thị từ -->
         <div class="card">
           <p class="display-word">{{ answer ? currentSet.wordResponses[currentCard].word : displayWord }}</p>
-          <img class="speaker-icon" v-if="!(currentSet.wordResponses[currentCard]?.audio === null)" src="../assets/speaker-icon.svg"/>
+          <img class="speaker-icon" v-if="!(currentSet.wordResponses[currentCard]?.audio === null)" src="../assets/speaker-icon.svg" @click="playAudio"/>
           <!-- <button class="audio-button" @click="playAudio">🔊</button> -->
         </div>
         <div class="controls">
