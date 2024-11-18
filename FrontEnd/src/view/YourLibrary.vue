@@ -6,7 +6,7 @@
     import { useStore } from 'vuex';
     const store = useStore();
     
-    const classes = computed(() => store.getters.getClasses)
+    const classes = computed(() => (store.getters.getClasses).reverse())
     const sets = computed(() => store.getters.getSets);
 
     onMounted(() => {

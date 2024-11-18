@@ -560,6 +560,10 @@
         cursor: pointer;
     }
 
+    .icon:hover{
+        transform: scale(1.05);
+    }
+
     .close-btn {
         background: none;
         border: none;

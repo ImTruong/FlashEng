@@ -112,7 +112,7 @@
                     <p class="definition">{{ totalCards[currentCard].definition }}</p>
                     <div v-if="totalCards[currentCard].audio" class="audio-icon" @click="playAudio">
                         <img v-if="!(totalCards[currentCard]?.audio === null)" src="../assets/speaker-icon.svg" alt="Speaker Icon" />
-                    </div>           currentCard          
+                    </div>                    
                     <p class="example">{{ totalCards[currentCard].example }}</p>
                     <!-- <audio v-if="!(totalCards[currentCard]?.audio === null)" :src="totalCards[currentCard].audio" @play="playAudio" controls></audio> -->
                 </div>
@@ -165,6 +165,7 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
         background-color: #f9f9f9;
         border: none;
+        cursor: pointer;
     }
 
     .flashcard-front{

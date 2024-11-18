@@ -24,11 +24,6 @@
         displayedSets.value = recentSets.value;
     };
 
-    // Điều hướng đến trang "/classes" khi nhấn "More..."
-    const showAllSets = () => {
-        router.push("/library");
-    };
-
     const fetchUserInfo = async () => {
         try {
             const token = localStorage.getItem('token') // Lấy token từ localStorage
@@ -77,6 +72,8 @@
     }
 
     const goToLibrary = () =>{
+        console.log(localStorage.getItem('libraryTab'));
+        localStorage.setItem('libraryTab', "Flashcard sets");
         router.push('/library');
     }
 </script>
@@ -101,7 +98,7 @@
 
         <h1 class="section-header">
             <span class="section-title-library" @click="goToLibrary">Your Library</span>
-            <span v-if="sets.length > 3" class="more-link" @click="showAllSets">More...</span>
+            <span v-if="sets.length > 3" class="more-link" @click="goToLibrary">More...</span>
         </h1>
         <div class="set-container">
             <Card 

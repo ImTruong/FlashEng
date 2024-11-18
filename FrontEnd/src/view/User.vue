@@ -86,7 +86,7 @@ const handleSavePassword = (data) => {
             </div>
             <div class="actions">
               <button type="button" @click="showChangePasswordForm">Change password</button>
-              <button type="submit">Edit profile</button>
+              <button type="submit">Save profile</button>
             </div>
 
 

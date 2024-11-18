@@ -80,6 +80,9 @@
     };
 
     const removeRow = async () => {
+        if(selectedUsers.value.length > 0 && !selectedUsers.value[0]){
+            return;
+        }
         if (selectedUsers.value.length > 0) {
             console.log('Selected Users:', selectedUsers.value);
             const token = localStorage.getItem('token');
@@ -136,10 +139,6 @@
 
     const toggleSelectColumn = () => {
         showSelectColumn.value = !showSelectColumn.value;
-    };
-
-    const toggleOptions = () => {
-        showOptions.value = !showOptions.value;
     };
 
 
@@ -260,7 +259,7 @@
     <OverlayBackground :isVisible="visible" @clickOverlay="closeForm" />
     <div v-if="visible" class="class-window">
         <div class="class-header">
-            <img src="../assets/search_icon.svg" alt="Status" @click="toggleSearch">
+            <img src="../assets/search_icon.svg" alt="Status" @click="toggleSearch" class="search-icon">
             <input v-model.trim = "search" v-if="showSearch" type="text" placeholder="Search for username" class="search-bar">
             <div class="class-name" v-if="!showSearch">
                 <label for="class-name">Class:</label>
@@ -343,6 +342,15 @@
         justify-content: space-between;
         align-items: center;
     }
+
+    .search-icon{
+        height: 20px;
+        cursor: pointer;
+    }
+
+    .search-icon:hover{
+        transform: scale(1.1);
+    }
   
     .class-header img{
         margin-left: 10px;
@@ -356,6 +364,8 @@
         text-align: center; 
         width: 50%;
     }
+
+    
 
     .class-name {
         display: flex;
@@ -447,7 +457,7 @@
         display: flex;
         justify-content: space-around; /* Căn giữa các icon */
         margin: 5px;
-        margin-bottom: 0px;
+        margin-top: 15px;
     }
 
     .icon-button {

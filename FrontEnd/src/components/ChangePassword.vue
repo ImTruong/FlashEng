@@ -71,15 +71,15 @@ const saveData = async () => {
         <img src="../assets/close.svg" alt="Icon" class="close-icon" @click="closeForm">
         <div class="password">
             <label>Current password</label>
-            <input type="text" v-model="currentPassword">
+            <input type="password" v-model="currentPassword">
         </div>
         <div class="password">
             <label>New password</label>
-            <input type="text" v-model="newPassword" >
+            <input type="password" v-model="newPassword" >
         </div>
         <div class="password">
             <label>Confirm password</label>
-            <input type="text" v-model="confirmPassword" >
+            <input type="password" v-model="confirmPassword" >
         </div>
 
         <!-- Hiển thị thông báo lỗi và thành công -->
@@ -87,76 +87,101 @@ const saveData = async () => {
 
         <!-- Nút hành động -->
         <div class="button-container">
-            <button @click="closeForm">Cancel</button>
             <button @click="saveData">Save</button>
+            <button @click="closeForm">Cancel</button>
         </div>
     </div>
 </template>
 
 <style scoped>
-.container {
-    position: fixed;
-    top: 25vh;
-    left: 35vw;
-    display: flex;
-    flex-direction: column;
-    height: 50vh;
-    width: 40vw;
-    justify-content: center;
-    align-items: center;
-    border-radius: 8px;
-    background-color: white;
-    overflow: hidden;
-    z-index: 11;
-    padding: 20px;
-}
+/* Đặt chung cho toàn bộ container */
+    .container {
+        top:-400px;
+        width: 400px;
+        margin: auto;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        position: relative;
+        z-index: 20;
+    }
 
-    h1{
-        /* height: 30px; */
-        margin-bottom: 30px;
+    /* Header */
+    .header {
         text-align: center;
+        margin-bottom: 20px;
     }
-    .close-icon{
+
+    .close-icon {
+        width: 24px;
+        height: 24px;
         position: absolute;
-        top: 10px;
-        right:10px;
+        top: 20px;
+        right: 20px;
+        cursor: pointer;
     }
-    
-    
 
-input {
-    width: 150px;
-    margin-bottom: 10px;
-    padding: 8px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    margin-left: 10px;
-}
+    /* Căn chỉnh các trường input */
+    .password {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 15px;
+    }
 
-.button-container {
-    display: flex;
-    justify-content: space-between;
-    width: 80%;
-    margin-top: 15px;
+    .password label {
+        margin-bottom: 5px;
+        font-weight: 600;
+    }
 
-}
+    .password input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
 
-button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    background-color: #BDEDF5;
-    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.3);
-}
+    /* Hiển thị thông báo lỗi */
+    .error {
+        color: #ff4d4d;
+        font-weight: 600;
+        text-align: center;
+        margin-top: 10px;
+    }
 
-button:hover {
-    background-color: #77effc;
-}
+    /* Button container */
+    .button-container {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
 
-.error {
-    color: red;
-    margin-bottom: 10px;
-}
+    .button-container button {
+        width: 48%;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.6);
+    }
+
+
+    .button-container button:last-child {
+        background-color: #ffc1c1;
+    }
+
+    .button-container button:last-child:hover {
+        background-color: #ff9191;
+    }
+
+    .button-container button:first-child {
+        background-color: #9adfeb;
+    }
+
+    .button-container button:first-child:hover {
+        background-color: #93fffa;
+    }
+
 
 </style>
