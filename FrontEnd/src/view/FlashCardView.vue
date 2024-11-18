@@ -12,12 +12,8 @@
     const selectedSet = ref(route.params.id);
     const currentCard = ref(0);
     const isFlipped = ref(false);
-
     const currentSet = ref(null);
-
-
     const totalCards = computed(() => currentSet.value ? currentSet.value.wordResponses.length : 0);
-
     const cardStatus = computed(() => `${currentCard.value + 1}/${totalCards.value}`);
     
     const playAudio = () => {
@@ -26,15 +22,13 @@
     }
     const nextCard = () => {
         if (currentCard.value < totalCards.value - 1) {
-            // Chuyển sang   thẻ tiếp theo nếu chưa đến cuối
             isFlipped.value = false;
             currentCard.value += 1;
         } else {
-            // Nếu đã hết thẻ, hiển thị thông báo
             alert("Completed!");
             setTimeout(() => {
-                router.push('/'); // Điều hướng về trang home
-            }, 0); // Đợi 3 giây trước khi điều hướng
+                router.push('/');
+            }, 0);
         
         }
     };
@@ -102,12 +96,11 @@
                   <div v-else class="flashcard-back">
                     <p class="ipa">{{ currentSet.wordResponses[currentCard].ipa }}</p>
                     <p class="definition">{{ currentSet.wordResponses[currentCard].definition }}</p>
-                    <div v-if="currentSet.wordResponses[currentCard].audio" class="audio-icon" @click="playAudio">
+                    <div v-if="currentSet.wordResponses[currentCard].audio" class="audio-icon" @click.stop="playAudio">
                         <img v-if="!(currentSet.wordResponses[currentCard]?.audio === null)" src="../assets/speaker-icon.svg" alt="Speaker Icon" class="icon-play" />
                     </div>
                     <p class="example">{{ currentSet.wordResponses[currentCard].example }}</p>
                     <!-- <audio :src="currentSet.wordResponses[currentCard].audio" @play="playAudio" controls></audio> -->
-                    
                   </div>
             </div>    
         </div>

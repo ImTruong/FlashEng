@@ -50,7 +50,8 @@
         isFlipped.value = !isFlipped.value;
     }
     const playAudio = () => {
-        const audio = new Audio(currentSet.value.wordResponses[currentCard.value].audio);
+
+        const audio = new Audio(totalCards.value[currentCard.value].audio);
         audio.play();
     }
 
@@ -110,7 +111,7 @@
                 <div v-else class="flashcard-back">
                     <p class="ipa">{{ totalCards[currentCard].ipa }}</p>
                     <p class="definition">{{ totalCards[currentCard].definition }}</p>
-                    <div v-if="totalCards[currentCard].audio" class="audio-icon" @click="playAudio">
+                    <div v-if="totalCards[currentCard].audio" class="audio-icon" @click.stop="playAudio">
                         <img v-if="!(totalCards[currentCard]?.audio === null)" src="../assets/speaker-icon.svg" alt="Speaker Icon" />
                     </div>                    
                     <p class="example">{{ totalCards[currentCard].example }}</p>
