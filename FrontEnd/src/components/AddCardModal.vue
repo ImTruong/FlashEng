@@ -126,6 +126,8 @@
       console.log(newWord.value.image);
       if(props.word){
         const response = await axios.put('/word', formData, config);
+        if(props.word.image && !newWord.value.image)
+        newWord.value.image = props.word.image;
         emit('update', newWord.value);
         alert(response.data.message);
       }
@@ -176,6 +178,7 @@
     watch(() => props.word, (newValue) => {
     if (newValue) {
       newWord.value = { ...newValue };
+      newWord.value.image = null;
     }
   }, { immediate: true });
 
