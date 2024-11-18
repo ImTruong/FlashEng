@@ -50,7 +50,7 @@
     <div class="signup-container">
       <div class="signup-left"></div>
       <div class="signup-right">
-        <h2>Sign in</h2>
+        <h2>Register</h2>
         <form @submit.prevent="registerUser">
           <div class="input-group">
             <label for="fullname">Fullname</label>
