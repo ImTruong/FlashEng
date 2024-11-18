@@ -185,6 +185,11 @@ const handleSavePassword = (data) => {
     color: rgb(0, 0, 0);
     border-radius: 4px;
     cursor: pointer;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+  }
+
+  .actions button:hover {
+    transform: scale(1.05);
   }
   
   .actions button:first-of-type {

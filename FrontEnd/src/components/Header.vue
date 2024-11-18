@@ -3,11 +3,9 @@
     import { RouterLink } from 'vue-router';
     import SetTable from "../components/SetTable.vue"
     import OverlayBackground from "../components/OverlayBackground.vue";
-    import classesData from "../data/classes.json" 
     import SeachBar from './SeachBar.vue';
     import ClassTable from './ClassTable.vue';
     import NotificationList from './NotificationList.vue'
-    import setsData from '../data/sets'
     
     const isEditMode = ref(false);
     const existingSet = ref(null);

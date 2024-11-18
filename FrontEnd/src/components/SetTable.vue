@@ -93,8 +93,8 @@
                 const response = await axios.post('/set', payload, { headers: config.headers }); 
                 emit('save', response.data.data); 
                 if (response.data.message) {
-                alert(response.data.message);
-            }
+                    alert(response.data.message);
+                }
             }
             
         } catch (error) {

@@ -1,7 +1,6 @@
 <script setup>
     import Header from '@/components/Header.vue';    // import statistic from '@/data/statistic.json'
     import { ref, onMounted } from 'vue';
-    import statistics from '@/data/statistics'
     import axios from 'axios';
 
     const data = ref(statistics);
