@@ -2,7 +2,6 @@
 // chưa chạy được
     import { defineProps, defineEmits, onMounted } from 'vue';
     import Card from './Set.vue';
-    import setsData from '@/data/sets.json'
     import { ref } from 'vue';
     import OverlayBackground from './OverlayBackground.vue';
     import axios from 'axios';
