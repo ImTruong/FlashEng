@@ -1,5 +1,5 @@
 <script setup>
-    import { defineProps, defineEmits, onMounted, computed } from 'vue';
+    import { defineProps, defineEmits, onMounted, watch } from 'vue';
     import { ref } from 'vue';
     import LibraryBody from './LibraryBody.vue';
     import OverlayBackground from './OverlayBackground.vue';
@@ -51,7 +51,15 @@
         } 
     }
 
-
+    watch(
+        () => searchQuery,
+        (newQuery) => {
+            console.log('Search query changed:', newQuery);
+            getClasses(); // Gọi lại getClasses khi searchQuery thay đổi
+            getSets(); // Gọi lại getSets khi searchQuery thay đổi
+        },
+        { immediate: true } // Gọi ngay lập tức khi component được mount lần đầu tiên
+    );
     onMounted(() => {
         getClasses();
         getSets();
@@ -69,7 +77,7 @@
             <img src="../assets/close.svg" alt="Icon" class="close-icon" @click="closeOverlay">
         </div> 
         <LibraryBody
-        class = "libraryBody"
+        class="libraryBody"
         :sets="sets"
         :classes="classes"
         />
