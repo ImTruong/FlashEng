@@ -135,7 +135,8 @@ public class WordServiceImpl implements WordService {
             throw new AccessDeniedException("You do not permission to delete word in this set");
         }
         try{
-            cloudinaryService.deleteImage(wordEntity.getImagePublicId());
+            if(wordEntity.getImagePublicId() != null)
+                cloudinaryService.deleteImage(wordEntity.getImagePublicId());
             wordRepository.delete(wordEntity);
         }
         catch (IOException e){
