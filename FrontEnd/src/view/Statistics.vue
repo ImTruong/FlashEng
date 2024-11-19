@@ -3,7 +3,7 @@
     import { ref, onMounted } from 'vue';
     import axios from 'axios';
 
-    const data = ref(statistics);
+    const data = ref("");
 
     const fetchStatistic = async () => {
         try {
@@ -44,7 +44,7 @@
                     <td class="date">{{ d.date }}</td>
                     <td class="words">{{ d.numberOfWords }} words</td>
                     <td >
-                        <div class="bar" :style="{width: d.numberOfWords * 5 + 'px'}" > </div>
+                        <div class="bar" :style="{width: d.numberOfWords * 15 + 'px'}" > </div>
                     </td>
                 </tr>
                 <!-- <p class="date">{{ d['Date'] }}</p>

@@ -102,11 +102,13 @@
                 <ul>
                     <li>
                         <img src="@/assets/icons/home-icon.png" alt="Home"  class="menu-icon"/>
-                        <router-link to="/" class="menu-link">Home</router-link>
+                        <a href="/">Home</a>
+                        <!-- <router-link to="/" class="menu-link">Home</router-link> -->
                     </li>
                     <li>
                         <img src="@/assets/icons/folder.png" alt="folder"  class="menu-icon"/>
-                        <router-link to="/library" class="menu-link">Your Library</router-link>
+                        <a href="/library">Your Library</a>
+                        <!-- <router-link to="/library" class="menu-link">Your Library</router-link> -->
                     </li>
                     <li>
                         <img src="@/assets/icons/statistics.png" alt="Home"  class="menu-icon"/>

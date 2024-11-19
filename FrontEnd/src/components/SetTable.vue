@@ -128,7 +128,6 @@
                     continue; // Skip nếu không tìm thấy từ
                 }
                 const response = await axios.delete(`/word/${wordId}`, config);
-                alert('Word deleted:', response.message);
                 rows.value = rows.value.filter(row => row.id !== wordId); // Xóa từ khỏi bảng
                 if (response.data.message) {
                     alert(response.data.message);

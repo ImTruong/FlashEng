@@ -16,6 +16,7 @@
     const recentSets = ref([]);
     const publicSets = ref([])
 
+
     onMounted(() => {
         store.dispatch('fetchLibrarySets').then(() => {
             displayedSets.value = sets.value.slice(0, 3); // Update displayed sets
@@ -77,8 +78,8 @@
                 Authorization: `Bearer ${token}`, // Đảm bảo gửi token trong header
             },
             })
-            publicSets.value = response.data.data
-            displayPublicSets.value = recentSets.value.slice(0, 3);
+            publicSets.value = response.data.data;
+            displayPublicSets.value = publicSets.value.slice(0, 3);
         }
         catch (error) {
             if (error.response) {
@@ -89,6 +90,12 @@
         }
     }
     onMounted(() => {
+        try{
+            const token = localStorage.getItem('token');
+        }
+        catch{
+            router.push('/login');
+        }
         fetchUserInfo();
         fetchRecentSet();
         fetchPublicSet();
