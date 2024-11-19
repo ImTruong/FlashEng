@@ -10,9 +10,11 @@
     const store = useStore();
     const sets = computed(() => store.getters.getSets);
     const displayedSets = ref([]);
+    const displayPublicSets = ref([]);
+    const displayRecentSets = ref([]);
     const errorMessage = ref(null);
     const recentSets = ref([]);
-
+    const publicSets = ref([])
 
     onMounted(() => {
         store.dispatch('fetchLibrarySets').then(() => {
@@ -21,9 +23,12 @@
         fetchRecentSet();
     });
     const showAllSetsRecent = () => {
-        displayedSets.value = recentSets.value;
+        displayRecentSets.value = recentSets.value;
     };
 
+    const showAllCommunity = () => {
+        displayPublicSets.value = publicSets.value;
+    }
     const fetchUserInfo = async () => {
         try {
             const token = localStorage.getItem('token') // Lấy token từ localStorage
@@ -54,6 +59,26 @@
             },
             })
             recentSets.value = response.data.data
+            displayRecentSets.value = recentSets.value.slice(0, 3);
+        }
+        catch (error) {
+            if (error.response) {
+                alert('Error:', error.response.data.message);
+            } else {
+                alert('Network or Axios error:', error.message);
+            }        
+        }
+    }
+    const fetchPublicSet = async () => {
+        try {
+            const token = localStorage.getItem('token')
+            const response = await axios.get('/set/public', {
+            headers: {
+                Authorization: `Bearer ${token}`, // Đảm bảo gửi token trong header
+            },
+            })
+            publicSets.value = response.data.data
+            displayPublicSets.value = recentSets.value.slice(0, 3);
         }
         catch (error) {
             if (error.response) {
@@ -66,6 +91,7 @@
     onMounted(() => {
         fetchUserInfo();
         fetchRecentSet();
+        fetchPublicSet();
     });
     const goToStudy = () => {
         router.push('/review');
@@ -79,7 +105,11 @@
 </script>
 
 <template>
-    <Header />
+    <Header
+    :recentSets="recentSets"
+    :ownerSets="sets"
+    :publicSets="publicSets"
+     />
     <div class="home">
         <div class="review-box" @click="goToStudy">
             <p>It's time to review...</p>
@@ -91,7 +121,7 @@
         </h1>
         <div class="set-container">
             <Card 
-                v-for="set in recentSets" 
+                v-for="set in displayRecentSets" 
                 :key="set.id" 
                 :set="set" />
         </div>
@@ -103,6 +133,16 @@
         <div class="set-container">
             <Card 
                 v-for="set in displayedSets" 
+                :key="set.id" 
+                :set="set" />
+        </div>
+        <h1 class="section-header">
+            <span class="section-title">Community</span>
+            <span v-if="publicSets.length > 3" class="more-link" @click="showAllCommunity">More...</span>
+        </h1>
+        <div class="set-container">
+            <Card 
+                v-for="set in displayPublicSets" 
                 :key="set.id" 
                 :set="set" />
         </div>

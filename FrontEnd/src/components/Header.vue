@@ -1,15 +1,37 @@
 <script setup>
-    import { ref, watch} from 'vue';
+    import { ref, watch, defineProps, computed, onMounted} from 'vue';
     import { RouterLink } from 'vue-router';
     import SetTable from "../components/SetTable.vue"
     import OverlayBackground from "../components/OverlayBackground.vue";
     import SeachBar from './SeachBar.vue';
     import ClassTable from './ClassTable.vue';
     import NotificationList from './NotificationList.vue'
-    
+    import { useStore } from 'vuex';
+
+
+    const store = useStore();
+    const props = defineProps({
+    recentSets: {
+        type: Array,
+        default: () => [], // Mảng rỗng mặc định
+    },
+    ownerSets: {
+        type: Array,
+        default: () => [],
+    },
+    publicSets: {
+        type: Array,
+        default: () => [],
+    },
+    });
+    const setsData = ref([...props.recentSets, ...props.ownerSets, ...props.publicSets]);
+    watch(() => [props.recentSets, props.ownerSets, props.publicSets], () => {
+    setsData.value = [...props.recentSets, ...props.ownerSets, ...props.publicSets];
+    });
+    const classesData = computed(() => store.getters.getClasses);
     const isEditMode = ref(false);
     const existingSet = ref(null);
-    const menuOpen = ref(false);
+    const menuOpen = ref(false);    
     const showNotifications = ref(false)
     const setTable = ref(false)
     const searchQuery = ref("")
@@ -20,6 +42,8 @@
     const searchItem = ref("")
     const newItem = ref(false);
     const classTable = ref(false)
+
+
 
     const toggleMenu = () => {
         menuOpen.value = !menuOpen.value;
@@ -33,20 +57,21 @@
         classTable.value = !classTable.value;
         newItem.value = !newItem;
     }
-    const performSearch = (searchQuery, () => {
-        if (searchQuery.value) {
-            classItems.value = classesData.filter(classData => 
-                classData.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+    console.log(classesData.value)
+    const performSearch = (query) => {
+        console.log('Search query:', query); // Xem giá trị của query
+        if (query) {
+            classItems.value = classesData.value.filter(classData => 
+                classData.className.toLowerCase().includes(query.toLowerCase())
             );
-            setItems.value = setsData.filter(setData => 
-                setData.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+            setItems.value = setsData.value.filter(setData => 
+                setData.name.toLowerCase().includes(query.toLowerCase())
             );
         }
         showSearch.value = true;
         Overlay_background.value = true;
-        searchItem.value = searchQuery.value
-        searchQuery.value = ""
-    })
+        searchItem.value = query; // Lưu giá trị tìm kiếm
+    };
 
     const showSetTable = (editMode = false) => {
         isEditMode.value = editMode;
@@ -57,13 +82,13 @@
         existingSet.value = data; // Gán dữ liệu cho set hiện tại nếu cần
     }
     watch(menuOpen, (newValue) => {
-    if (!newValue) {
-      showNotifications.value = false; 
-    }
-    function closeOverlay(){
-        emit('close');
-    }
-  });
+        if (!newValue) {
+        showNotifications.value = false; 
+        }
+    });
+    onMounted(() => {
+        store.dispatch('fetchClassData');
+    });
 </script>
 
 <template>
@@ -106,7 +131,7 @@
             <input 
                 type="text" 
                 v-model="searchQuery"
-                @keyup.enter="performSearch" 
+                @keyup.enter="performSearch(searchQuery)" 
                 placeholder="Search for flashcards sets, classes" 
                 class="search-bar"/>
             <div class="button-container">
