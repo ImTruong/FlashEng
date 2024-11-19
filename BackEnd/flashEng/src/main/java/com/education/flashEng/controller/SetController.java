@@ -18,8 +18,14 @@ public class SetController {
     SetService setService;
 
     @GetMapping
+    public ResponseEntity<?> getOwnSets() {
+        ApiResponse<?> response = new ApiResponse<>(true, "Get All Own Set Successfully", setService.getPublicAndPrivateSet());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/public")
     public ResponseEntity<?> getPublicSets() {
-        ApiResponse<?> response = new ApiResponse<>(true, "Get All Public And Private Sets Successfully", setService.getPublicAndPrivateSet());
+        ApiResponse<?> response = new ApiResponse<>(true, "Get All Public Sets Successfully", setService.getPublicSet());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

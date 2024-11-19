@@ -16,4 +16,6 @@ public interface SetService {
     boolean deleteSetById(Long setID);
     List<SetResponse> getRecentSet();
     List<SetResponse> findSetByName(String name);
+
+    List<SetResponse> getPublicSet();
 }

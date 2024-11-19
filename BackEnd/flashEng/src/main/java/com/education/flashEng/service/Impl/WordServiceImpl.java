@@ -4,6 +4,7 @@ import com.education.flashEng.entity.SetEntity;
 import com.education.flashEng.entity.StudySessionEntity;
 import com.education.flashEng.entity.UserEntity;
 import com.education.flashEng.entity.WordEntity;
+import com.education.flashEng.enums.AccessModifierType;
 import com.education.flashEng.exception.EntityNotFoundWithIdException;
 import com.education.flashEng.payload.request.CreateWordRequest;
 import com.education.flashEng.payload.request.UpdateWordRequest;
@@ -83,12 +84,15 @@ public class WordServiceImpl implements WordService {
 
     @Override
     public List<WordResponse> getWordBySetId(Long setId) {
-        UserEntity user = userService.getUserFromSecurityContext();
         SetEntity setEntity = setRepository.findById(setId)
                 .orElseThrow(() -> new EntityNotFoundWithIdException("SetEntity", setId.toString()));
-        if((user.getClassMemberEntityList().stream().noneMatch(classMemberEntity -> classMemberEntity.getClassEntity().getSetsEntityList().contains(setEntity))&&setEntity.getPrivacyStatus().equals("Class"))||(setEntity.getPrivacyStatus().equals("PRIVATE")&&!Objects.equals(setEntity.getUserEntity().getId(), user.getId()))){
-            throw new IllegalArgumentException("You do not have permission to get word in this set");
+        if(!setEntity.getPrivacyStatus().equals(AccessModifierType.getKeyfromValue("Public"))){
+            UserEntity user = userService.getUserFromSecurityContext();
+            if((user.getClassMemberEntityList().stream().noneMatch(classMemberEntity -> classMemberEntity.getClassEntity().getSetsEntityList().contains(setEntity))&&setEntity.getPrivacyStatus().equals(AccessModifierType.getKeyfromValue("Class")))||(setEntity.getPrivacyStatus().equals(AccessModifierType.getKeyfromValue("Private"))&&!Objects.equals(setEntity.getUserEntity().getId(), user.getId()))){
+                throw new IllegalArgumentException("You do not have permission to get word in this set");
+            }
         }
+
         List<WordEntity> wordEntities = wordRepository.findAllBySetEntityId(setId);
         List<WordResponse> wordListResponses = new ArrayList<>();
         for(WordEntity wordEntity : wordEntities){

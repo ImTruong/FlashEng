@@ -82,8 +82,8 @@ public class SetServiceImpl implements SetService {
 
     @Override
     public List<SetResponse> getPublicAndPrivateSet() {
-        List<SetEntity> publicSetEntities = setRepository.findAllByPrivacyStatus(AccessModifierType.getKeyfromValue("Public"));
         UserEntity user = userService.getUserFromSecurityContext();
+        List<SetEntity> publicSetEntities = setRepository.findAllByPrivacyStatusAndUserEntityId(AccessModifierType.getKeyfromValue("Public"), user.getId());
         List<SetEntity> privateSetEntities = setRepository.findAllByPrivacyStatusAndUserEntityId(
                 AccessModifierType.getKeyfromValue("Private"), user.getId());
         List<SetEntity> combinedSetEntities = new ArrayList<>();
@@ -262,6 +262,25 @@ public class SetServiceImpl implements SetService {
                     s.setNumberOfWords((long) wordListResponses.size());
                     setResponses.add(s);
                 });
+        return setResponses;
+    }
+
+    @Override
+    public List<SetResponse> getPublicSet() {
+        List<SetEntity> setEntities = setRepository.findAllByPrivacyStatus(AccessModifierType.getKeyfromValue("Public"));
+        List<SetResponse> setResponses = new ArrayList<>();
+        for(SetEntity setEntity : setEntities){
+            SetResponse s = new SetResponse();
+            modelMapper.map(setEntity, s);
+            s.setUserDetailResponse(setEntity.getUserEntity().getFullName(),
+                    setEntity.getUserEntity().getUsername(),
+                    setEntity.getUserEntity().getEmail(),
+                    setEntity.getUserEntity().getCountry());
+            List<WordResponse> wordListResponses = wordService.getWordBySetId(setEntity.getId());
+            s.setWordResponses(wordListResponses);
+            s.setNumberOfWords((long) wordListResponses.size());
+            setResponses.add(s);
+        }
         return setResponses;
     }
 
