@@ -81,7 +81,7 @@ public class SetServiceImpl implements SetService {
     }
 
     @Override
-    public List<SetResponse> getPublicAndPrivateSet() {
+    public List<SetResponse> getOwnPublicAndPrivateSet() {
         UserEntity user = userService.getUserFromSecurityContext();
         List<SetEntity> publicSetEntities = setRepository.findAllByPrivacyStatusAndUserEntityId(AccessModifierType.getKeyfromValue("Public"), user.getId());
         List<SetEntity> privateSetEntities = setRepository.findAllByPrivacyStatusAndUserEntityId(

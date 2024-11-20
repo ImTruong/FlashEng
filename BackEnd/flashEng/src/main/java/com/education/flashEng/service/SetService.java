@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface SetService {
     SetResponse createSet(CreateSetRequest createSetRequest);
-    List<SetResponse> getPublicAndPrivateSet();
+    List<SetResponse> getOwnPublicAndPrivateSet();
     List<SetResponse> getPrivateSet();
     List<SetResponse> getSetByClassID(Long classID);
     boolean updateSet(UpdateSetRequest updateSetRequest);
