@@ -14,6 +14,7 @@ import com.education.flashEng.repository.WordRepository;
 import com.education.flashEng.service.StudySessionService;
 import com.education.flashEng.service.UserService;
 import com.education.flashEng.service.WordService;
+import com.education.flashEng.util.TimeUtil;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,8 @@ public class WordServiceImpl implements WordService {
     private UserService userService;
     @Autowired
     private StudySessionService studySessionService;
+    @Autowired
+    private TimeUtil timeUtil;
 
     @Transactional
     @Override
@@ -159,7 +162,7 @@ public class WordServiceImpl implements WordService {
             Long wordId = studySessionEntity.getWordEntity().getId();
             if (!wordIds.contains(wordId)) {
                 wordIds.add(wordId);
-                if(studySessionService.getReminderTimeBasedOnLevel(studySessionEntity.getDifficulty(), studySessionEntity.getCreatedAt()).isAfter(LocalDateTime.now()))
+                if(timeUtil.addFractionOfDay(studySessionEntity.getCreatedAt(),studySessionEntity.getReminderTime()).isAfter(LocalDateTime.now()))
                     continue;
 
                 WordResponse wordResponse = new WordResponse();
