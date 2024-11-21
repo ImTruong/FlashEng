@@ -78,7 +78,7 @@
                 Authorization: `Bearer ${token}`, // Đảm bảo gửi token trong header
             },
             })
-            publicSets.value = response.data.data;
+            publicSets.value = response.data.data
             displayPublicSets.value = publicSets.value.slice(0, 3);
         }
         catch (error) {
