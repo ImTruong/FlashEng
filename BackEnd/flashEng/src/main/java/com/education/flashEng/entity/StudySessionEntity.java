@@ -26,7 +26,7 @@ public class StudySessionEntity {
     private Double coefficient = 2.0;
 
     @Column(name = "reminder_time")
-    private Double reminderTime = 1.0;
+    private Double reminderTime = 0.3;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

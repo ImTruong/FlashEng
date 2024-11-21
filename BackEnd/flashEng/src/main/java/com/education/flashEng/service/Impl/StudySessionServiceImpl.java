@@ -78,12 +78,13 @@ public class StudySessionServiceImpl implements StudySessionService {
                 break;
             case "easy":
                 break;
-            case "hard":
+            case "difficult":
                 if(coefficient > 1.0)
                     coefficient += -0.1;
                 break;
-            case "very hard":
+            case "very difficult":
                 coefficient = 1.0;
+                reminderTime = 0.3;
                 break;
         }
         reminderTime *= coefficient;
