@@ -12,7 +12,7 @@
     const selectedSet = ref(route.params.id);
     const currentCard = ref(0);
     const isFlipped = ref(false);
-    const currentSet = ref(null);
+    const currentSet = computed(() => store.state.currentSet);
     const totalCards = computed(() => currentSet.value ? currentSet.value.wordResponses.length : 0);
     const cardStatus = computed(() => `${currentCard.value + 1}/${totalCards.value}`);
     
@@ -74,7 +74,8 @@
 
     onMounted(() => {
         store.dispatch('fetchLibrarySets');
-        console.log(currentSet.value.wordResponses);
+        console.log(currentSet);
+        // console.log(currentSet.value.wordResponses);
     });
 </script>
 
