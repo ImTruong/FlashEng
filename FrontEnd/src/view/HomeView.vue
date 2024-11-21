@@ -78,7 +78,7 @@
             },
             })
             publicSets.value = response.data.data
-            displayPublicSets.value = recentSets.value.slice(0, 3);
+            displayPublicSets.value = publicSets.value.slice(0, 3);
         }
         catch (error) {
             if (error.response) {

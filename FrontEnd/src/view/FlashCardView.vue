@@ -1,19 +1,16 @@
 <script setup>
     import { ref, computed, onMounted, watch } from 'vue';
-    import { useRoute, useRouter } from 'vue-router';
+    import { useRouter } from 'vue-router';
     import { useStore } from 'vuex';
     import axios from 'axios';
     import Header from "../components/Header.vue";
 
     const store = useStore();
-    const sets = computed(() => store.getters.getSets);
     const router = useRouter();
-    const route = useRoute();
-    const selectedSet = ref(route.params.id);
     const currentCard = ref(0);
     const isFlipped = ref(false);
-    const currentSet = ref(null);
-    const totalCards = computed(() => currentSet.value ? currentSet.value.wordResponses.length : 0);
+    const currentSet = computed(() => store.state.currentSet); 
+    const totalCards = computed(() => currentSet.value ? currentSet.value.wordResponses.length : 0);    
     const cardStatus = computed(() => `${currentCard.value + 1}/${totalCards.value}`);
     
     const playAudio = () => {
@@ -66,16 +63,7 @@
             }
         }
     };
-    watch([sets, selectedSet], () => {
-        if (sets.value && sets.value.length > 0) {
-            currentSet.value = sets.value.find(set => set.id == selectedSet.value) || null;
-        }
-    }, { immediate: true });
-
-    onMounted(() => {
-        store.dispatch('fetchLibrarySets');
-        console.log(currentSet.value.wordResponses);
-    });
+    
 </script>
 
 <template>

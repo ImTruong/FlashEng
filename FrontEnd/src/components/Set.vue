@@ -37,6 +37,7 @@
         alert("Please add words before studying!");
         return; 
     }
+    store.commit('setCurrentSet', set); 
     router.push(`/flashcard/${set.id}`); 
   };
 
