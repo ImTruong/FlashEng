@@ -44,8 +44,8 @@ public class StudySessionServiceImpl implements StudySessionService {
                 .orElseThrow(() -> new EntityNotFoundWithIdException("Word", studySessionRequest.getWordId().toString()));
         String privacy = wordEntity.getSetEntity().getPrivacyStatus();
         if(!privacy.equals("PUBLIC")
-                && (!privacy.equals("PRIVATE") && !Objects.equals(wordEntity.getSetEntity().getUserEntity().getId(), currentUser.getId()))
-                && (!privacy.equals("CLASS") && wordEntity.getSetEntity().getClassEntity().getClassMemberEntityList().stream().noneMatch(classMemberEntity -> classMemberEntity.getUserEntity().getId().equals(currentUser.getId()))))
+                && !(privacy.equals("PRIVATE") && wordEntity.getSetEntity().getUserEntity().getId().equals(currentUser.getId()))
+                && !(privacy.equals("CLASS") && wordEntity.getSetEntity().getClassEntity().getClassMemberEntityList().stream().anyMatch(classMemberEntity -> classMemberEntity.getUserEntity().getId().equals(currentUser.getId()))))
             throw new AccessDeniedException("You do not have permission to study this word");
 
         studySessionEntity.setUserEntity(currentUser);
