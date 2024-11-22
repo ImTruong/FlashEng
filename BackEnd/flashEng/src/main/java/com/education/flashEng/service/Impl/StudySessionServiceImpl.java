@@ -53,6 +53,7 @@ public class StudySessionServiceImpl implements StudySessionService {
         studySessionEntity.setDifficulty(studySessionRequest.getDifficulty());
         StudySessionEntity studySession = studySessionRepository.save(studySessionEntity);
         notificationServiceImpl.createStudySessionNotification(studySessionEntity,getReminderTimeBasedOnLevel(studySession, LocalDateTime.now()));
+        studySessionRepository.save(studySessionEntity);
         return true;
     }
 
@@ -79,7 +80,7 @@ public class StudySessionServiceImpl implements StudySessionService {
             case "easy":
                 break;
             case "difficult":
-                if(coefficient > 1.0)
+                if(coefficient > 0.3)
                     coefficient += -0.1;
                 break;
             case "very difficult":

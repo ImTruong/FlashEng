@@ -23,7 +23,7 @@ public class StudySessionEntity {
     private String difficulty;
 
     @Column(name = "coefficient")
-    private Double coefficient = 2.0;
+    private Double coefficient = 1.0;
 
     @Column(name = "reminder_time")
     private Double reminderTime = 0.3;
